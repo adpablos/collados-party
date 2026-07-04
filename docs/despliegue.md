@@ -2,7 +2,8 @@
 
 El Bote se sirve desde el server de Hetzner (`treasure-map-prod-01`), el mismo
 que hospeda la porra del Mundial. SSH solo por tailnet (`100.83.154.97`,
-usuario `adpablos`, clave `~/.ssh/personal_ed25519`).
+usuario `adpablos`, clave `~/.ssh/treasure_map_prod_github_actions_ed25519`;
+la clave personal NO está autorizada en ese server).
 
 ## Arquitectura
 
@@ -56,17 +57,16 @@ curl -fsS http://127.0.0.1:3200/ >/dev/null && echo OK
 
 ## Setup inicial (una sola vez)
 
-Hecho el 2026-07-05; queda documentado por si hay que recrearlo.
+Hecho el 2026-07-05 (túnel `collados`, id
+`2abb0680-613f-4304-9835-80e2bcf642fd`); queda documentado por si hay que
+recrearlo.
 
-1. Clonar el repo:
+Dato clave: el CLI de `cloudflared` y el `cert.pem` de la cuenta de
+Cloudflare viven **en el Mac** (`~/.cloudflared/`), no en el server. Los
+túneles se crean desde el Mac y solo las credenciales del túnel viajan al
+server. Así se montaron también los túneles de la porra.
 
-   ```bash
-   sudo git clone https://github.com/adpablos/collados-party.git /opt/collados-party
-   sudo chown -R adpablos:adpablos /opt/collados-party
-   ```
-
-2. Crear el túnel y su ruta DNS (necesita el cert de cuenta de Cloudflare que
-   ya existe en el server de los túneles de la porra):
+1. Desde el Mac, crear el túnel y su ruta DNS:
 
    ```bash
    cloudflared tunnel create collados
@@ -76,14 +76,32 @@ Hecho el 2026-07-05; queda documentado por si hay que recrearlo.
    `create` imprime el id del túnel y deja las credenciales en
    `~/.cloudflared/<tunnel-id>.json`.
 
-3. Colocar la config del túnel:
+2. Desde el Mac, subir credenciales y config (mismo patrón de permisos que
+   la porra: `root:adpablos`, ficheros `0640`, directorios `0750`):
+
+   ```bash
+   TID=<tunnel-id>
+   sed "s/<tunnel-id>/$TID/g" deployment/cloudflare/config.yml.example > /tmp/collados-config.yml
+   scp -i ~/.ssh/treasure_map_prod_github_actions_ed25519 -o IdentitiesOnly=yes \
+     /tmp/collados-config.yml ~/.cloudflared/$TID.json adpablos@100.83.154.97:/tmp/
+   ```
+
+   Y en el server:
 
    ```bash
    sudo mkdir -p /etc/collados-party/cloudflared
-   sudo cp ~/.cloudflared/<tunnel-id>.json /etc/collados-party/cloudflared/
-   sudo cp deployment/cloudflare/config.yml.example /etc/collados-party/cloudflared/config.yml
-   sudo vi /etc/collados-party/cloudflared/config.yml  # poner el <tunnel-id> real
-   sudo chmod 600 /etc/collados-party/cloudflared/*.json
+   sudo install -o root -g adpablos -m 0640 /tmp/collados-config.yml /etc/collados-party/cloudflared/config.yml
+   sudo install -o root -g adpablos -m 0640 /tmp/$TID.json /etc/collados-party/cloudflared/$TID.json
+   sudo chown root:adpablos /etc/collados-party /etc/collados-party/cloudflared
+   sudo chmod 750 /etc/collados-party /etc/collados-party/cloudflared
+   rm /tmp/collados-config.yml /tmp/$TID.json
+   ```
+
+3. En el server, clonar el repo:
+
+   ```bash
+   sudo git clone https://github.com/adpablos/collados-party.git /opt/collados-party
+   sudo chown -R adpablos:adpablos /opt/collados-party
    ```
 
 4. Levantar y verificar:
@@ -120,7 +138,8 @@ cd /opt/collados-party
 sudo docker compose down
 ```
 
-Borrado completo del túnel, si algún día se retira la app:
+Borrado completo del túnel, si algún día se retira la app (desde el Mac, que
+es donde está el cert de cuenta):
 
 ```bash
 cloudflared tunnel delete collados   # tras el down y borrar el DNS en Cloudflare

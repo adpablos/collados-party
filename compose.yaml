@@ -1,0 +1,31 @@
+# Stack de servidor: nginx sirve public/ y cloudflared lo expone en
+# https://collados.alexdepablos.es. Pensado para el server de Hetzner
+# (ver docs/despliegue.md); en local no hace falta, abre public/index.html.
+name: collados
+
+services:
+  web:
+    image: nginx:1.28-alpine
+    restart: unless-stopped
+    ports:
+      # Solo loopback: el acceso público entra por el túnel, no por el puerto.
+      - "127.0.0.1:3200:80"
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.11.1
+    restart: unless-stopped
+    user: "0:0"
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ${COLLADOS_CLOUDFLARED_CONFIG_DIR:-/etc/collados-party/cloudflared}:/etc/cloudflared:ro
+    depends_on:
+      web:
+        condition: service_healthy

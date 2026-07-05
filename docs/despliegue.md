@@ -1,27 +1,37 @@
 # Despliegue
 
-El Bote se sirve desde el server de Hetzner (`treasure-map-prod-01`), el mismo
+A Pachas se sirve desde el server de Hetzner (`treasure-map-prod-01`), el mismo
 que hospeda la porra del Mundial. SSH solo por tailnet (`100.83.154.97`,
 usuario `adpablos`, clave `~/.ssh/treasure_map_prod_github_actions_ed25519`;
 la clave personal NO está autorizada en ese server).
 
 ## Arquitectura
 
-Un proyecto Docker Compose aislado (`collados`) con dos contenedores:
+Un proyecto Docker Compose aislado (`collados`) con tres contenedores:
 
 ```txt
 Internet ── Cloudflare ── túnel "collados" ── cloudflared ── nginx (web)
-                                                              └─ sirve public/
-https://collados.alexdepablos.es
+                                                              ├─ sirve public/
+https://collados.alexdepablos.es                              └─ /api/ → api
+                                                                 (node, fiestas
+                                                                  compartidas)
 ```
 
-- `web`: nginx sirviendo `public/` en modo solo-lectura. Expuesto además en
-  `127.0.0.1:3200` del server para smokes de operador.
+- `web`: nginx sirviendo `public/` en modo solo-lectura y pasando `/api/` al
+  contenedor `api` (config en `deployment/nginx/default.conf`). Expuesto
+  además en `127.0.0.1:3200` del server para smokes de operador.
+- `api`: `server/api.js` con node:22-alpine, sin `npm install` (cero
+  dependencias). Guarda un JSON por fiesta compartida en el volumen
+  `api-data`. Si se cae, lo estático sigue arriba y la app funciona en modo
+  local (a propósito: `web` solo espera a que `api` arranque, no a que esté
+  sano).
 - `cloudflared`: túnel propio de esta app (mismo patrón que producción y
   staging de la porra: un túnel por stack, cero acoplamiento entre apps).
 
-No hay build, base de datos ni secretos de aplicación. El único material
-sensible son las credenciales del túnel, que viven fuera del repo.
+No hay build ni secretos de aplicación. Los datos de las fiestas viven en el
+volumen `api-data` (se pierden solo con `docker compose down -v`; las fiestas
+sin tocar 8 meses se purgan solas). El único material sensible son las
+credenciales del túnel, que viven fuera del repo.
 
 ## Rutas en el server
 
@@ -43,8 +53,13 @@ scripts/deploy.sh
 El script hace `git pull --ff-only` + `docker compose up -d --wait` en el
 server y comprueba que `https://collados.alexdepablos.es` responde. Como
 `public/` está montado directamente en nginx, un cambio de contenido ni
-siquiera reinicia contenedores: el pull basta (el `up` solo actúa si cambió
-`compose.yaml`).
+siquiera reinicia contenedores: el pull basta. Un cambio en `server/api.js`
+o en la config de nginx sí necesita reinicio; el `up` no detecta cambios en
+ficheros montados, así que en ese caso:
+
+```bash
+sudo docker compose restart api    # o web, si cambió deployment/nginx/
+```
 
 Manual equivalente, desde el server:
 
@@ -53,6 +68,7 @@ cd /opt/collados-party
 git pull --ff-only
 sudo docker compose up -d --wait
 curl -fsS http://127.0.0.1:3200/ >/dev/null && echo OK
+curl -fsS http://127.0.0.1:3200/api/salud >/dev/null && echo API OK
 ```
 
 ## Setup inicial (una sola vez)

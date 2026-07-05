@@ -1,6 +1,7 @@
-# Stack de servidor: nginx sirve public/ y cloudflared lo expone en
+# Stack de servidor: nginx sirve public/ y pasa /api/ al contenedor api
+# (fiestas compartidas); cloudflared lo expone en
 # https://collados.alexdepablos.es. Pensado para el server de Hetzner
-# (ver docs/despliegue.md); en local no hace falta, abre public/index.html.
+# (ver docs/despliegue.md); en local basta `node server/api.js`.
 name: collados
 
 services:
@@ -12,8 +13,30 @@ services:
       - "127.0.0.1:3200:80"
     volumes:
       - ./public:/usr/share/nginx/html:ro
+      - ./deployment/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      # started y no healthy a propósito: si el api cae, lo estático sigue
+      # (la app funciona en modo local) y /api devuelve 502.
+      api:
+        condition: service_started
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  api:
+    image: node:22-alpine
+    restart: unless-stopped
+    command: ["node", "/srv/api.js"]
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - ./server/api.js:/srv/api.js:ro
+      - api-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8010/api/salud"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -29,3 +52,8 @@ services:
     depends_on:
       web:
         condition: service_healthy
+
+volumes:
+  # Fiestas compartidas (un JSON por fiesta). Sobrevive a redespliegues;
+  # solo se pierde con `docker compose down -v`.
+  api-data:

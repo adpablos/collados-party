@@ -11,9 +11,12 @@ APP_DIR="/opt/collados-party"
 PUBLIC_URL="https://collados.alexdepablos.es"
 
 echo "→ Desplegando en ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}"
+# El restart de api es porque `up` no detecta cambios en ficheros montados
+# (server/api.js); es stateless (datos en volumen) y tarda un segundo.
 ssh -i "${DEPLOY_SSH_KEY}" -o IdentitiesOnly=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
-  "cd '${APP_DIR}' && git pull --ff-only && sudo docker compose up -d --wait"
+  "cd '${APP_DIR}' && git pull --ff-only && sudo docker compose up -d --wait && sudo docker compose restart api"
 
 echo "→ Comprobando ${PUBLIC_URL}"
 curl -fsS -o /dev/null --retry 3 --retry-delay 2 "${PUBLIC_URL}"
-echo "✔ ${PUBLIC_URL} responde"
+curl -fsS -o /dev/null --retry 3 --retry-delay 2 "${PUBLIC_URL}/api/salud"
+echo "✔ ${PUBLIC_URL} responde (web y api)"

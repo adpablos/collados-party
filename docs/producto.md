@@ -195,15 +195,19 @@ abre también la app vieja: mismas formas, campos extra ignorados.
 ### API
 
 - `POST /api/fiestas` body `{estado}` → `201 {id, clave, rev:1}`.
-- `GET /api/fiestas/:id[?rev=n]` → `200 {rev, estado, updatedAt}` o `304`.
+- `GET /api/fiestas/:id[?rev=n]` → `200 {rev, estado, updatedAt}` o `204`
+  (sin cambios; 204 y no 304 porque `fetch` lo trata mejor).
 - `PUT /api/fiestas/:id` body `{clave, rev, estado}` →
   `200 {rev}` · `409 {rev, estado}` (revisión vieja: fusiona y reintenta) ·
-  `403` (clave mala) · `404`.
+  `403` (clave mala) · `404` · `413`/`400` (el cliente avisa y no reintenta
+  a ciegas).
 - `GET /api/salud` → `200` (healthcheck).
-- Guardarraíles: JSON ≤ 256 KB, validación de forma mínima, ids
-  `[a-z2-7]{10}` generados con crypto, escritura atómica (tmp + rename),
-  rate limit best-effort por IP, sin contenido de fiestas en logs, fiestas
-  sin tocar 8 meses se purgan.
+- Guardarraíles: JSON ≤ 256 KB, validación de forma mínima, ids de 10
+  caracteres generados con crypto, escritura atómica (tmp + rename), rate
+  limit best-effort por IP (leer barato, escribir caro: la peña entera
+  comparte la IP del WiFi del pueblo), tope global de fiestas en disco, y
+  ni contenido ni ids de fiestas en logs (el id solo ya da lectura).
+  Fiestas sin tocar 8 meses se purgan.
 - Despliegue: contenedor `api` (node:22-alpine, sin npm install) en el
   compose existente; nginx pasa `/api/` al contenedor y lo demás sigue
   siendo estático. En local `node server/api.js` sirve también `public/`
@@ -278,10 +282,10 @@ abre también la app vieja: mismas formas, campos extra ignorados.
 
 ## Métricas (sin analítica invasiva)
 
-De momento, las que salen gratis de los logs de nginx/api: fiestas creadas,
-PUTs por fiesta (¿edita más de una persona?), 409 por fiesta (¿molestan los
-conflictos?), GETs con 304 (¿el sondeo es barato?). Nada de nombres ni
-contenido. Si algún día hace falta más, eventos anónimos y opt-out.
+De momento, las que salen gratis de los logs del api (que redactan el id de
+la fiesta): fiestas creadas (201), volumen de escrituras (PUT 200), 409
+(¿molestan los conflictos?) y sondeos baratos (204). Nada de nombres,
+contenido ni ids. Si algún día hace falta más, eventos anónimos y opt-out.
 
 ## Apéndice — correcciones al análisis original
 

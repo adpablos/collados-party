@@ -3,9 +3,9 @@
 // control de revisión optimista y cero dependencias (solo stdlib de Node).
 //
 //   POST /api/fiestas            {estado}              -> 201 {id, clave, rev}
-//   GET  /api/fiestas/:id[?rev=] -> 200 {rev, estado, updatedAt} | 304
+//   GET  /api/fiestas/:id[?rev=] -> 200 {rev, estado, updatedAt} | 204 (sin cambios)
 //   PUT  /api/fiestas/:id        {clave, rev, estado}  -> 200 {rev, updatedAt}
-//                                   | 409 {rev, estado} | 403 | 404
+//                                   | 409 {rev, estado} | 403 | 404 | 413
 //   GET  /api/salud              -> 200
 //
 // En local (`node server/api.js`) sirve también public/ para probar la app
@@ -24,7 +24,11 @@ const STATIC_DIR = process.env.STATIC_DIR || path.join(__dirname, '..', 'public'
 
 const MAX_BODY = 256 * 1024;          // una fiesta grande son ~30 KB; esto sobra
 const CADUCIDAD_MS = 240 * 24 * 3600 * 1000; // fiestas sin tocar 8 meses se purgan
-const RATE_MAX = 120;                 // peticiones por IP y minuto
+// Cupo en puntos por IP y minuto: leer vale 1, escribir 5. Toda la peña suele
+// compartir la IP del WiFi del pueblo, así que tiene que dar para ~30 móviles
+// sondeando cada 12 s (~150 puntos/min) con margen de sobra.
+const RATE_MAX = 600;
+const MAX_FIESTAS = 5000;             // freno a bots minando fiestas en disco
 const ALFABETO = 'abcdefghjkmnpqrstuvwxyz23456789'; // sin i/l/o/0/1
 const ID_RE = new RegExp(`^[${ALFABETO}]{10}$`);
 
@@ -69,17 +73,23 @@ function json(res, codigo, cuerpo) {
 function leerCuerpo(req) {
   return new Promise((resolve, reject) => {
     let total = 0;
+    let pasado = false;
     const trozos = [];
     req.on('data', (t) => {
       total += t.length;
+      // se sigue drenando sin guardar: destruir el socket dejaría al
+      // cliente con un reset en vez del 413
       if (total > MAX_BODY) {
-        reject(new Error('grande'));
-        req.destroy();
+        pasado = true;
+        trozos.length = 0;
         return;
       }
       trozos.push(t);
     });
-    req.on('end', () => resolve(Buffer.concat(trozos).toString('utf8')));
+    req.on('end', () => {
+      if (pasado) reject(new Error('grande'));
+      else resolve(Buffer.concat(trozos).toString('utf8'));
+    });
     req.on('error', reject);
   });
 }
@@ -111,12 +121,28 @@ function pasaCupo(req) {
     c = { n: 0, hasta: ahora + 60000 };
     cupos.set(ip, c);
   }
-  c.n++;
-  if (cupos.size > 5000) cupos.clear();
+  c.n += (req.method === 'GET' || req.method === 'HEAD') ? 1 : 5;
+  if (cupos.size > 5000) {
+    // primero fuera lo caducado; solo si sigue desbordado se vacía todo
+    for (const [k, v] of cupos) if (ahora > v.hasta) cupos.delete(k);
+    if (cupos.size > 5000) cupos.clear();
+  }
   return c.n <= RATE_MAX;
 }
 
 /* ---------- purga de fiestas abandonadas ---------- */
+
+// cuántas fiestas hay en disco, contadas perezosamente (la purga y los POST
+// mantienen la cifra; MAX_FIESTAS la usa para frenar a bots)
+let fiestasCache = null;
+function numFiestas() {
+  if (fiestasCache === null) {
+    try {
+      fiestasCache = fs.readdirSync(DATA_DIR).filter((f) => f.endsWith('.json')).length;
+    } catch (e) { fiestasCache = 0; }
+  }
+  return fiestasCache;
+}
 
 function purgar() {
   let borradas = 0;
@@ -136,9 +162,12 @@ function purgar() {
       } catch (e) { /* carrera con otra purga: da igual */ }
     }
   } catch (e) { /* sin data dir aún */ }
+  fiestasCache = null; // recontar a la próxima
   if (borradas) console.log(`purga: ${borradas} fiesta(s) caducada(s)`);
 }
-purgar();
+// la primera purga espera a que el server esté sirviendo: con muchos ficheros
+// un barrido síncrono antes de listen() retrasaría el arranque
+setTimeout(purgar, 5000).unref();
 setInterval(purgar, 12 * 3600 * 1000).unref();
 
 /* ---------- API ---------- */
@@ -151,15 +180,22 @@ async function api(req, res, url) {
   }
 
   if (req.method === 'POST' && url.pathname === '/api/fiestas') {
+    if (numFiestas() >= MAX_FIESTAS) {
+      return json(res, 503, { error: 'El servidor está hasta arriba de fiestas' });
+    }
     let cuerpo;
     try { cuerpo = JSON.parse(await leerCuerpo(req)); }
-    catch (e) { return json(res, 400, { error: 'Cuerpo inválido' }); }
+    catch (e) {
+      if (e.message === 'grande') throw e; // el catch de fuera responde 413
+      return json(res, 400, { error: 'Cuerpo inválido' });
+    }
     const estado = estadoValido(cuerpo && cuerpo.estado);
     if (!estado) return json(res, 400, { error: 'Eso no es una fiesta' });
     const id = aleatorio(10);
     const clave = aleatorio(14);
     const doc = { clave, rev: 1, updatedAt: new Date().toISOString(), estado };
     guardarFiesta(id, doc);
+    fiestasCache = fiestasCache === null ? null : fiestasCache + 1;
     return json(res, 201, { id, clave, rev: 1 });
   }
 
@@ -179,7 +215,10 @@ async function api(req, res, url) {
     if (req.method === 'PUT') {
       let cuerpo;
       try { cuerpo = JSON.parse(await leerCuerpo(req)); }
-      catch (e) { return json(res, 400, { error: 'Cuerpo inválido' }); }
+      catch (e) {
+        if (e.message === 'grande') throw e; // el catch de fuera responde 413
+        return json(res, 400, { error: 'Cuerpo inválido' });
+      }
       const doc = leerFiesta(id);
       if (!doc) return json(res, 404, { error: 'No hay tal fiesta' });
       if (!cuerpo || cuerpo.clave !== doc.clave) return json(res, 403, { error: 'Ese enlace no puede editar' });
@@ -242,7 +281,9 @@ const servidor = http.createServer(async (req, res) => {
   const inicio = Date.now();
   const url = new URL(req.url, 'http://local');
   res.on('finish', () => {
-    console.log(`${req.method} ${url.pathname} ${res.statusCode} ${Date.now() - inicio}ms`);
+    // el id de fiesta no se loguea: con él solo ya se puede leer la fiesta
+    const ruta = url.pathname.replace(/^(\/api\/fiestas\/)[^/]+/, '$1***');
+    console.log(`${req.method} ${ruta} ${res.statusCode} ${Date.now() - inicio}ms`);
   });
   try {
     if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {

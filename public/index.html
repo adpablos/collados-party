@@ -372,7 +372,8 @@ try {
     for(const vieja of CLAVES_VIEJAS){
       const v = JSON.parse(localStorage.getItem(vieja));
       if(v && v.gente){
-        if(typeof v.fiesta === 'string') v.fiesta = {nombre:v.fiesta, fecha:null, ejemplo:true};
+        // ojo: sin ejemplo:true — es una fiesta real, tiene que poder ir en vivo
+        if(typeof v.fiesta === 'string') v.fiesta = {nombre:v.fiesta, fecha:null};
         S = v;
         break;
       }
@@ -387,8 +388,10 @@ function guardarLocal(){ try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }c
 // servidor con un pelín de retardo (agrupa toques seguidos).
 function guardar(){
   guardarLocal();
-  if(S && S.remota && !S.fiesta.ejemplo &&
-     JSON.stringify(estadoCompartido()) !== sync.subido) programarSubida();
+  if(S && S.remota && !S.fiesta.ejemplo && estadoJson() !== sync.subido){
+    sync.rechazado = false; // cambio nuevo: otra oportunidad de subir
+    programarSubida();
+  }
 }
 
 /* ================= tema ================= */
@@ -428,6 +431,26 @@ function fechaBonita(f){
 
 // saldados[k] puede ser true (formato viejo) u {hecho,t,por}
 const hechoBizum = k => { const v = S.saldados[k]; return v === true || !!(v && v.hecho); };
+const claveBizum = b => b.de + '>' + b.a;
+const bizumsPendientes = c => c.bizums.filter(b => !hechoBizum(claveBizum(b)));
+const claseSaldo = s => s > 0 ? 'saldo-verde' : (s < 0 ? 'saldo-terra' : 'saldo-neutro');
+
+// sello de última edición: de esto vive la fusión entre móviles
+function tocar(x){ x.mod = ahora(); x.modPor = S.yo || null; return x; }
+
+const pillPersona = (p, attr, clases) =>
+  `<button class="pill ${clases}" type="button" data-${attr}="${p.id}">${avatarHtml(p.id,true)}${esc(p.nombre)}</button>`;
+
+// precio a céntimos entendiendo la notación española: coma decimal y
+// puntos de miles («1.000» son mil euros, no uno)
+function precioACentimos(txt){
+  let s = String(txt).trim().replace(/[€\s]/g,'');
+  if(!s) return NaN;
+  if(s.includes(',')) s = s.replace(/\./g,'').replace(',', '.');
+  else if(/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,'');
+  if(!/^\d+(\.\d+)?$/.test(s)) return NaN;
+  return Math.round(parseFloat(s)*100);
+}
 
 function haceCuanto(t){
   if(!t) return 'hace nada';
@@ -471,6 +494,10 @@ const RE_VIVO = /F:([a-z2-9]{6,}):([a-z2-9]{6,})/i;
 function codigoFiesta(){
   const limpio = {...S, yo:null, tab:'fiesta'};
   delete limpio.remota;
+  // los AP1 los leen también clientes viejos cacheados: saldados en su
+  // formato (solo claves hechas, a true), que un {hecho:false} les sale ✓
+  limpio.saldados = {};
+  for(const k in S.saldados){ if(hechoBizum(k)) limpio.saldados[k] = true; }
   const json = JSON.stringify(limpio);
   const b64 = btoa(unescape(encodeURIComponent(json)))
     .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -515,14 +542,15 @@ function importar(texto){
 
 /* ================= fiesta viva (sincronización) ================= */
 const sync = {
-  subido: null,      // JSON del último estado compartido confirmado en el server
+  subido: null,       // JSON del último estado compartido confirmado en el server
   timer: null,
   subiendo: false,
-  otraVez: false,    // llegó un cambio mientras subíamos
-  bajarLuego: false, // llegó la hora de bajar con un sheet abierto
-  ultimo: 0,         // última vez que hablamos con el server con éxito
+  otraVez: false,     // llegó un cambio mientras subíamos
+  pintarLuego: false, // hay estado nuevo sin repintar (sheet abierto o texto a medias)
+  ultimo: 0,          // última vez que hablamos con el server con éxito
   sinRed: false,
   avisado: false,
+  rechazado: false,   // el server no acepta el estado (400/413): no reintentar a lo loco
 };
 
 async function pedir(metodo, ruta, cuerpo){
@@ -543,10 +571,11 @@ async function pedir(metodo, ruta, cuerpo){
 }
 
 // Lo que viaja al servidor y en enlaces: la fiesta sin lo local (yo, tab, remota).
-function estadoCompartido(){
-  return {v:4, fiesta:S.fiesta, gente:S.gente, items:S.items,
-    saldados:S.saldados, papelera:S.papelera};
-}
+// compartidoDe canoniza también el orden de claves, que las comparaciones son por JSON.
+const compartidoDe = o => ({v:4, fiesta:o.fiesta, gente:o.gente, items:o.items,
+  saldados:o.saldados, papelera:o.papelera});
+const estadoCompartido = () => compartidoDe(S);
+const estadoJson = () => JSON.stringify(estadoCompartido());
 
 // Fusión por entidad: última edición gana (mod), y la papelera evita que un
 // borrado resucite. a = normalmente el servidor, b = lo local.
@@ -580,7 +609,8 @@ function fusionar(a, b){
     gente: mezcla(a.gente, b.gente),
     items: mezcla(a.items, b.items),
     saldados,
-    papelera: [...pap.values()].slice(-300),
+    // el tope se come las lápidas más viejas, no las últimas en llegar
+    papelera: [...pap.values()].sort((x,y)=>(x.t||0)-(y.t||0)).slice(-300),
   };
 }
 
@@ -606,6 +636,7 @@ function textoSync(){
   if(!S) return '';
   if(S.fiesta.ejemplo) return 'Fiesta de ejemplo · solo en este móvil';
   if(!S.remota) return 'Solo en este móvil';
+  if(sync.rechazado) return 'En vivo · hay cambios que no se han podido subir';
   if(sync.sinRed) return 'Sin red · los cambios se subirán solos';
   if(!sync.ultimo) return 'En vivo · poniéndose al día…';
   return 'En vivo con la peña · al día ' + haceCuanto(sync.ultimo);
@@ -622,7 +653,12 @@ function ocupado(){
   const a = document.activeElement;
   if(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') &&
      (!$('#sheet').contains(a) || sheetAbierto())) return true;
-  return ['#inItem','#inPersona','#inEnlace'].some(sel => { const el = $(sel); return el && el.value; });
+  return [...document.querySelectorAll('#vista input, #vista textarea')].some(el => el.value);
+}
+// Repinta ya si se puede; si no, en cuanto el usuario suelte los dedos.
+function pintarOLuego(){
+  if(!sheetAbierto() && !ocupado()){ sync.pintarLuego = false; pintar(); }
+  else sync.pintarLuego = true;
 }
 
 function programarSubida(){
@@ -631,7 +667,7 @@ function programarSubida(){
 }
 
 async function subir(){
-  if(!S || !S.remota || S.fiesta.ejemplo) return;
+  if(!S || !S.remota || S.fiesta.ejemplo || sync.rechazado) return;
   if(sync.subiendo){ sync.otraVez = true; return; }
   sync.subiendo = true;
   try {
@@ -649,13 +685,22 @@ async function subir(){
         adoptar(fusionar(migrar(r.cuerpo.estado), estado));
         S.remota.rev = r.cuerpo.rev;
         guardarLocal();
-        if(!sheetAbierto() && !ocupado()) pintar();
+        pintarOLuego();
         // y a la siguiente vuelta subimos lo fusionado
       } else if(r.status === 404){
         desconectarRemota('Esa fiesta ya no está en el servidor. Sigues con tu copia local.');
         break;
       } else if(r.status === 403){
         desconectarRemota('Este enlace ya no puede editar la fiesta. Sigues con tu copia local.');
+        break;
+      } else if(r.status === 429){
+        break; // frenazo del servidor: el intervalo lo reintenta enseguida
+      } else if(r.status === 400 || r.status === 413){
+        // el servidor no quiere este estado (¿demasiado grande?): no es un
+        // problema de red y reintentar a ciegas no lo arregla
+        sync.rechazado = true;
+        toast('El servidor no ha aceptado los últimos cambios. Se quedan en este móvil.');
+        refrescarSync();
         break;
       } else { sinRed(); break; }
     }
@@ -666,33 +711,40 @@ async function subir(){
 
 async function bajar(){
   if(!S || !S.remota || S.fiesta.ejemplo) return;
-  if(sheetAbierto() || ocupado()){ sync.bajarLuego = true; return; }
   try {
     const r = await pedir('GET', '/fiestas/' + S.remota.id + '?rev=' + S.remota.rev);
-    if(r.status === 204 || r.status === 304){ alDia(); return; }
+    if(!S || !S.remota) return; // la fiesta cambió mientras esperábamos
+    if(r.status === 204){ alDia(); return; }
     if(r.status === 200 && r.cuerpo && r.cuerpo.estado){
-      const antes = JSON.stringify(estadoCompartido());
+      const antes = estadoJson();
       const remoto = migrar(r.cuerpo.estado);
-      adoptar(fusionar(remoto, JSON.parse(antes)));
+      adoptar(fusionar(remoto, estadoCompartido()));
       S.remota.rev = r.cuerpo.rev;
-      const despues = JSON.stringify(estadoCompartido());
-      if(despues === JSON.stringify(remoto)) sync.subido = despues;
+      const despues = estadoJson();
+      if(despues === JSON.stringify(compartidoDe(remoto))) sync.subido = despues;
       else programarSubida(); // la fusión tiene cosas nuestras que el server no vio
       alDia();
-      if(despues !== antes){ guardarLocal(); pintar(); }
+      if(despues !== antes){ guardarLocal(); pintarOLuego(); }
     } else if(r.status === 404){
       desconectarRemota('Esa fiesta ya no está en el servidor. Sigues con tu copia local.');
+    } else if(r.status >= 500){
+      sinRed(); // el server no está fino: mismo trato que sin cobertura
     }
   } catch(e){ sinRed(); }
 }
 
 async function crearRemota(){
+  if(!S || S.fiesta.ejemplo || S.remota) return !!(S && S.remota); // la demo jamás se sube
+  const estado = estadoCompartido();
+  const json = JSON.stringify(estado); // foto de lo que de verdad mandamos
   try {
-    const r = await pedir('POST', '/fiestas', {estado: estadoCompartido()});
+    const r = await pedir('POST', '/fiestas', {estado});
     if(r.status === 201 && r.cuerpo && r.cuerpo.id){
       S.remota = {id: r.cuerpo.id, clave: r.cuerpo.clave, rev: r.cuerpo.rev};
-      sync.subido = JSON.stringify(estadoCompartido());
+      sync.subido = json;
       guardarLocal(); alDia();
+      // lo editado mientras el POST volaba se sube ahora
+      if(estadoJson() !== json) programarSubida();
       return true;
     }
   } catch(e){}
@@ -702,7 +754,7 @@ async function crearRemota(){
 function desconectarRemota(msg){
   S.remota = null; sync.subido = null;
   guardarLocal(); toast(msg);
-  if(!sheetAbierto()) pintar();
+  pintarOLuego();
 }
 
 async function activarVivo(){
@@ -721,15 +773,21 @@ async function abrirEnlaceVivo(id, clave){
       ? 'Esa fiesta ya no está en el servidor.'
       : 'No se ha podido abrir la fiesta del enlace. ¿Hay red?');
     pintar();
-    return;
+    return false;
   }
+  const remoto = migrar(r.cuerpo.estado);
   const mismo = S && S.remota && S.remota.id === id;
   if(!mismo) respaldarActual();
   const yo = mismo ? S.yo : null;
-  S = {...migrar(r.cuerpo.estado), yo, tab:'fiesta', remota:{id, clave, rev:r.cuerpo.rev}};
-  sync.subido = JSON.stringify(estadoCompartido());
+  // si ya estábamos en esta fiesta, lo local pendiente se fusiona, no se pisa
+  const base = mismo ? fusionar(remoto, estadoCompartido()) : remoto;
+  S = {...base, yo, tab:'fiesta', remota:{id, clave, rev:r.cuerpo.rev}};
+  const json = estadoJson();
+  if(json === JSON.stringify(compartidoDe(remoto))) sync.subido = json;
+  else { sync.subido = JSON.stringify(compartidoDe(remoto)); programarSubida(); }
   guardarLocal(); alDia(); pintar();
   if(!S.yo) sheetIdentidad(true);
+  return true;
 }
 
 /* ================= cálculo de cuentas ================= */
@@ -777,14 +835,13 @@ function cerrarSheet(){
   // sin esto, un input del sheet se queda con el foco (y el teclado abierto)
   const a = document.activeElement;
   if(a && a.blur && $('#sheet').contains(a)) a.blur();
-  if(sync.bajarLuego){ sync.bajarLuego = false; setTimeout(bajar, 250); }
+  if(sync.pintarLuego) pintarOLuego();
 }
 
 /* --- quién eres --- */
 function sheetIdentidad(forzado){
   const pills = S.gente.map(p =>
-    `<button class="pill pill-sky ${p.id===S.yo?'on':''}" type="button" data-quien="${p.id}">${avatarHtml(p.id,true)}${esc(p.nombre)}</button>`
-  ).join('');
+    pillPersona(p, 'quien', 'pill-sky ' + (p.id===S.yo?'on':''))).join('');
   abrirSheet(`
     <h2 class="sheet-titulo">¿Quién eres?</h2>
     <p class="sheet-sub">Estás en «${esc(S.fiesta.nombre)}». Di quién eres o apúntate.</p>
@@ -796,13 +853,15 @@ function sheetIdentidad(forzado){
     </div>
   `, forzado);
   document.querySelectorAll('[data-quien]').forEach(b => b.onclick = () => {
-    S.yo = b.dataset.quien; guardar(); cerrarSheet(); pintar();
-    toast('Hola, ' + persona(S.yo).nombre);
+    const p = persona(b.dataset.quien);
+    if(!p) return; // se fue de la peña mientras el sheet estaba abierto
+    S.yo = p.id; guardar(); cerrarSheet(); pintar();
+    toast('Hola, ' + p.nombre);
   });
   $('#btnApuntame').onclick = () => {
     const n = $('#nuevoNombre').value.trim();
     if(!n) return toast('Escribe tu nombre, que la lista no adivina.');
-    const p = {id: nuevoId('p'), nombre: n, admin:false};
+    const p = tocar({id: nuevoId('p'), nombre: n, admin:false});
     S.gente.push(p); S.yo = p.id; guardar(); cerrarSheet(); pintar();
     toast('Bienvenido, ' + n);
   };
@@ -818,14 +877,10 @@ function sheetGasto(itemId){
   let compradorSel = editando ? it.compradorId : ((it && it.pilladorId) || S.yo);
   if(!persona(compradorSel)) compradorSel = persona(S.yo) ? S.yo : null;
 
-  const pillsCons = S.gente.map(p => `
-    <button class="pill ${marcados.has(p.id)?'on':'off'}" type="button" data-cons="${p.id}">
-      ${avatarHtml(p.id,true)}${esc(p.nombre)}
-    </button>`).join('');
-  const pillsComp = S.gente.map(p => `
-    <button class="pill pill-sky ${p.id===compradorSel?'on':''}" type="button" data-comp="${p.id}">
-      ${avatarHtml(p.id,true)}${esc(p.nombre)}
-    </button>`).join('');
+  const pillsCons = S.gente.map(p =>
+    pillPersona(p, 'cons', marcados.has(p.id)?'on':'off')).join('');
+  const pillsComp = S.gente.map(p =>
+    pillPersona(p, 'comp', 'pill-sky ' + (p.id===compradorSel?'on':''))).join('');
 
   let historial = '';
   if(editando){
@@ -883,24 +938,29 @@ function sheetGasto(itemId){
   $('#btnGuardarCompra').onclick = () => {
     const nombre = $('#inConcepto').value.trim();
     if(!nombre) return toast('Pon qué fue.');
-    const bruto = $('#inPrecio').value.trim().replace(',','.');
-    const val = Math.round(parseFloat(bruto)*100);
-    if(!bruto || isNaN(val) || val<=0) return toast('Ponle precio, que gratis no fue.');
+    const val = precioACentimos($('#inPrecio').value);
+    if(isNaN(val) || val<=0) return toast('Ponle precio, que gratis no fue.');
     if(!persona(compradorSel)) return toast('¿Quién lo pagó?');
     const consumen = marcados.size === S.gente.length ? null : [...marcados];
     if(directo){
-      S.items.unshift({id:nuevoId('i'), nombre, estado:'comprada', precio:val,
+      S.items.unshift(tocar({id:nuevoId('i'), nombre, estado:'comprada', precio:val,
         compradorId:compradorSel, consumen,
-        creadoEn:ahora(), creadoPor:S.yo || null, mod:ahora(), modPor:S.yo || null});
+        creadoEn:ahora(), creadoPor:S.yo || null}));
       toast('Apuntado. Las cuentas ya lo saben.');
     } else {
-      // buscar por id otra vez: la fiesta puede haberse refrescado mientras
-      const vivo = S.items.find(x=>x.id===itemId) || it;
+      // buscar por id otra vez: la fiesta puede haberse refrescado mientras.
+      // Si otro la borró, se vuelve a apuntar: el pago fue real
+      let vivo = S.items.find(x=>x.id===itemId);
+      if(!vivo){
+        vivo = it;
+        S.items.unshift(vivo);
+        S.papelera = S.papelera.filter(t=>t.id!==itemId);
+      }
       vivo.nombre = nombre;
       vivo.precio = val;
       vivo.consumen = consumen;
       vivo.compradorId = compradorSel;
-      vivo.mod = ahora(); vivo.modPor = S.yo || null;
+      tocar(vivo);
       if(!editando){
         vivo.estado = 'comprada';
         delete vivo.pilladorId;
@@ -926,10 +986,8 @@ function sheetGasto(itemId){
 /* --- asignar (solo admins) --- */
 function sheetAsignar(itemId){
   const it = S.items.find(x=>x.id===itemId); if(!it) return;
-  const pills = S.gente.map(p => `
-    <button class="pill pill-sky ${it.pilladorId===p.id?'on':''}" type="button" data-asig="${p.id}">
-      ${avatarHtml(p.id,true)}${esc(p.nombre)}
-    </button>`).join('');
+  const pills = S.gente.map(p =>
+    pillPersona(p, 'asig', 'pill-sky ' + (it.pilladorId===p.id?'on':''))).join('');
   abrirSheet(`
     <h2 class="sheet-titulo">¿Quién trae «${esc(it.nombre)}»?</h2>
     <p class="sheet-sub">Le saldrá como suya en la lista.</p>
@@ -939,11 +997,12 @@ function sheetAsignar(itemId){
     </div>
   `);
   document.querySelectorAll('[data-asig]').forEach(b => b.onclick = () => {
-    const id = b.dataset.asig;
-    const vivo = S.items.find(x=>x.id===itemId) || it;
-    if(id){ vivo.estado='pillada'; vivo.pilladorId=id; toast('Se la lleva ' + persona(id).nombre); }
+    const quien = persona(b.dataset.asig);
+    let vivo = S.items.find(x=>x.id===itemId);
+    if(!vivo){ cerrarSheet(); pintar(); return toast('Esa cosa ya no está en la lista.'); }
+    if(quien){ vivo.estado='pillada'; vivo.pilladorId=quien.id; toast('Se la lleva ' + quien.nombre); }
     else { vivo.estado='pendiente'; delete vivo.pilladorId; toast('Suelta. A ver quién se la pide ahora.'); }
-    vivo.mod = ahora(); vivo.modPor = S.yo || null;
+    tocar(vivo);
     guardar(); cerrarSheet(); pintar();
   });
 }
@@ -984,26 +1043,32 @@ function sheetPersona(pid){
   `);
   const rec = $('#btnRecordar');
   if(rec) rec.onclick = () => sheetCompartir('persona', pid);
+  // los handlers rebuscan por id: la fiesta puede haberse fusionado mientras
   const tog = $('#btnToggleAdmin');
   if(tog) tog.onclick = () => {
-    if(p.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
-    p.admin = !p.admin;
-    p.mod = ahora();
+    const q = persona(pid);
+    if(!q){ cerrarSheet(); pintar(); return toast('Esa persona ya no está en la peña.'); }
+    if(q.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
+    q.admin = !q.admin;
+    tocar(q);
     guardar(); cerrarSheet(); pintar();
-    toast(p.admin ? p.nombre + ' tiene la llave' : p.nombre + ' ya no tiene la llave');
+    toast(q.admin ? q.nombre + ' tiene la llave' : q.nombre + ' ya no tiene la llave');
   };
   const eli = $('#btnEliminar');
   if(eli) eli.onclick = () => {
-    if(compras.length) return toast('Tiene compras apuntadas: reasígnalas antes');
-    if(p.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
+    const q = persona(pid);
+    if(!q){ cerrarSheet(); pintar(); return toast('Esa persona ya no está en la peña.'); }
+    if(S.items.some(i=>i.estado==='comprada' && i.compradorId===pid))
+      return toast('Tiene compras apuntadas: reasígnalas antes');
+    if(q.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
     S.items.forEach(i => {
-      if(i.pilladorId === pid){ i.estado='pendiente'; delete i.pilladorId; i.mod = ahora(); }
-      if(i.consumen){ i.consumen = i.consumen.filter(x=>x!==pid); i.mod = ahora(); }
+      if(i.pilladorId === pid){ i.estado='pendiente'; delete i.pilladorId; tocar(i); }
+      if(i.consumen && i.consumen.includes(pid)){ i.consumen = i.consumen.filter(x=>x!==pid); tocar(i); }
     });
     S.gente = S.gente.filter(x=>x.id!==pid);
     S.papelera.push({id:pid, t:ahora()});
     guardar(); cerrarSheet(); pintar();
-    toast(p.nombre + ' ya no está en la peña');
+    toast(q.nombre + ' ya no está en la peña');
   };
 }
 
@@ -1023,14 +1088,14 @@ function mensajeCompartir(tipo, pid){
   }
   if(tipo === 'cuentas'){
     const c = cuentas();
-    const pendientes = c.bizums.filter(b=>!hechoBizum(b.de+'>'+b.a));
+    const pendientes = bizumsPendientes(c);
     const lineas = [`Cuentas de «${n}» — A Pachas`,
       `Total: ${eur(c.total)} entre ${S.gente.length}`, ''];
     if(!c.bizums.length){
       lineas.push('Cuentas en paz. Ni pa ti ni pa mí.');
     } else {
       c.bizums.forEach(b => lineas.push(
-        (hechoBizum(b.de+'>'+b.a) ? '✓ ' : '· ') +
+        (hechoBizum(claveBizum(b)) ? '✓ ' : '· ') +
         persona(b.de).nombre + ' → ' + persona(b.a).nombre + ': ' + eur(b.cents)));
       lineas.push('');
       lineas.push(pendientes.length
@@ -1049,8 +1114,8 @@ function mensajeCompartir(tipo, pid){
       lineas.push('Te toca traer:');
       asignadas.forEach(i => lineas.push('· ' + i.nombre));
     }
-    const debe = c.bizums.filter(b => b.de === pid && !hechoBizum(b.de+'>'+b.a));
-    const leDeben = c.bizums.filter(b => b.a === pid && !hechoBizum(b.de+'>'+b.a));
+    const debe = bizumsPendientes(c).filter(b => b.de === pid);
+    const leDeben = bizumsPendientes(c).filter(b => b.a === pid);
     if(debe.length || leDeben.length){
       lineas.push('');
       lineas.push('De cuentas te sale:');
@@ -1187,7 +1252,7 @@ function sheetRenombrar(){
     if(!n) return toast('La fiesta necesita un nombre');
     S.fiesta.nombre = n;
     S.fiesta.fecha = $('#inFechaF').value || null;
-    S.fiesta.mod = ahora();
+    tocar(S.fiesta);
     guardar(); cerrarSheet(); pintar(); toast('Guardado');
   };
 }
@@ -1230,13 +1295,12 @@ function heroMiniHtml(){
   return `<div class="hero-mini">${LOGO}<span class="marca">A Pachas</span></div>`;
 }
 
-function vistaFiesta(){
-  const c = cuentas();
+function vistaFiesta(c){
   const yo = persona(S.yo);
   const f = fechaBonita(S.fiesta.fecha);
   const sinDueno = S.items.filter(i=>i.estado==='pendiente').length;
   const porResolver = S.items.filter(i=>i.estado!=='comprada').length;
-  const pendBizums = c.bizums.filter(b=>!hechoBizum(b.de+'>'+b.a)).length;
+  const pendBizums = bizumsPendientes(c).length;
 
   // qué toca ahora: UNA acción según el estado de la fiesta
   let accion;
@@ -1261,7 +1325,7 @@ function vistaFiesta(){
   let miLinea = '';
   if(yo && c.total){
     const s = c.saldo[S.yo] || 0;
-    const cls = s > 0 ? 'saldo-verde' : (s < 0 ? 'saldo-terra' : 'saldo-neutro');
+    const cls = claseSaldo(s);
     const txt = s === 0 ? 'Estás en paz' : s > 0 ? `Te deben ${eur(s)}` : `Debes ${eur(-s)}`;
     miLinea = `<div class="card yo-fila">
       <span class="quien"><b class="${cls}">${txt}</b></span>
@@ -1377,12 +1441,11 @@ function vistaLista(){
   `;
 }
 
-function vistaPena(){
-  const c = cuentas();
+function vistaPena(c){
   const filas = S.gente.map(p => {
     const asignadas = S.items.filter(i=>i.estado==='pillada' && i.pilladorId===p.id).length;
     const s = c.saldo[p.id];
-    const cls = s>0?'saldo-verde':(s<0?'saldo-terra':'saldo-neutro');
+    const cls = claseSaldo(s);
     const estado = s>0?'le deben':(s<0?'debe':'en paz');
     const subs = [];
     if(p.admin) subs.push('Organiza la fiesta');
@@ -1411,8 +1474,7 @@ function vistaPena(){
   `;
 }
 
-function vistaCuentas(){
-  const c = cuentas();
+function vistaCuentas(c){
   if(c.total === 0){
     return `
       <div class="cabecera"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
@@ -1422,7 +1484,7 @@ function vistaCuentas(){
 
   const flecha = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M14 6l6 6-6 6"/></svg>';
   const check = '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>';
-  const pendientes = c.bizums.filter(b => !hechoBizum(b.de+'>'+b.a));
+  const pendientes = bizumsPendientes(c);
 
   // tu cuenta, lo primero
   let miCuenta;
@@ -1436,7 +1498,7 @@ function vistaCuentas(){
     </div>`;
   } else {
     const s = c.saldo[S.yo] || 0;
-    const cls = s > 0 ? 'saldo-verde' : (s < 0 ? 'saldo-terra' : 'saldo-neutro');
+    const cls = claseSaldo(s);
     const titulo = s === 0 ? 'Estás en paz' : s > 0 ? `Te deben ${eur(s)}` : `Debes ${eur(-s)}`;
     const misBizums = pendientes.filter(b => b.de === S.yo || b.a === S.yo);
     const acciones = misBizums.map(b => b.de === S.yo
@@ -1462,7 +1524,7 @@ function vistaCuentas(){
     : 'repartido según quién cata cada cosa';
 
   const bizumsHtml = c.bizums.map(b => {
-    const key = b.de+'>'+b.a, hecho = hechoBizum(key);
+    const key = claveBizum(b), hecho = hechoBizum(key);
     return `<div class="card bizum-fila ${hecho?'hecho':''}">
       <div class="quien">${esc(persona(b.de).nombre)}${flecha}${esc(persona(b.a).nombre)}</div>
       <span class="cuanto">${eur(b.cents)}</span>
@@ -1492,6 +1554,7 @@ function vistaCuentas(){
 
 /* ================= pintar ================= */
 function pintar(){
+  sync.pintarLuego = false; // repintar por cualquier vía salda la deuda
   document.body.classList.toggle('sin-fiesta', !S);
   const v = $('#vista');
   if(!S){
@@ -1502,15 +1565,15 @@ function pintar(){
   document.querySelectorAll('.tab').forEach(t =>
     t.classList.toggle('activa', t.dataset.tab === S.tab));
   const c = cuentas();
-  const pend = c.bizums.filter(b=>!hechoBizum(b.de+'>'+b.a)).length;
+  const pend = bizumsPendientes(c).length;
   const badge = $('#badgeCuentas');
   badge.hidden = pend===0;
   badge.textContent = pend;
 
-  v.innerHTML = S.tab==='fiesta' ? vistaFiesta()
+  v.innerHTML = S.tab==='fiesta' ? vistaFiesta(c)
     : S.tab==='lista' ? vistaLista()
-    : S.tab==='pena' ? vistaPena()
-    : vistaCuentas();
+    : S.tab==='pena' ? vistaPena(c)
+    : vistaCuentas(c);
   conectar(v);
 }
 
@@ -1562,8 +1625,8 @@ function conectar(v){
     e.preventDefault();
     const n = v.querySelector('#inItem').value.trim();
     if(!n) return toast('Escribe algo, que la lista no adivina.');
-    S.items.unshift({id:nuevoId('i'), nombre:n, estado:'pendiente',
-      creadoEn:ahora(), creadoPor:S.yo || null, mod:ahora()});
+    S.items.unshift(tocar({id:nuevoId('i'), nombre:n, estado:'pendiente',
+      creadoEn:ahora(), creadoPor:S.yo || null}));
     guardar(); pintar(); toast('«' + n + '» apuntado');
   };
   on('#btnGastoDirecto', () => {
@@ -1574,15 +1637,17 @@ function conectar(v){
   v.querySelectorAll('[data-pillar]').forEach(b => b.onclick = () => {
     if(!S.yo) return sheetIdentidad(true);
     const it = S.items.find(x=>x.id===b.dataset.pillar);
+    if(!it) return pintar(); // la borraron desde otro móvil
     it.estado='pillada'; it.pilladorId=S.yo;
-    it.mod = ahora(); it.modPor = S.yo;
+    tocar(it);
     guardar(); pintar(); toast('Apuntado: ' + it.nombre + ' corre de tu cuenta.');
   });
   v.querySelectorAll('[data-soltar]').forEach(b => b.onclick = () => {
     const it = S.items.find(x=>x.id===b.dataset.soltar);
+    if(!it) return pintar();
     if(it.pilladorId !== S.yo && !soyAdmin()) return;
     it.estado='pendiente'; delete it.pilladorId;
-    it.mod = ahora(); it.modPor = S.yo || null;
+    tocar(it);
     guardar(); pintar(); toast('Suelta. A ver quién se la pide ahora.');
   });
   v.querySelectorAll('[data-asignar]').forEach(b => b.onclick = () => {
@@ -1616,7 +1681,7 @@ function conectar(v){
     e.preventDefault();
     const n = v.querySelector('#inPersona').value.trim();
     if(!n) return;
-    S.gente.push({id:nuevoId('p'), nombre:n, admin:false, mod:ahora()});
+    S.gente.push(tocar({id:nuevoId('p'), nombre:n, admin:false}));
     guardar(); pintar(); toast(n + ' se une a la peña');
   };
   v.querySelectorAll('[data-persona]').forEach(f => f.onclick = () => sheetPersona(f.dataset.persona));
@@ -1649,17 +1714,19 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 
 /* arranque: enlace vivo (#F:id:clave), snapshot (#AP1:/#EB1:) o lo guardado */
 (function(){
-  const hash = location.hash ? decodeURIComponent(location.hash) : '';
+  let hash = location.hash || '';
+  try { hash = decodeURIComponent(hash); } catch(e){ /* un % suelto no tumba la app */ }
   const limpiarHash = () => {
     try { history.replaceState(null,'',location.pathname + location.search); } catch(e){}
   };
 
   const vivo = hash.match(RE_VIVO);
   if(vivo){
-    limpiarHash();
     pintar();
     if(!S) toast('Abriendo la fiesta del grupo…');
-    abrirEnlaceVivo(vivo[1].toLowerCase(), vivo[2].toLowerCase());
+    // el hash solo se limpia si la fiesta abre: si no hay red, recargar reintenta
+    abrirEnlaceVivo(vivo[1].toLowerCase(), vivo[2].toLowerCase())
+      .then(ok => { if(ok) limpiarHash(); });
     return;
   }
 
@@ -1680,8 +1747,9 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 setInterval(() => {
   if(document.visibilityState !== 'visible' || !S || !S.remota) return;
   refrescarSync();
+  if(sync.pintarLuego) pintarOLuego();
   bajar();
-  if(sync.sinRed || JSON.stringify(estadoCompartido()) !== sync.subido) subir();
+  if(sync.sinRed || estadoJson() !== sync.subido) subir();
 }, 12000);
 document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible') bajar();

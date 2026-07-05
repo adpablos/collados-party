@@ -1,12 +1,17 @@
-# El Bote
+# A Pachas
 
-Las cuentas de la peña, sin líos. Apuntad lo que trae cada uno, quién lo paga,
-y El Bote os dice quién le debe cuánto a quién para quedar en paz.
+Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí.
 
 **En producción:** https://collados.alexdepablos.es
 
-Es una sola página (`public/index.html`), sin build ni base de datos: todo se
-guarda en el propio navegador.
+Apuntáis la lista de la compra de la fiesta, cada uno se pide lo que trae,
+se apunta lo que costó y quiénes lo catan, y A Pachas saca los bizums
+mínimos para quedar en paz. Se comparte por enlace, sin cuentas ni registros:
+todo vive en el navegador de cada uno.
+
+Es una sola página (`public/index.html`), sin build ni base de datos. El
+logo y la identidad salen del óculo del monasterio de Santa María de la
+Sierra, el monumento de Collado Hermoso — ver [docs/diseno.md](docs/diseno.md).
 
 ## Desarrollo
 

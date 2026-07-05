@@ -3,279 +3,254 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>El Bote — cuentas de la peña</title>
+<title>A Pachas — los gastos de la peña</title>
+<meta name="description" content="Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='24' cy='24' r='19' stroke='%232E6E9E' stroke-width='4.5'/%3E%3Cg stroke='%232E6E9E' stroke-width='4.5' stroke-linecap='round'%3E%3Cline x1='24' y1='24' x2='24' y2='5'/%3E%3Cline x1='24' y1='24' x2='42.1' y2='18.1'/%3E%3Cline x1='24' y1='24' x2='35.2' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='12.8' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='5.9' y2='18.1'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F7F6F3;
-    --surface:#FFFFFF;
-    --ink:#1C1B18;
-    --sub:#75726B;
-    --line:#E6E3DC;
-    --line-suave:#EFEDE8;
-    --accent:#136A52;
-    --accent-tenue:#E3EDE9;
-    --neg:#A8433C;
-    --inverso:#FFFFFF;
-    --sombra:0 1px 2px rgba(28,27,24,.05);
-    --radius:12px;
-    --mono:ui-monospace,'SF Mono','Cascadia Mono',Menlo,Consolas,monospace;
-    --av0:#E7E0D1;--av1:#D9E3DC;--av2:#DDE1E9;--av3:#EADDD6;--av4:#E3DEE9;--av5:#E5E8D8;
+    --bg:#EFE7D8;
+    --card:#FBF7ED;
+    --ink:#2B251C;
+    --muted:#80735C;
+    --line:#E0D5BE;
+    --sky:#2E6E9E;
+    --onsky:#FFFFFF;
+    --skysoft:#DCE7EE;
+    --green:#57704E;
+    --greensoft:#E3E9DA;
+    --terra:#A64B2A;
+    --terrasoft:#F1E0D3;
+    --chip:#E8DDC5;
+    --velo:rgba(24,19,11,.45);
+    --radius:14px;
+    --display:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;
+    --texto:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --bg:#151512;
-      --surface:#1E1D1A;
-      --ink:#EFEDE7;
-      --sub:#9B978D;
-      --line:#2F2D28;
-      --line-suave:#282622;
-      --accent:#5CB89A;
-      --accent-tenue:#20302B;
-      --neg:#D1786F;
-      --inverso:#151512;
-      --sombra:none;
-      --av0:#3A362C;--av1:#2E3830;--av2:#2F333C;--av3:#3C322D;--av4:#353040;--av5:#343827;
+      --bg:#1D1811; --card:#292219; --ink:#F0E8D6; --muted:#A2947B; --line:#3B3224;
+      --sky:#7FB0D9; --onsky:#14212C; --skysoft:#26333E;
+      --green:#98B089; --greensoft:#2B3524; --terra:#D98F66; --terrasoft:#3B2A1E;
+      --chip:#352D1F; --velo:rgba(0,0,0,.55);
     }
   }
-  :root[data-theme="dark"]{
-    --bg:#151512;--surface:#1E1D1A;--ink:#EFEDE7;--sub:#9B978D;--line:#2F2D28;
-    --line-suave:#282622;--accent:#5CB89A;--accent-tenue:#20302B;--neg:#D1786F;
-    --inverso:#151512;--sombra:none;
-    --av0:#3A362C;--av1:#2E3830;--av2:#2F333C;--av3:#3C322D;--av4:#353040;--av5:#343827;
-  }
   :root[data-theme="light"]{
-    --bg:#F7F6F3;--surface:#FFFFFF;--ink:#1C1B18;--sub:#75726B;--line:#E6E3DC;
-    --line-suave:#EFEDE8;--accent:#136A52;--accent-tenue:#E3EDE9;--neg:#A8433C;
-    --inverso:#FFFFFF;--sombra:0 1px 2px rgba(28,27,24,.05);
-    --av0:#E7E0D1;--av1:#D9E3DC;--av2:#DDE1E9;--av3:#EADDD6;--av4:#E3DEE9;--av5:#E5E8D8;
+    --bg:#EFE7D8; --card:#FBF7ED; --ink:#2B251C; --muted:#80735C; --line:#E0D5BE;
+    --sky:#2E6E9E; --onsky:#FFFFFF; --skysoft:#DCE7EE;
+    --green:#57704E; --greensoft:#E3E9DA; --terra:#A64B2A; --terrasoft:#F1E0D3;
+    --chip:#E8DDC5; --velo:rgba(24,19,11,.45);
   }
+  :root[data-theme="dark"]{
+    --bg:#1D1811; --card:#292219; --ink:#F0E8D6; --muted:#A2947B; --line:#3B3224;
+    --sky:#7FB0D9; --onsky:#14212C; --skysoft:#26333E;
+    --green:#98B089; --greensoft:#2B3524; --terra:#D98F66; --terrasoft:#3B2A1E;
+    --chip:#352D1F; --velo:rgba(0,0,0,.55);
+  }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink);
+    font-family:var(--texto);
+    font-size:15px; line-height:1.45;
     min-height:100dvh;
-    font-size:15px;
-    line-height:1.45;
   }
-  #app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
-  body.modo-crear #tabbar,
-  body.modo-crear .yo-chip,
-  body.modo-crear .menu-btn,
-  body.modo-crear .fiesta-nombre,
-  body.modo-crear .fiesta-sub{display:none}
+  #app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+  main{flex:1;padding:14px 20px 104px;overflow-x:hidden}
+  body.sin-fiesta #tabbar{display:none}
+  body.sin-fiesta main{padding-bottom:30px}
   button{font-family:inherit;color:inherit}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  :focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 
-  /* ---------- cabecera ---------- */
-  header{padding:22px 20px 8px}
-  .fila-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .fila-acciones-top{display:flex;gap:8px;align-items:center}
-  .marca{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sub)}
-  .fiesta-nombre{
-    font-size:clamp(22px,6vw,27px);font-weight:700;letter-spacing:-.02em;
-    line-height:1.15;margin:14px 0 3px;text-wrap:balance;
+  /* ---------- botón tema ---------- */
+  #btnTema{
+    position:fixed;top:14px;right:14px;z-index:50;
+    width:38px;height:38px;border-radius:999px;border:1px solid var(--line);
+    background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);
   }
-  .fiesta-sub{color:var(--sub);font-size:13.5px}
-  .fiesta-sub b{color:var(--ink);font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
-  .yo-chip{
-    display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
-    background:var(--surface);border-radius:999px;
-    padding:4px 12px 4px 5px;font-size:13px;font-weight:600;cursor:pointer;
-  }
-  .yo-chip .avatar{width:22px;height:22px;font-size:10px}
-  .menu-btn{
-    width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
-    background:var(--surface);cursor:pointer;line-height:1;padding:0;
-    display:inline-flex;align-items:center;justify-content:center;color:var(--sub);
-  }
-
-  /* ---------- pestañas ---------- */
-  main{flex:1;padding:4px 20px 104px;overflow-x:hidden}
-  body.modo-crear main{padding-bottom:30px}
-  nav#tabbar{
-    position:fixed;bottom:0;left:0;right:0;z-index:40;
-    background:var(--surface);
-    border-top:1px solid var(--line);
-    padding:6px 10px calc(8px + env(safe-area-inset-bottom));
-  }
-  .tabbar-in{max-width:520px;margin:0 auto;display:flex}
-  .tab{
-    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-    background:none;border:none;color:var(--sub);
-    font-size:11px;font-weight:600;padding:8px 4px 5px;cursor:pointer;position:relative;
-  }
-  .tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;
+  #btnTema svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;
     stroke-linecap:round;stroke-linejoin:round}
-  .tab.activa{color:var(--accent)}
-  .tab .badge{
-    position:absolute;top:4px;right:calc(50% - 24px);
-    background:var(--accent);color:var(--inverso);font-size:9.5px;font-weight:700;
-    min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;
-    font-family:var(--mono);
-  }
+
+  /* ---------- cabeceras de pantalla ---------- */
+  .cabecera{margin:18px 2px 16px}
+  .cabecera h1{font-family:var(--display);font-size:26px;font-weight:700;margin:0;line-height:1.15}
+  .cabecera .sub{color:var(--muted);font-size:13px;margin-top:3px}
+
+  /* ---------- hero (Fiesta) ---------- */
+  .hero{text-align:center;padding:34px 0 6px}
+  .hero .logo{color:var(--sky)}
+  .hero .logo svg{width:76px;height:76px}
+  .hero h1{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.5px;margin:10px 0 6px}
+  .hero .lema{color:var(--muted);font-size:14px;line-height:1.5;margin:0 auto 24px;max-width:34ch}
 
   /* ---------- comunes ---------- */
-  .seccion{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--sub);margin:26px 2px 10px}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-bottom:8px;box-shadow:var(--sombra)}
-  .avatar{
-    width:30px;height:30px;border-radius:999px;display:inline-flex;align-items:center;
-    justify-content:center;font-weight:700;font-size:11.5px;color:var(--ink);flex:none;
-    background:var(--line-suave);
-  }
-  .av-0{background:var(--av0)}.av-1{background:var(--av1)}.av-2{background:var(--av2)}
-  .av-3{background:var(--av3)}.av-4{background:var(--av4)}.av-5{background:var(--av5)}
-  .btn{
-    border:none;border-radius:10px;padding:10px 15px;font-size:14px;
-    font-weight:600;cursor:pointer;
-  }
-  .btn-primario{background:var(--ink);color:var(--inverso)}
-  .btn-acento{background:var(--accent);color:var(--inverso)}
-  .btn-fantasma{background:transparent;border:1px solid var(--line);color:var(--ink)}
-  .btn-mini{padding:7px 12px;font-size:13px;border-radius:9px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-bottom:10px}
+  .label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);display:block;margin:16px 0 7px}
+  .card .label:first-child, .campo .label{margin-top:0}
+  .btn{border:none;border-radius:11px;padding:12px 16px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn-sky{background:var(--sky);color:var(--onsky)}
+  .btn-green{background:var(--green);color:var(--onsky)}
+  .btn-soft{background:var(--skysoft);color:var(--sky)}
+  .btn-borde{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+  .btn-mini{padding:8px 13px;font-size:13.5px;border-radius:9px}
   .btn-block{width:100%}
+  .link-quieto{background:none;border:none;color:var(--muted);font-size:13px;font-weight:500;
+    cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px 2px}
   input[type=text],input[type=tel],input[type=date],textarea{
-    font-family:inherit;font-size:16px;background:var(--surface);color:var(--ink);
-    border:1px solid var(--line);border-radius:10px;padding:11px 13px;width:100%;
+    font-family:inherit;font-size:16px;background:var(--card);color:var(--ink);
+    border:1px solid var(--line);border-radius:11px;padding:12px 13px;width:100%;
   }
-  input[type=date]{min-height:46px}
-  textarea{resize:vertical;min-height:96px}
-  input::placeholder,textarea::placeholder{color:var(--sub);opacity:.7}
-  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
-  .fila-add{display:flex;gap:8px;margin-bottom:6px}
+  input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+  input:focus,textarea:focus{outline:none;border-color:var(--sky)}
+  input[type=date]{min-height:47px}
+  textarea{resize:vertical;min-height:90px}
+  .fila-add{display:flex;gap:8px;margin-bottom:14px}
   .fila-add input{flex:1;min-width:0}
   .campo{margin-bottom:16px}
-  .campo-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--sub);display:block;margin:18px 0 7px}
-  .campo .campo-label{margin-top:0}
-  .tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-    border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--sub)}
-  .tag-acento{border-color:transparent;background:var(--accent-tenue);color:var(--accent)}
+  .vacio{text-align:center;color:var(--muted);padding:36px 20px;font-size:14px;line-height:1.6}
+  .avatar{
+    width:40px;height:40px;border-radius:999px;background:var(--chip);flex:none;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:16px;
+  }
+  .avatar.mini{width:24px;height:24px;font-size:11px}
+  .chip-estado{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .chip-neutro{background:var(--chip);color:var(--muted)}
+  .chip-sky{background:var(--skysoft);color:var(--sky)}
+  .chip-green{background:var(--greensoft);color:var(--green)}
+  .llave{width:13px;height:13px;color:var(--muted);flex:none}
 
-  /* ---------- crear ---------- */
-  .crear{padding:34px 0 10px}
-  .crear h1{font-size:clamp(24px,7vw,30px);font-weight:700;letter-spacing:-.02em;
-    margin:0 0 10px;line-height:1.15;text-wrap:balance;max-width:22ch}
-  .crear .intro{color:var(--sub);font-size:15px;margin:0 0 30px;max-width:44ch}
-  .crear .alt{display:flex;flex-direction:column;gap:10px;margin-top:28px}
-  .link-suave{background:none;border:none;color:var(--sub);
-    font-size:14px;font-weight:600;cursor:pointer;text-decoration:underline;
-    text-underline-offset:3px;padding:6px}
+  /* ---------- fiesta ---------- */
+  .fiesta-card .titulo{font-family:var(--display);font-weight:700;font-size:20px;margin:2px 0 3px}
+  .fiesta-card .meta{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .separador-o{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:18px 0}
+  .separador-o::before,.separador-o::after{content:'';flex:1;height:1px;background:var(--line)}
+  .crear-dashed{
+    width:100%;border:1.5px dashed var(--line);background:transparent;border-radius:var(--radius);
+    color:var(--muted);font-size:14px;font-weight:600;padding:14px;cursor:pointer;
+  }
+  .yo-fila{display:flex;align-items:center;gap:10px;padding:2px}
+  .yo-fila .quien{flex:1;font-size:14px;color:var(--muted)}
+  .yo-fila b{color:var(--ink)}
 
   /* ---------- lista ---------- */
-  .progreso{margin:14px 2px 0}
-  .progreso .txt{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:7px}
-  .progreso .txt b{color:var(--ink);font-weight:600}
-  .barra{height:4px;background:var(--line);border-radius:99px;overflow:hidden}
-  .barra > i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .4s}
-  .item{display:flex;align-items:center;gap:12px}
-  .item .info{flex:1;min-width:0}
-  .item .nombre{font-weight:600;font-size:15px;line-height:1.3}
-  .item .meta{font-size:13px;color:var(--sub);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .item .precio{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;
-    font-size:14.5px;white-space:nowrap}
-  .item .acciones{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-  .card.comprada-card{cursor:pointer}
-  .card.comprada-card:active{background:var(--line-suave)}
-  .mini-avatares{display:flex}
-  .mini-avatares .avatar{width:18px;height:18px;font-size:8px;margin-left:-5px;border:2px solid var(--surface)}
-  .mini-avatares .avatar:first-child{margin-left:0}
-  .quitar{background:none;border:none;color:var(--sub);font-size:15px;cursor:pointer;
-    padding:6px;line-height:1;opacity:.7}
-  .vacio{text-align:center;color:var(--sub);padding:38px 20px;font-size:14px;line-height:1.55}
+  .item-card .fila{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}
+  .item-card .nombre{font-weight:600;font-size:15px;line-height:1.35;padding-top:2px}
+  .item-card .meta{color:var(--muted);font-size:13px;margin-top:3px}
+  .item-card .acciones{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:11px}
+  .quitar{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;
+    padding:4px 6px;line-height:1;opacity:.6;flex:none}
+  .comprada-card{cursor:pointer}
+  .comprada-card:active{filter:brightness(.97)}
 
   /* ---------- peña ---------- */
-  .persona{display:flex;align-items:center;gap:12px}
-  .persona .info{flex:1;min-width:0}
-  .persona .nombre{font-weight:600;font-size:15px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .persona .meta{font-size:13px;color:var(--sub)}
-  .persona .meta b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
-  .card.persona-card{cursor:pointer}
-  .card.persona-card:active{background:var(--line-suave)}
-  .flecha{color:var(--sub);font-size:16px}
-  .invitar{
-    width:100%;border:1px dashed var(--line);background:transparent;border-radius:var(--radius);
-    color:var(--accent);font-size:14px;font-weight:600;padding:14px;cursor:pointer;margin-top:6px;
-  }
+  .persona-fila{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+  .persona-fila:last-child{border-bottom:none}
+  .persona-fila .centro{flex:1;min-width:0}
+  .persona-fila .nombre{font-weight:600;font-size:15px;display:flex;align-items:center;gap:6px}
+  .persona-fila .subtexto{color:var(--muted);font-size:13px;margin-top:1px}
+  .persona-fila .saldo{text-align:right;font-variant-numeric:tabular-nums}
+  .persona-fila .saldo .cifra{font-weight:600;font-size:14.5px}
+  .persona-fila .saldo .estado{display:block;font-size:11px;color:var(--muted)}
+  .saldo-verde{color:var(--green)}
+  .saldo-terra{color:var(--terra)}
+  .saldo-neutro{color:var(--muted)}
 
   /* ---------- cuentas ---------- */
-  .resumen{padding:4px 16px}
-  .res-fila{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-    padding:12px 0;border-bottom:1px solid var(--line-suave)}
-  .res-fila:last-child{border-bottom:none}
-  .res-fila .l{min-width:0}
-  .res-fila .l small{display:block;color:var(--sub);font-size:12px;margin-top:1px}
-  .res-fila .r{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;
-    font-size:14.5px;white-space:nowrap}
-  .res-fila.total{padding:14px 0}
-  .res-fila.total .l{font-weight:600}
-  .res-fila.total .r{font-size:17px;font-weight:700}
-  .sube{color:var(--accent)}
-  .baja{color:var(--neg)}
-  .neutro{color:var(--sub)}
-
-  .bizum{display:flex;align-items:center;gap:11px}
-  .bizum .quien{flex:1;font-size:14.5px;font-weight:600;line-height:1.3;min-width:0}
-  .bizum .quien .fl{color:var(--sub);font-weight:400;padding:0 2px}
-  .bizum .cuanto{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
-  .bizum.hecho .quien,.bizum.hecho .cuanto{text-decoration:line-through;opacity:.4}
-  .enpaz{
-    background:var(--accent-tenue);border:1px solid transparent;
-    border-radius:var(--radius);padding:16px;margin-bottom:8px;
+  .total-card{text-align:center;padding:20px 14px}
+  .total-card .cifra{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.5px}
+  .total-card .porcabeza{color:var(--muted);font-size:13px;margin-top:3px}
+  .bizum-fila{display:flex;align-items:center;gap:11px}
+  .bizum-fila.hecho{opacity:.55}
+  .bizum-fila .quien{flex:1;font-size:14.5px;font-weight:600;min-width:0}
+  .bizum-fila .quien svg{width:14px;height:14px;color:var(--muted);vertical-align:-2px;margin:0 3px}
+  .bizum-fila .cuanto{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .check{
+    width:30px;height:30px;border-radius:999px;border:1.5px solid var(--line);
+    background:transparent;cursor:pointer;flex:none;
+    display:inline-flex;align-items:center;justify-content:center;color:transparent;
   }
-  .enpaz .t{font-size:15px;font-weight:700;color:var(--accent)}
-  .enpaz .s{font-size:13.5px;color:var(--sub);margin-top:2px}
+  .check.on{background:var(--green);border-color:var(--green);color:var(--onsky)}
+  .check svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round}
+  .enpaz{color:var(--green);text-align:center;font-weight:600;font-size:14.5px;padding:18px 10px 6px}
+  .pie-nota{color:var(--muted);font-size:12.5px;text-align:center;margin-top:14px}
+
+  /* ---------- tab bar ---------- */
+  nav#tabbar{
+    position:fixed;bottom:0;left:0;right:0;z-index:40;
+    background:var(--card);border-top:1px solid var(--line);
+    padding:6px 10px calc(8px + env(safe-area-inset-bottom));
+  }
+  .tabbar-in{max-width:480px;margin:0 auto;display:flex}
+  .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:none;border:none;color:var(--muted);
+    font-size:11px;font-weight:600;padding:7px 4px 4px;cursor:pointer;position:relative;
+  }
+  .tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
+  .tab.activa{color:var(--sky)}
+  .tab .badge{
+    position:absolute;top:3px;right:calc(50% - 24px);
+    background:var(--terra);color:var(--onsky);font-size:9.5px;font-weight:700;
+    min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+    font-variant-numeric:tabular-nums;
+  }
 
   /* ---------- sheet ---------- */
-  #velo{position:fixed;inset:0;background:rgba(20,18,14,.45);z-index:60;opacity:0;
+  #velo{position:fixed;inset:0;background:var(--velo);z-index:60;opacity:0;
     pointer-events:none;transition:opacity .2s}
   #velo.abierto{opacity:1;pointer-events:auto}
   #sheet{
-    position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--surface);
-    border-radius:16px 16px 0 0;border-top:1px solid var(--line);
+    position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--card);
+    border-radius:18px 18px 0 0;border-top:1px solid var(--line);
     padding:8px 20px calc(24px + env(safe-area-inset-bottom));
-    max-width:520px;margin:0 auto;transform:translateY(105%);transition:transform .25s;
+    max-width:480px;margin:0 auto;transform:translateY(105%);transition:transform .25s;
     max-height:85dvh;overflow-y:auto;
   }
   #sheet.abierto{transform:translateY(0)}
   .asa{width:36px;height:4px;border-radius:99px;background:var(--line);margin:6px auto 16px}
-  .sheet-titulo{font-size:18px;font-weight:700;letter-spacing:-.01em;margin:0 0 3px;text-wrap:balance}
-  .sheet-sub{color:var(--sub);font-size:13.5px;margin:0 0 14px;line-height:1.5}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
-  .chip{
+  .sheet-titulo{font-family:var(--display);font-size:20px;font-weight:700;margin:0 0 4px;text-wrap:balance}
+  .sheet-sub{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+  .pill{
     display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
-    background:var(--surface);border-radius:999px;padding:6px 13px 6px 6px;
-    font-size:13.5px;font-weight:600;cursor:pointer;transition:border-color .12s,background .12s;
+    background:var(--card);border-radius:999px;padding:6px 13px 6px 6px;
+    font-size:13.5px;font-weight:600;cursor:pointer;
   }
-  .chip .avatar{width:22px;height:22px;font-size:9.5px}
-  .chip.on{border-color:var(--accent);background:var(--accent-tenue)}
-  .chip.off{opacity:.4}
-  .chip.solo-texto{padding:6px 13px}
+  .pill .avatar{width:24px;height:24px;font-size:11px}
+  .pill.on{border-color:var(--green);background:var(--greensoft)}
+  .pill.off{opacity:.4}
+  .pill.solo-texto{padding:6px 13px}
+  .pill.on.pill-sky{border-color:var(--sky);background:var(--skysoft)}
   .precio-input{display:flex;align-items:center;gap:10px}
-  .precio-input input{font-family:var(--mono);font-size:24px;font-weight:600;text-align:right;
-    font-variant-numeric:tabular-nums}
-  .precio-input .eur{font-size:19px;font-weight:600;color:var(--sub)}
+  .precio-input input{font-size:24px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+  .precio-input .eur{font-size:19px;font-weight:600;color:var(--muted)}
   .sheet-botones{display:flex;gap:10px;margin-top:22px}
   .sheet-botones .btn{flex:1}
-  .link-borrar{background:none;border:none;color:var(--neg);font-size:13.5px;
+  .link-borrar{background:none;border:none;color:var(--terra);font-size:13.5px;
     font-weight:600;margin:16px auto 0;display:block;cursor:pointer}
   .opcion-menu{
-    display:block;width:100%;background:var(--surface);
-    border:1px solid var(--line);border-radius:10px;
+    display:block;width:100%;background:var(--card);
+    border:1px solid var(--line);border-radius:11px;
     font-size:14.5px;font-weight:600;padding:13px 14px;margin-bottom:8px;cursor:pointer;text-align:left;
   }
-  .opcion-menu small{display:block;font-weight:400;color:var(--sub);font-size:12.5px;margin-top:2px}
-  .nota{border:1px solid var(--line);border-left:3px solid var(--accent);
-    border-radius:8px;padding:11px 13px;font-size:13px;color:var(--sub);line-height:1.5;margin-top:16px}
+  .opcion-menu small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
+  .nota{border:1px solid var(--line);border-left:3px solid var(--sky);
+    border-radius:9px;padding:11px 13px;font-size:13px;color:var(--muted);line-height:1.5;margin-top:16px}
 
   /* ---------- toast ---------- */
   #toast{
     position:fixed;bottom:92px;left:50%;transform:translate(-50%,16px);z-index:70;
-    background:var(--ink);color:var(--inverso);font-size:13.5px;font-weight:500;
-    padding:10px 17px;border-radius:9px;opacity:0;transition:.25s;pointer-events:none;
+    background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:500;
+    padding:10px 17px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;
     max-width:86vw;text-align:center;
   }
   #toast.ver{opacity:1;transform:translate(-50%,0)}
@@ -286,23 +261,17 @@
 </head>
 <body>
 
+<button id="btnTema" type="button" aria-label="Cambiar entre modo claro y oscuro">
+  <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+</button>
+
 <div id="app">
-  <header>
-    <div class="fila-top">
-      <span class="marca">El Bote</span>
-      <div class="fila-acciones-top">
-        <button class="yo-chip" id="yoChip" type="button"></button>
-        <button class="menu-btn" id="btnMenu" type="button" aria-label="Menú">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="fiesta-nombre" id="fiestaNombre"></div>
-    <div class="fiesta-sub" id="fiestaSub"></div>
-  </header>
   <main id="vista"></main>
   <nav id="tabbar">
     <div class="tabbar-in">
+      <button class="tab" data-tab="fiesta" type="button">
+        <svg viewBox="0 0 48 48" stroke-width="3.4"><circle cx="24" cy="24" r="19"/><g stroke-linecap="round"><line x1="24" y1="24" x2="24" y2="5"/><line x1="24" y1="24" x2="42.1" y2="18.1"/><line x1="24" y1="24" x2="35.2" y2="39.4"/><line x1="24" y1="24" x2="12.8" y2="39.4"/><line x1="24" y1="24" x2="5.9" y2="18.1"/></g></svg>
+        Fiesta</button>
       <button class="tab" data-tab="lista" type="button">
         <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
         Lista</button>
@@ -310,7 +279,7 @@
         <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.4c2.3.2 4 1.7 4.5 4.1"/></svg>
         Peña</button>
       <button class="tab" data-tab="cuentas" type="button">
-        <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-2-1.4L14 21l-2-1.4L10 21l-2-1.4L6 21z"/><path d="M9.5 8.5h5M9.5 12.5h5"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M4 7h13M17 7l-3-3M17 7l-3 3"/><path d="M20 17H7M7 17l3-3M7 17l3 3"/></svg>
         Cuentas<span class="badge" id="badgeCuentas" hidden></span></button>
     </div>
   </nav>
@@ -323,15 +292,19 @@
 <script>
 'use strict';
 /* ================= estado ================= */
-const CLAVE = 'el-bote-proto-v2';
-const CLAVE_V1 = 'el-bote-proto-v1';
+const CLAVE = 'a-pachas-v1';
+const CLAVES_VIEJAS = ['el-bote-proto-v2', 'el-bote-proto-v1'];
+const CLAVE_TEMA = 'a-pachas-tema';
+
+const LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4.5"><circle cx="24" cy="24" r="19"/><g stroke-linecap="round"><line x1="24" y1="24" x2="24" y2="5"/><line x1="24" y1="24" x2="42.1" y2="18.1"/><line x1="24" y1="24" x2="35.2" y2="39.4"/><line x1="24" y1="24" x2="12.8" y2="39.4"/><line x1="24" y1="24" x2="5.9" y2="18.1"/></g></svg>`;
+const LLAVE = `<svg class="llave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Admin"><circle cx="8" cy="8" r="4.5"/><path d="M11 11l9 9M17 17l2.5-2.5M14 14l2.5-2.5"/></svg>`;
 
 function demo(){
   return {
-    v:2,
-    fiesta: {nombre:'Piscina en casa de Edu', fecha:null, ejemplo:true},
+    v:3,
+    fiesta: {nombre:'Fiestas de Collado 2026', fecha:null, ejemplo:true},
     yo: null,
-    tab: 'lista',
+    tab: 'fiesta',
     gente: [
       {id:'p1', nombre:'Edu',    admin:true},
       {id:'p2', nombre:'Marta',  admin:true},
@@ -340,15 +313,13 @@ function demo(){
       {id:'p5', nombre:'Andrés', admin:false},
     ],
     items: [
-      {id:'i1', nombre:'Hielo (3 bolsas)',            estado:'comprada',  compradorId:'p3', precio:450,  consumen:null},
-      {id:'i2', nombre:'Cervezas (2 cajas)',          estado:'comprada',  compradorId:'p1', precio:1840, consumen:['p1','p2','p3','p5']},
-      {id:'i3', nombre:'Carbón y pastillas',          estado:'comprada',  compradorId:'p5', precio:995,  consumen:null},
-      {id:'i4', nombre:'Vasos, platos y servilletas', estado:'comprada',  compradorId:'p2', precio:620,  consumen:null},
-      {id:'i5', nombre:'Sandía',                      estado:'pillada',   pilladorId:'p2'},
-      {id:'i6', nombre:'Carne para la barbacoa',      estado:'pillada',   pilladorId:'p1'},
-      {id:'i7', nombre:'Tinto de verano (5 L)',       estado:'pendiente'},
-      {id:'i8', nombre:'Panes de hamburguesa',        estado:'pendiente'},
-      {id:'i9', nombre:'Nachos y guacamole',          estado:'pendiente'},
+      {id:'i1', nombre:'Leña para la caldereta', estado:'comprada', compradorId:'p3', precio:1800, consumen:null},
+      {id:'i2', nombre:'Barril de cerveza',      estado:'comprada', compradorId:'p1', precio:8450, consumen:['p1','p2','p3','p5']},
+      {id:'i3', nombre:'Hielo (3 bolsas)',       estado:'comprada', compradorId:'p4', precio:600,  consumen:null},
+      {id:'i4', nombre:'Cordero',                estado:'pillada',  pilladorId:'p1'},
+      {id:'i5', nombre:'Vasos y servilletas',    estado:'pillada',  pilladorId:'p2'},
+      {id:'i6', nombre:'Pan (mucho pan)',        estado:'pendiente'},
+      {id:'i7', nombre:'Café y orujo pa después',estado:'pendiente'},
     ],
     saldados: {},
   };
@@ -358,23 +329,42 @@ let S = null;
 try {
   S = JSON.parse(localStorage.getItem(CLAVE));
   if(!S){
-    const v1 = JSON.parse(localStorage.getItem(CLAVE_V1));
-    if(v1 && v1.gente){
-      v1.v = 2;
-      v1.fiesta = {nombre: String(v1.fiesta || 'Nuestra fiesta'), fecha:null, ejemplo:true};
-      v1.gente.forEach((p,i) => p.admin = i < 2);
-      S = v1;
+    for(const vieja of CLAVES_VIEJAS){
+      const v = JSON.parse(localStorage.getItem(vieja));
+      if(v && v.gente){
+        v.v = 3;
+        if(typeof v.fiesta === 'string') v.fiesta = {nombre:v.fiesta, fecha:null, ejemplo:true};
+        v.gente.forEach((p,i) => { if(p.admin === undefined) p.admin = i < 2; });
+        if(!['fiesta','lista','pena','cuentas'].includes(v.tab)) v.tab = 'fiesta';
+        S = v;
+        break;
+      }
     }
   }
+  if(S && !['fiesta','lista','pena','cuentas'].includes(S.tab)) S.tab = 'fiesta';
 } catch(e){ S = null; }
 
 function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }catch(e){} }
+
+/* ================= tema ================= */
+(function(){
+  const t = localStorage.getItem(CLAVE_TEMA);
+  if(t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+})();
+document.getElementById('btnTema').addEventListener('click', () => {
+  const raiz = document.documentElement;
+  const actual = raiz.dataset.theme ||
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const nuevo = actual === 'dark' ? 'light' : 'dark';
+  raiz.dataset.theme = nuevo;
+  try{ localStorage.setItem(CLAVE_TEMA, nuevo); }catch(e){}
+});
 
 /* ================= utilidades ================= */
 const $ = sel => document.querySelector(sel);
 const eur = c => (c/100).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
 const persona = id => S && S.gente.find(p=>p.id===id);
-const iniciales = n => n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const inicial = n => n.trim()[0].toUpperCase();
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const consumidores = it => (it.consumen && it.consumen.length ? it.consumen : S.gente.map(p=>p.id));
 const soyAdmin = () => { const p = persona(S && S.yo); return !!(p && p.admin); };
@@ -391,17 +381,15 @@ function fechaBonita(f){
   } catch(e){ return null; }
 }
 
-function avatarHtml(id, cls){
+const avatarHtml = (id, mini) => {
   const p = persona(id); if(!p) return '';
-  const idx = Math.max(0, S.gente.findIndex(x=>x.id===id)) % 6;
-  return `<span class="avatar av-${idx} ${cls||''}">${esc(iniciales(p.nombre))}</span>`;
-}
-const tagAdmin = p => p.admin ? '<span class="tag">Admin</span>' : '';
+  return `<span class="avatar ${mini?'mini':''}">${esc(inicial(p.nombre))}</span>`;
+};
 
 let toastTimer;
 function toast(msg){
   const t = $('#toast'); t.textContent = msg; t.classList.add('ver');
-  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('ver'), 2400);
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('ver'), 2600);
 }
 
 async function copiar(txt){
@@ -417,27 +405,30 @@ async function copiar(txt){
   }
 }
 
-/* ================= código de fiesta (compartir) ================= */
+/* ================= invitación por enlace ================= */
 function codigoFiesta(){
-  const limpio = {...S, yo:null, tab:'lista'};
+  const limpio = {...S, yo:null, tab:'fiesta'};
   const json = JSON.stringify(limpio);
   const b64 = btoa(unescape(encodeURIComponent(json)))
     .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-  return 'EB1:' + b64;
+  return 'AP1:' + b64;
+}
+function enlaceFiesta(){
+  return location.origin + location.pathname + '#' + codigoFiesta();
 }
 function decodificar(texto){
-  const m = String(texto).match(/EB1:([A-Za-z0-9_-]+)/);
+  const m = String(texto).match(/(?:AP1|EB1):([A-Za-z0-9_-]+)/);
   if(!m) return null;
   try {
     let b64 = m[1].replace(/-/g,'+').replace(/_/g,'/');
     while(b64.length % 4) b64 += '=';
     const obj = JSON.parse(decodeURIComponent(escape(atob(b64))));
     if(!obj || !obj.gente || !obj.items || !obj.fiesta) return null;
-    obj.yo = null; obj.tab = 'lista'; obj.v = 2;
+    obj.yo = null; obj.tab = 'fiesta'; obj.v = 3;
     return obj;
   } catch(e){ return null; }
 }
-function importarCodigo(texto){
+function importar(texto){
   const obj = decodificar(texto);
   if(!obj) return false;
   S = obj; guardar(); pintar(); sheetIdentidad(true);
@@ -490,17 +481,17 @@ function cerrarSheet(){
 
 /* --- quién eres --- */
 function sheetIdentidad(forzado){
-  const chips = S.gente.map(p =>
-    `<button class="chip" type="button" data-quien="${p.id}">${avatarHtml(p.id)}${esc(p.nombre)}${p.admin?' · Admin':''}</button>`
+  const pills = S.gente.map(p =>
+    `<button class="pill pill-sky ${p.id===S.yo?'on':''}" type="button" data-quien="${p.id}">${avatarHtml(p.id,true)}${esc(p.nombre)}</button>`
   ).join('');
   abrirSheet(`
     <h2 class="sheet-titulo">¿Quién eres?</h2>
-    <p class="sheet-sub">Has entrado en «${esc(S.fiesta.nombre)}». Elige tu nombre o apúntate.</p>
-    <div class="chips">${chips}</div>
-    <label class="campo-label" for="nuevoNombre">O apúntate</label>
+    <p class="sheet-sub">Estás en «${esc(S.fiesta.nombre)}». Di quién eres o apúntate.</p>
+    <div class="pills">${pills}</div>
+    <label class="label" for="nuevoNombre">O apúntate</label>
     <div class="fila-add">
       <input type="text" id="nuevoNombre" placeholder="Tu nombre" maxlength="20" autocomplete="off">
-      <button class="btn btn-primario" id="btnApuntame" type="button">Entrar</button>
+      <button class="btn btn-sky" id="btnApuntame" type="button">Entrar</button>
     </div>
   `, forzado);
   document.querySelectorAll('[data-quien]').forEach(b => b.onclick = () => {
@@ -509,7 +500,7 @@ function sheetIdentidad(forzado){
   });
   $('#btnApuntame').onclick = () => {
     const n = $('#nuevoNombre').value.trim();
-    if(!n) return toast('Escribe tu nombre');
+    if(!n) return toast('Escribe tu nombre, que la lista no adivina.');
     const p = {id: nuevoId('p'), nombre: n, admin:false};
     S.gente.push(p); S.yo = p.id; guardar(); cerrarSheet(); pintar();
     toast('Bienvenido, ' + n);
@@ -524,41 +515,41 @@ function sheetCompra(itemId){
   let compradorSel = editando ? it.compradorId : (it.pilladorId || S.yo);
   if(!persona(compradorSel)) compradorSel = S.yo;
 
-  const chipsCons = S.gente.map(p => `
-    <button class="chip ${marcados.has(p.id)?'on':'off'}" type="button" data-cons="${p.id}">
-      ${avatarHtml(p.id)}${esc(p.nombre)}
+  const pillsCons = S.gente.map(p => `
+    <button class="pill ${marcados.has(p.id)?'on':'off'}" type="button" data-cons="${p.id}">
+      ${avatarHtml(p.id,true)}${esc(p.nombre)}
     </button>`).join('');
 
   const filaComprador = soyAdmin()
-    ? `<span class="campo-label">Pagado por</span>
-       <div class="chips" id="chipsComprador">${S.gente.map(p => `
-         <button class="chip ${p.id===compradorSel?'on':''}" type="button" data-comp="${p.id}">
-           ${avatarHtml(p.id)}${esc(p.nombre)}
+    ? `<span class="label">Pagó</span>
+       <div class="pills">${S.gente.map(p => `
+         <button class="pill pill-sky ${p.id===compradorSel?'on':''}" type="button" data-comp="${p.id}">
+           ${avatarHtml(p.id,true)}${esc(p.nombre)}
          </button>`).join('')}</div>`
-    : `<p class="sheet-sub" style="margin:14px 0 0">Se apunta como pagado por <strong>${esc(persona(compradorSel)?.nombre || '—')}</strong>.</p>`;
+    : `<p class="sheet-sub" style="margin:14px 0 0">Se apunta como pagada por <strong>${esc(persona(compradorSel)?.nombre || '—')}</strong>.</p>`;
 
   const precioIni = editando && it.precio ? (it.precio/100).toFixed(2).replace('.',',') : '';
   abrirSheet(`
     <h2 class="sheet-titulo">${esc(it.nombre)}</h2>
-    <p class="sheet-sub">${editando ? 'Corrige el precio, quién lo pagó o quién lo consume.' : 'Apunta lo que ha costado.'}</p>
-    <label class="campo-label" for="inPrecio">Precio</label>
+    <p class="sheet-sub">${editando ? 'Corrige el precio, quién pagó o quiénes la catan.' : 'Apunta lo que ha costado y quién la cata.'}</p>
+    <label class="label" for="inPrecio">Precio</label>
     <div class="precio-input">
       <input type="tel" id="inPrecio" inputmode="decimal" placeholder="0,00" value="${precioIni}" autocomplete="off">
-      <span class="eur">EUR</span>
+      <span class="eur">€</span>
     </div>
-    <span class="campo-label">Lo consumen</span>
-    <div class="chips" id="chipsCons">${chipsCons}</div>
+    <span class="label">¿Quiénes la catan?</span>
+    <div class="pills">${pillsCons}</div>
     ${filaComprador}
     <div class="sheet-botones">
-      <button class="btn btn-fantasma" id="btnCancelar" type="button">Cancelar</button>
-      <button class="btn btn-primario" id="btnGuardarCompra" type="button">${editando?'Guardar':'Apuntar compra'}</button>
+      <button class="btn btn-borde" id="btnCancelar" type="button">Cancelar</button>
+      <button class="btn btn-green" id="btnGuardarCompra" type="button">${editando?'Guardar':'Apuntar la compra'}</button>
     </div>
-    ${editando ? '<button class="link-borrar" id="btnBorrarItem" type="button">Borrar este artículo</button>' : ''}
+    ${editando ? '<button class="link-borrar" id="btnBorrarItem" type="button">Borrar esta cosa de la lista</button>' : ''}
   `);
   document.querySelectorAll('[data-cons]').forEach(b => b.onclick = () => {
     const id = b.dataset.cons;
     if(marcados.has(id)){
-      if(marcados.size === 1) return toast('Tiene que consumirlo al menos una persona');
+      if(marcados.size === 1) return toast('Alguien la catará, digo yo.');
       marcados.delete(id);
     } else marcados.add(id);
     b.classList.toggle('on', marcados.has(id));
@@ -573,14 +564,14 @@ function sheetCompra(itemId){
   $('#btnGuardarCompra').onclick = () => {
     const bruto = $('#inPrecio').value.trim().replace(',','.');
     const val = Math.round(parseFloat(bruto)*100);
-    if(!bruto || isNaN(val) || val<=0) return toast('Falta el precio');
+    if(!bruto || isNaN(val) || val<=0) return toast('Ponle precio, que gratis no fue.');
     it.precio = val;
     it.consumen = marcados.size === S.gente.length ? null : [...marcados];
     it.compradorId = compradorSel;
     if(!editando){
       it.estado = 'comprada';
       delete it.pilladorId;
-      toast('Apuntado: ' + eur(val));
+      toast('Apuntada. Las cuentas ya lo saben.');
     } else {
       toast('Guardado');
     }
@@ -589,7 +580,7 @@ function sheetCompra(itemId){
   const del = $('#btnBorrarItem');
   if(del) del.onclick = () => {
     S.items = S.items.filter(x=>x.id!==itemId);
-    guardar(); cerrarSheet(); pintar(); toast('Artículo borrado');
+    guardar(); cerrarSheet(); pintar(); toast('Fuera de la lista');
   };
   setTimeout(()=>$('#inPrecio').focus(), 250);
 }
@@ -597,22 +588,22 @@ function sheetCompra(itemId){
 /* --- asignar (solo admins) --- */
 function sheetAsignar(itemId){
   const it = S.items.find(x=>x.id===itemId); if(!it) return;
-  const chips = S.gente.map(p => `
-    <button class="chip ${it.pilladorId===p.id?'on':''}" type="button" data-asig="${p.id}">
-      ${avatarHtml(p.id)}${esc(p.nombre)}
+  const pills = S.gente.map(p => `
+    <button class="pill pill-sky ${it.pilladorId===p.id?'on':''}" type="button" data-asig="${p.id}">
+      ${avatarHtml(p.id,true)}${esc(p.nombre)}
     </button>`).join('');
   abrirSheet(`
     <h2 class="sheet-titulo">¿Quién trae «${esc(it.nombre)}»?</h2>
-    <p class="sheet-sub">Le aparecerá como suyo en la lista.</p>
-    <div class="chips">
-      ${chips}
-      <button class="chip solo-texto ${!it.pilladorId?'on':''}" type="button" data-asig="">Sin asignar</button>
+    <p class="sheet-sub">Le saldrá como suya en la lista.</p>
+    <div class="pills">
+      ${pills}
+      <button class="pill solo-texto ${!it.pilladorId?'on':''}" type="button" data-asig="">Sin dueño</button>
     </div>
   `);
   document.querySelectorAll('[data-asig]').forEach(b => b.onclick = () => {
     const id = b.dataset.asig;
-    if(id){ it.estado='pillada'; it.pilladorId=id; toast('Asignado a ' + persona(id).nombre); }
-    else { it.estado='pendiente'; delete it.pilladorId; toast('Sin asignar'); }
+    if(id){ it.estado='pillada'; it.pilladorId=id; toast('Se la lleva ' + persona(id).nombre); }
+    else { it.estado='pendiente'; delete it.pilladorId; toast('Suelta. A ver quién se la pide ahora.'); }
     guardar(); cerrarSheet(); pintar();
   });
 }
@@ -628,19 +619,19 @@ function sheetPersona(pid){
 
   const listaAsig = asignadas.length
     ? asignadas.map(i=>`<li>${esc(i.nombre)}</li>`).join('')
-    : '<li style="color:var(--sub)">Nada pendiente</li>';
+    : '<li style="color:var(--muted)">Nada pendiente</li>';
 
   abrirSheet(`
-    <h2 class="sheet-titulo">${esc(p.nombre)} ${tagAdmin(p)} ${esYo?'<span class="tag tag-acento">Tú</span>':''}</h2>
+    <h2 class="sheet-titulo">${esc(p.nombre)}${p.admin?' '+LLAVE:''}${esYo?' <span class="chip-estado chip-sky">tú</span>':''}</h2>
     <p class="sheet-sub">Ha pagado <strong>${eur(c.pagado[pid]||0)}</strong> en ${compras.length} compra${compras.length===1?'':'s'}.</p>
-    <span class="campo-label">Le toca traer</span>
+    <span class="label">Le toca traer</span>
     <ul style="margin:0 0 6px;padding-left:20px;font-size:14px;line-height:1.7">${listaAsig}</ul>
-    ${asignadas.length ? `<button class="btn btn-fantasma btn-mini" id="btnRecordar" type="button" style="margin-top:6px">Copiar recordatorio</button>` : ''}
+    ${asignadas.length ? `<button class="btn btn-borde btn-mini" id="btnRecordar" type="button" style="margin-top:6px">Copiar recordatorio</button>` : ''}
     ${puedoGestionar ? `
-      <span class="campo-label">Gestión</span>
+      <span class="label">Gestión</span>
       <button class="opcion-menu" id="btnToggleAdmin" type="button">
-        ${p.admin ? 'Quitarle el rol de admin' : 'Hacer admin'}
-        <small>Los admins asignan compras, corrigen precios y gestionan la peña.</small>
+        ${p.admin ? 'Quitarle la llave' : 'Darle la llave (admin)'}
+        <small>Los de la llave asignan cosas, corrigen precios y gestionan la peña.</small>
       </button>
       <button class="opcion-menu" id="btnEliminar" type="button">
         Quitar de la peña
@@ -656,15 +647,15 @@ function sheetPersona(pid){
   };
   const tog = $('#btnToggleAdmin');
   if(tog) tog.onclick = () => {
-    if(p.admin && numAdmins() === 1) return toast('Tiene que quedar al menos un admin');
+    if(p.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
     p.admin = !p.admin;
     guardar(); cerrarSheet(); pintar();
-    toast(p.admin ? p.nombre + ' ahora es admin' : p.nombre + ' ya no es admin');
+    toast(p.admin ? p.nombre + ' tiene la llave' : p.nombre + ' ya no tiene la llave');
   };
   const eli = $('#btnEliminar');
   if(eli) eli.onclick = () => {
     if(compras.length) return toast('Tiene compras apuntadas: reasígnalas antes');
-    if(p.admin && numAdmins() === 1) return toast('Tiene que quedar al menos un admin');
+    if(p.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
     S.items.forEach(i => {
       if(i.pilladorId === pid){ i.estado='pendiente'; delete i.pilladorId; }
       if(i.consumen) i.consumen = i.consumen.filter(x=>x!==pid);
@@ -675,93 +666,98 @@ function sheetPersona(pid){
   };
 }
 
-/* --- compartir fiesta --- */
-function sheetCompartir(){
+/* --- invitar por enlace --- */
+async function invitarPorEnlace(){
+  const txt = `Únete a «${S.fiesta.nombre}» en A Pachas:\n${enlaceFiesta()}`;
+  let hecho = false;
+  if(navigator.share){
+    try { await navigator.share({text: txt}); hecho = true; } catch(e){}
+  }
+  if(!hecho){
+    hecho = await copiar(txt);
+    toast(hecho ? 'Enlace copiado. Mándalo al grupo.' : 'No se ha podido copiar');
+  }
+}
+function sheetInvitar(){
   abrirSheet(`
-    <h2 class="sheet-titulo">Invitar a la peña</h2>
-    <p class="sheet-sub">Copia la invitación y pégala en el grupo. Quien la reciba abre el enlace,
-    pulsa «Tengo una invitación» y pega el mensaje entero: verá la fiesta tal y como está ahora.</p>
-    <button class="btn btn-primario btn-block" id="btnCopiarInv" type="button">Copiar invitación</button>
+    <h2 class="sheet-titulo">Invitar por enlace</h2>
+    <p class="sheet-sub">Manda el enlace al grupo. Quien lo abra verá la fiesta
+    tal y como está ahora mismo y elegirá quién es.</p>
+    <button class="btn btn-sky btn-block" id="btnCopiarInv" type="button">Copiar el enlace</button>
     <div class="nota">Cada móvil guarda su propia copia. Para que las cuentas cuadren,
-    que las compras las apunte una misma persona (un admin) y comparta la fiesta actualizada al final.</div>
+    que las compras las apunte una misma persona (alguien con llave) y comparta el
+    enlace actualizado al final.</div>
   `);
-  $('#btnCopiarInv').onclick = async () => {
-    const url = location.href.split('#')[0];
-    const txt = `Únete a «${S.fiesta.nombre}» en El Bote\n\n1) Abre: ${url}\n2) Pulsa «Tengo una invitación» y pega este mensaje entero.\n\n${codigoFiesta()}`;
-    let hecho = false;
-    if(navigator.share){
-      try { await navigator.share({text: txt}); hecho = true; } catch(e){}
-    }
-    if(!hecho){
-      hecho = await copiar(txt);
-      toast(hecho ? 'Invitación copiada' : 'No se ha podido copiar');
-    }
-    if(hecho) cerrarSheet();
-  };
+  $('#btnCopiarInv').onclick = async () => { await invitarPorEnlace(); cerrarSheet(); };
 }
 
-/* --- pegar invitación --- */
-function sheetInvitacion(){
+/* --- unirse pegando enlace --- */
+function sheetUnirse(){
   abrirSheet(`
-    <h2 class="sheet-titulo">Tengo una invitación</h2>
-    <p class="sheet-sub">Pega el mensaje de invitación que te han pasado (entero).</p>
-    <textarea id="inCodigo" placeholder="Pega aquí el mensaje"></textarea>
+    <h2 class="sheet-titulo">Tengo un enlace</h2>
+    <p class="sheet-sub">Pega aquí el enlace (o el mensaje entero) que te han pasado.</p>
+    <textarea id="inCodigo" placeholder="Pega el enlace del grupo"></textarea>
     <div class="sheet-botones">
-      <button class="btn btn-fantasma" id="btnCancelarInv" type="button">Cancelar</button>
-      <button class="btn btn-primario" id="btnEntrarInv" type="button">Entrar en la fiesta</button>
+      <button class="btn btn-borde" id="btnCancelarInv" type="button">Cancelar</button>
+      <button class="btn btn-sky" id="btnEntrarInv" type="button">Unirme</button>
     </div>
   `);
   $('#btnCancelarInv').onclick = cerrarSheet;
   $('#btnEntrarInv').onclick = () => {
-    const ok = importarCodigo($('#inCodigo').value);
-    if(!ok) toast('Ese mensaje no contiene una invitación válida');
-    else toast('Dentro. Elige quién eres');
+    if(!importar($('#inCodigo').value)) toast('Ahí no hay ninguna fiesta que valga');
   };
 }
 
-/* --- menú --- */
-function sheetMenu(){
+/* --- crear fiesta --- */
+function sheetCrear(){
   abrirSheet(`
-    <h2 class="sheet-titulo">${esc(S.fiesta.nombre)}</h2>
-    <p class="sheet-sub">${S.gente.length} en la peña${S.fiesta.fecha ? ' · ' + esc(fechaBonita(S.fiesta.fecha) || '') : ''}</p>
-    <button class="opcion-menu" id="mInvitar" type="button">
-      Invitar a la peña<small>Copia la invitación para el grupo.</small>
-    </button>
-    ${soyAdmin() ? `
-    <button class="opcion-menu" id="mRenombrar" type="button">
-      Cambiar nombre o fecha<small>Solo admins.</small>
-    </button>` : ''}
-    <button class="opcion-menu" id="mNueva" type="button">
-      Nueva fiesta<small>Borra esta de tu móvil y empieza otra.</small>
-    </button>
-    <button class="opcion-menu" id="mEjemplo" type="button">
-      Ver fiesta de ejemplo<small>Para enseñar cómo funciona.</small>
-    </button>
+    <h2 class="sheet-titulo">Fiesta nueva</h2>
+    <div class="campo" style="margin-top:14px">
+      <label class="label" for="inFiestaNueva">Nombre de la fiesta</label>
+      <input type="text" id="inFiestaNueva" placeholder="Matanza en casa de Paco" maxlength="40" autocomplete="off">
+    </div>
+    <div class="campo">
+      <label class="label" for="inTuNombre">Tu nombre (te quedas la llave)</label>
+      <input type="text" id="inTuNombre" placeholder="Paco" maxlength="20" autocomplete="off">
+    </div>
+    <div class="campo">
+      <label class="label" for="inFechaNueva">Fecha (opcional)</label>
+      <input type="date" id="inFechaNueva">
+    </div>
+    <button class="btn btn-sky btn-block" id="btnCrearFiesta" type="button" style="padding:14px">Crear la fiesta</button>
   `);
-  $('#mInvitar').onclick = () => sheetCompartir();
-  const ren = $('#mRenombrar');
-  if(ren) ren.onclick = () => sheetRenombrar();
-  $('#mNueva').onclick = () => sheetNueva();
-  $('#mEjemplo').onclick = () => sheetCargar('¿Cargar la fiesta de ejemplo?',
-    'Se borrará la fiesta actual de este móvil (la de tus colegas no se toca).', () => {
-      S = demo(); guardar(); pintar(); sheetIdentidad(true);
-    });
+  $('#btnCrearFiesta').onclick = () => {
+    const nombre = $('#inFiestaNueva').value.trim();
+    const tu = $('#inTuNombre').value.trim();
+    if(!nombre) return toast('Ponle nombre a la fiesta');
+    if(!tu) return toast('Falta tu nombre');
+    const pid = nuevoId('p');
+    S = {
+      v:3,
+      fiesta:{nombre, fecha: $('#inFechaNueva').value || null},
+      yo: pid, tab:'lista',
+      gente:[{id:pid, nombre:tu, admin:true}],
+      items:[], saldados:{},
+    };
+    guardar(); cerrarSheet(); pintar();
+    toast('Fiesta creada. Apunta la lista e invita a la peña.');
+  };
 }
 
 function sheetRenombrar(){
   abrirSheet(`
     <h2 class="sheet-titulo">Nombre y fecha</h2>
     <div class="campo" style="margin-top:14px">
-      <label class="campo-label" for="inNombreF">Nombre de la fiesta</label>
+      <label class="label" for="inNombreF">Nombre de la fiesta</label>
       <input type="text" id="inNombreF" maxlength="40" value="${esc(S.fiesta.nombre)}">
     </div>
     <div class="campo">
-      <label class="campo-label" for="inFechaF">Fecha (opcional)</label>
+      <label class="label" for="inFechaF">Fecha (opcional)</label>
       <input type="date" id="inFechaF" value="${S.fiesta.fecha || ''}">
     </div>
     <div class="sheet-botones">
-      <button class="btn btn-fantasma" id="btnCancelarRen" type="button">Cancelar</button>
-      <button class="btn btn-primario" id="btnGuardarRen" type="button">Guardar</button>
+      <button class="btn btn-borde" id="btnCancelarRen" type="button">Cancelar</button>
+      <button class="btn btn-sky" id="btnGuardarRen" type="button">Guardar</button>
     </div>
   `);
   $('#btnCancelarRen').onclick = cerrarSheet;
@@ -774,20 +770,13 @@ function sheetRenombrar(){
   };
 }
 
-function sheetNueva(){
-  sheetCargar('¿Empezar una fiesta nueva?',
-    'Se borrará la actual de este móvil. Si quieres conservarla, copia antes la invitación: sirve de copia de seguridad.', () => {
-      S = null; localStorage.removeItem(CLAVE); pintar();
-    });
-}
-
-function sheetCargar(titulo, aviso, accion){
+function sheetConfirmar(titulo, aviso, accion){
   abrirSheet(`
     <h2 class="sheet-titulo">${esc(titulo)}</h2>
     <p class="sheet-sub">${esc(aviso)}</p>
     <div class="sheet-botones">
-      <button class="btn btn-fantasma" id="btnNo" type="button">Cancelar</button>
-      <button class="btn btn-primario" id="btnSi" type="button">Sí, adelante</button>
+      <button class="btn btn-borde" id="btnNo" type="button">Cancelar</button>
+      <button class="btn btn-sky" id="btnSi" type="button">Sí, adelante</button>
     </div>
   `);
   $('#btnNo').onclick = cerrarSheet;
@@ -795,103 +784,121 @@ function sheetCargar(titulo, aviso, accion){
 }
 
 /* ================= vistas ================= */
-function vistaCrear(){
-  return `<div class="crear">
-    <h1>Las cuentas de la fiesta, claras.</h1>
-    <p class="intro">Una lista de la compra compartida. Cada uno apunta lo que paga
-    y El Bote calcula los pagos justos para quedar en paz.</p>
-    <div class="campo">
-      <label class="campo-label" for="inFiestaNueva">Nombre de la fiesta</label>
-      <input type="text" id="inFiestaNueva" placeholder="Cumple de Rubén" maxlength="40" autocomplete="off">
-    </div>
-    <div class="campo">
-      <label class="campo-label" for="inTuNombre">Tu nombre (serás el admin)</label>
-      <input type="text" id="inTuNombre" placeholder="Rubén" maxlength="20" autocomplete="off">
-    </div>
-    <div class="campo">
-      <label class="campo-label" for="inFechaNueva">Fecha (opcional)</label>
-      <input type="date" id="inFechaNueva">
-    </div>
-    <button class="btn btn-primario btn-block" id="btnCrearFiesta" type="button" style="padding:14px;font-size:15px">Crear la fiesta</button>
-    <div class="alt">
-      <button class="btn btn-fantasma btn-block" id="btnTengoInv" type="button">Tengo una invitación</button>
-      <button class="link-suave" id="btnVerEjemplo" type="button">Ver una fiesta de ejemplo</button>
-    </div>
+function heroHtml(){
+  return `<div class="hero">
+    <div class="logo" aria-hidden="true">${LOGO}</div>
+    <h1>A Pachas</h1>
+    <p class="lema">Los gastos de la peña, a partes iguales.<br>Ni pa ti ni pa mí.</p>
   </div>`;
 }
 
+function vistaEntrada(){
+  return `${heroHtml()}
+    <div class="fila-add">
+      <input type="text" id="inEnlace" placeholder="Pega el enlace del grupo" autocomplete="off">
+      <button class="btn btn-borde" id="btnUnirme" type="button">Unirme</button>
+    </div>
+    <button class="crear-dashed" id="btnCrear" type="button">+ Crear fiesta nueva</button>
+    <div style="text-align:center;margin-top:22px">
+      <button class="link-quieto" id="btnVerEjemplo" type="button">Ver una fiesta de ejemplo</button>
+    </div>`;
+}
+
+function vistaFiesta(){
+  const c = cuentas();
+  const yo = persona(S.yo);
+  const f = fechaBonita(S.fiesta.fecha);
+  const porResolver = S.items.filter(i=>i.estado!=='comprada').length;
+  return `${heroHtml()}
+    <div class="card fiesta-card">
+      <span class="label">Tu fiesta</span>
+      <div class="titulo">${esc(S.fiesta.nombre)}</div>
+      <div class="meta">${f ? esc(f) + ' · ' : ''}${S.gente.length} en la peña · ${S.items.length} cosa${S.items.length===1?'':'s'} en la lista · ${eur(c.total)}</div>
+      <button class="btn btn-sky btn-block" id="btnInvitar" type="button">Invitar por enlace</button>
+    </div>
+    <div class="card yo-fila">
+      <span class="quien">${yo ? `Eres <b>${esc(yo.nombre)}</b>` : 'Aún no has dicho quién eres'}</span>
+      <button class="btn btn-borde btn-mini" id="btnQuienSoy" type="button">${yo ? 'Cambiar' : '¿Quién eres?'}</button>
+    </div>
+    ${porResolver ? `<div class="card yo-fila">
+      <span class="quien">Quedan <b>${porResolver}</b> cosa${porResolver===1?'':'s'} por resolver</span>
+      <button class="btn btn-soft btn-mini" id="btnIrLista" type="button">A la lista</button>
+    </div>` : ''}
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:22px">
+      ${soyAdmin() ? '<button class="link-quieto" id="btnRenombrar" type="button">Cambiar nombre o fecha</button>' : ''}
+      <button class="link-quieto" id="btnNueva" type="button">Empezar otra fiesta</button>
+      <button class="link-quieto" id="btnVerEjemplo" type="button">Ver la fiesta de ejemplo</button>
+    </div>`;
+}
+
 function vistaLista(){
-  const compradas = S.items.filter(i=>i.estado==='comprada');
-  const porComprar = S.items.filter(i=>i.estado!=='comprada');
-  const pct = S.items.length ? Math.round(compradas.length/S.items.length*100) : 0;
+  const total = S.items.length;
+  const porResolver = S.items.filter(i=>i.estado!=='comprada').length;
+  const sub = !total ? 'Apunta lo que haga falta'
+    : porResolver === 0 ? 'Todo comprado. Vaya máquinas.'
+    : porResolver === 1 ? `1 cosa por resolver de ${total}`
+    : `${porResolver} cosas por resolver de ${total}`;
   const admin = soyAdmin();
 
-  const cardPend = it => {
-    const asignada = it.estado==='pillada';
-    const p = asignada ? persona(it.pilladorId) : null;
-    const esMia = asignada && it.pilladorId === S.yo;
-    let botones = '';
-    if(esMia){
-      botones = `<button class="btn btn-acento btn-mini" data-comprar="${it.id}" type="button">Apuntar precio</button>
-                 <button class="btn btn-fantasma btn-mini" data-soltar="${it.id}" type="button">Soltar</button>`;
-    } else if(!asignada){
-      botones = `<button class="btn btn-primario btn-mini" data-pillar="${it.id}" type="button">Lo traigo yo</button>
-        ${admin ? `<button class="btn btn-fantasma btn-mini" data-asignar="${it.id}" type="button">Asignar</button>` : ''}
-        <button class="btn btn-fantasma btn-mini" data-comprar="${it.id}" type="button">Marcar comprado</button>`;
-    } else {
-      botones = admin
-        ? `<button class="btn btn-fantasma btn-mini" data-asignar="${it.id}" type="button">Reasignar</button>
-           <button class="btn btn-fantasma btn-mini" data-comprar="${it.id}" type="button">Apuntar precio</button>`
-        : '';
+  const cardItem = it => {
+    const comprada = it.estado === 'comprada';
+    const p = it.pilladorId ? persona(it.pilladorId) : null;
+    const esMia = it.estado==='pillada' && it.pilladorId === S.yo;
+
+    let chip;
+    if(comprada) chip = '<span class="chip-estado chip-green">Comprada</span>';
+    else if(esMia) chip = '<span class="chip-estado chip-sky">La traes tú</span>';
+    else if(p) chip = `<span class="chip-estado chip-sky">La trae ${esc(p.nombre)}</span>`;
+    else chip = '<span class="chip-estado chip-neutro">Sin dueño</span>';
+
+    let meta = '';
+    if(comprada){
+      const n = consumidores(it).length;
+      meta = `<div class="meta">${eur(it.precio)} · pagó ${esc(persona(it.compradorId)?.nombre || '—')} · entre ${n===S.gente.length?'todos':n}</div>`;
     }
-    const puedeQuitar = admin || !asignada;
-    return `<div class="card">
-      <div class="item">
-        <div class="info">
+
+    let acciones = '';
+    if(!comprada){
+      if(esMia){
+        acciones = `<button class="btn btn-green btn-mini" data-comprar="${it.id}" type="button">Ya está comprada</button>
+          <button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>`;
+      } else if(!p){
+        acciones = `<button class="btn btn-soft btn-mini" data-pillar="${it.id}" type="button">Me lo pido</button>
+          <button class="link-quieto" data-comprar="${it.id}" type="button">ya comprada</button>
+          ${admin ? `<button class="link-quieto" data-asignar="${it.id}" type="button">asignar</button>` : ''}`;
+      } else if(admin){
+        acciones = `<button class="link-quieto" data-soltar="${it.id}" type="button">soltar (cosas de la llave)</button>
+          <button class="link-quieto" data-comprar="${it.id}" type="button">apuntar precio</button>`;
+      }
+    }
+
+    const puedeQuitar = !comprada && (admin || !p);
+    return `<div class="card item-card ${comprada?'comprada-card':''}" ${comprada?`data-editar="${it.id}"`:''}>
+      <div class="fila">
+        <div style="flex:1;min-width:0">
           <div class="nombre">${esc(it.nombre)}</div>
-          <div class="meta">${asignada && p
-            ? `Lo trae ${esc(p.nombre)}${esMia?' (tú)':''}`
-            : 'Sin asignar'}</div>
-          ${botones ? `<div class="acciones">${botones}</div>` : ''}
+          ${meta}
+          ${acciones ? `<div class="acciones">${acciones}</div>` : ''}
         </div>
-        ${puedeQuitar ? `<button class="quitar" data-quitar="${it.id}" type="button" aria-label="Quitar ${esc(it.nombre)}">✕</button>` : ''}
+        <div style="display:flex;align-items:center;gap:4px">
+          ${chip}
+          ${puedeQuitar ? `<button class="quitar" data-quitar="${it.id}" type="button" aria-label="Quitar ${esc(it.nombre)}">✕</button>` : ''}
+        </div>
       </div>
     </div>`;
   };
 
-  const cardComp = it => {
-    const cons = consumidores(it);
-    return `<div class="card comprada-card" data-editar="${it.id}">
-      <div class="item">
-        ${avatarHtml(it.compradorId)}
-        <div class="info">
-          <div class="nombre">${esc(it.nombre)}</div>
-          <div class="meta">Pagado por ${esc(persona(it.compradorId)?.nombre || '—')} ·
-            <span class="mini-avatares">${cons.slice(0,6).map(id=>avatarHtml(id)).join('')}</span>
-            ${cons.length===S.gente.length?'todos':cons.length}
-          </div>
-        </div>
-        <span class="precio">${eur(it.precio)}</span>
-      </div>
-    </div>`;
-  };
+  const porComprar = S.items.filter(i=>i.estado!=='comprada');
+  const compradas = S.items.filter(i=>i.estado==='comprada');
 
   return `
-    ${S.items.length ? `<div class="progreso">
-      <div class="txt"><span><b>${compradas.length}</b> de ${S.items.length} compradas</span><span>${pct}%</span></div>
-      <div class="barra"><i style="width:${pct}%"></i></div>
-    </div>` : ''}
-    <div class="seccion">Añadir a la lista</div>
+    <div class="cabecera"><h1>La lista</h1><div class="sub">${sub}</div></div>
     <form class="fila-add" id="formAddItem">
-      <input type="text" id="inItem" placeholder="¿Qué falta?" maxlength="40" autocomplete="off">
-      <button class="btn btn-primario" type="submit">Añadir</button>
+      <input type="text" id="inItem" placeholder="¿Qué falta? (garrafón no)" maxlength="40" autocomplete="off">
+      <button class="btn btn-sky" type="submit">Apuntar</button>
     </form>
-    ${S.items.length ? `<div class="seccion">Por comprar · ${porComprar.length}</div>` : ''}
-    ${!S.items.length
-      ? '<div class="vacio">La lista está vacía.<br>Añade lo primero que haga falta para la fiesta.</div>'
-      : (porComprar.length ? porComprar.map(cardPend).join('')
-        : '<div class="vacio">Todo comprado.</div>')}
-    ${compradas.length ? `<div class="seccion">Compradas · ${compradas.length}</div>` + compradas.map(cardComp).join('') : ''}
+    ${!total ? '<div class="vacio">La lista está vacía.<br>Apunta lo primero que haga falta.</div>'
+      : porComprar.map(cardItem).join('') + compradas.map(cardItem).join('')}
   `;
 }
 
@@ -899,149 +906,198 @@ function vistaPena(){
   const c = cuentas();
   const filas = S.gente.map(p => {
     const asignadas = S.items.filter(i=>i.estado==='pillada' && i.pilladorId===p.id).length;
+    const s = c.saldo[p.id];
+    const cls = s>0?'saldo-verde':(s<0?'saldo-terra':'saldo-neutro');
+    const estado = s>0?'le deben':(s<0?'debe':'en paz');
+    const subs = [];
+    if(p.admin) subs.push('Organiza la fiesta');
+    if(asignadas) subs.push(`trae ${asignadas} cosa${asignadas===1?'':'s'}`);
     return `
-    <div class="card persona-card" data-persona="${p.id}"><div class="persona">
+    <div class="persona-fila" data-persona="${p.id}">
       ${avatarHtml(p.id)}
-      <div class="info">
-        <div class="nombre">${esc(p.nombre)}
-          ${tagAdmin(p)}
-          ${p.id===S.yo?'<span class="tag tag-acento">Tú</span>':''}</div>
-        <div class="meta">ha pagado <b>${eur(c.pagado[p.id]||0)}</b>${asignadas?` · le toca traer ${asignadas}`:''}</div>
+      <div class="centro">
+        <div class="nombre">${esc(p.nombre)}${p.id===S.yo?' (tú)':''}${p.admin?LLAVE:''}</div>
+        ${subs.length?`<div class="subtexto">${esc(subs.join(' · '))}</div>`:''}
       </div>
-      <span class="flecha">›</span>
-    </div></div>`;
+      <div class="saldo ${cls}">
+        <span class="cifra">${s>0?'+':''}${eur(s)}</span>
+        <span class="estado">${estado}</span>
+      </div>
+    </div>`;
   }).join('');
   return `
-    <div class="seccion">La peña · ${S.gente.length}</div>
-    ${filas}
-    <form class="fila-add" id="formAddPersona" style="margin-top:16px">
-      <input type="text" id="inPersona" placeholder="Añadir a alguien" maxlength="20" autocomplete="off">
-      <button class="btn btn-primario" type="submit">Añadir</button>
+    <div class="cabecera"><h1>La peña</h1><div class="sub">${S.gente.length} en la cuadrilla</div></div>
+    <div class="card" style="padding:4px 14px">${filas}</div>
+    <button class="btn btn-sky btn-block" id="btnInvitar" type="button" style="margin-top:6px">Invitar por enlace</button>
+    <form class="fila-add" id="formAddPersona" style="margin-top:14px">
+      <input type="text" id="inPersona" placeholder="Añadir a alguien a mano" maxlength="20" autocomplete="off">
+      <button class="btn btn-borde" type="submit">Añadir</button>
     </form>
-    <button class="invitar" id="btnInvitar" type="button">Invitar a la peña por WhatsApp</button>
   `;
 }
 
 function vistaCuentas(){
   const c = cuentas();
   if(c.total === 0){
-    return `<div class="vacio">Aún no hay gastos apuntados.<br>
-      En cuanto la peña compre cosas, aquí salen las cuentas.</div>`;
+    return `
+      <div class="cabecera"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
+      <div class="vacio">Aún no hay gastos apuntados.<br>En cuanto la peña compre cosas, aquí salen las cuentas.</div>`;
   }
-  const filas = S.gente.map(p => {
-    const s = c.saldo[p.id];
-    const cls = s>0?'sube':(s<0?'baja':'neutro');
-    const signo = s>0?'+':'';
-    return `<div class="res-fila">
-      <span class="l">${esc(p.nombre)}<small>pagó ${eur(c.pagado[p.id])} · le toca ${eur(c.debe[p.id])}</small></span>
-      <span class="r ${cls}">${signo}${eur(s)}</span>
+  const porCabeza = Math.round(c.total / S.gente.length);
+  const pendientes = c.bizums.filter(b => !S.saldados[b.de+'>'+b.a]);
+  const flecha = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M14 6l6 6-6 6"/></svg>';
+  const check = '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>';
+
+  const bizumsHtml = c.bizums.map(b => {
+    const key = b.de+'>'+b.a, hecho = !!S.saldados[key];
+    return `<div class="card bizum-fila ${hecho?'hecho':''}">
+      <div class="quien">${esc(persona(b.de).nombre)}${flecha}${esc(persona(b.a).nombre)}</div>
+      <span class="cuanto">${eur(b.cents)}</span>
+      <button class="check ${hecho?'on':''}" data-bizum="${key}" type="button"
+        aria-label="${hecho?'Deshacer':'Marcar'} bizum de ${esc(persona(b.de).nombre)} a ${esc(persona(b.a).nombre)}">${check}</button>
     </div>`;
   }).join('');
 
-  const pendientes = c.bizums.filter(b => !S.saldados[b.de+'>'+b.a]);
-  const bizumsHtml = c.bizums.length ? c.bizums.map(b => {
-    const key = b.de+'>'+b.a, hecho = !!S.saldados[key];
-    return `<div class="card bizum ${hecho?'hecho':''}">
-      ${avatarHtml(b.de)}
-      <div class="quien">${esc(persona(b.de).nombre)}<span class="fl">→</span>${esc(persona(b.a).nombre)}</div>
-      <span class="cuanto">${eur(b.cents)}</span>
-      <button class="btn ${hecho?'btn-fantasma':'btn-acento'} btn-mini" data-bizum="${key}" type="button">
-        ${hecho?'Deshacer':'Pagado'}</button>
-    </div>`;
-  }).join('') : '';
-
-  const enPaz = c.bizums.length>0 && pendientes.length===0;
+  const todoEnPaz = c.bizums.length>0 && pendientes.length===0;
 
   return `
-    <div class="seccion">Resumen</div>
-    <div class="card resumen">
-      <div class="res-fila total"><span class="l">Total de la fiesta</span><span class="r">${eur(c.total)}</span></div>
-      ${filas}
+    <div class="cabecera"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
+    <div class="card total-card">
+      <div class="cifra">${eur(c.total)}</div>
+      <div class="porcabeza">${eur(porCabeza)} por cabeza</div>
     </div>
-    ${enPaz ? `<div class="enpaz" style="margin-top:16px"><div class="t">Cuentas en paz</div>
-      <div class="s">Nadie debe nada a nadie.</div></div>` : ''}
-    ${c.bizums.length ? `<div class="seccion">Pagos para quedar en paz · ${pendientes.length}</div>${bizumsHtml}` : ''}
-    <button class="btn btn-fantasma btn-block" id="btnCompartirCuentas" type="button" style="margin-top:10px">
-      Compartir cuentas por WhatsApp</button>
+    ${bizumsHtml}
+    ${todoEnPaz ? '<div class="enpaz">Cuentas claras y el chocolate espeso.</div>'
+      : '<div class="pie-nota">Marca el círculo cuando el bizum esté hecho.</div>'}
+    <button class="btn btn-borde btn-block" id="btnCompartirCuentas" type="button" style="margin-top:14px">
+      Mandar las cuentas al grupo</button>
   `;
 }
 
 /* ================= pintar ================= */
 function pintar(){
-  document.body.classList.toggle('modo-crear', !S);
+  document.body.classList.toggle('sin-fiesta', !S);
   const v = $('#vista');
   if(!S){
-    $('#fiestaNombre').textContent = '';
-    $('#fiestaSub').textContent = '';
-    v.innerHTML = vistaCrear();
-    conectarCrear(v);
+    v.innerHTML = vistaEntrada();
+    conectarEntrada(v);
     return;
   }
-  const c = cuentas();
-  $('#fiestaNombre').textContent = S.fiesta.nombre;
-  const f = fechaBonita(S.fiesta.fecha);
-  $('#fiestaSub').innerHTML =
-    `${f ? esc(f) + ' · ' : ''}${S.gente.length} en la peña · <b>${eur(c.total)}</b> en total`;
-  const yo = persona(S.yo);
-  $('#yoChip').innerHTML = yo
-    ? `${avatarHtml(yo.id)} ${esc(yo.nombre)}`
-    : '¿Quién eres?';
-
   document.querySelectorAll('.tab').forEach(t =>
     t.classList.toggle('activa', t.dataset.tab === S.tab));
+  const c = cuentas();
   const pend = c.bizums.filter(b=>!S.saldados[b.de+'>'+b.a]).length;
   const badge = $('#badgeCuentas');
   badge.hidden = pend===0;
   badge.textContent = pend;
 
-  v.innerHTML = S.tab==='lista' ? vistaLista() : S.tab==='pena' ? vistaPena() : vistaCuentas();
+  v.innerHTML = S.tab==='fiesta' ? vistaFiesta()
+    : S.tab==='lista' ? vistaLista()
+    : S.tab==='pena' ? vistaPena()
+    : vistaCuentas();
   conectar(v);
 }
 
-function conectarCrear(v){
-  v.querySelector('#btnCrearFiesta').onclick = () => {
-    const nombre = v.querySelector('#inFiestaNueva').value.trim();
-    const tu = v.querySelector('#inTuNombre').value.trim();
-    if(!nombre) return toast('Ponle nombre a la fiesta');
-    if(!tu) return toast('Falta tu nombre');
-    const pid = nuevoId('p');
-    S = {
-      v:2,
-      fiesta:{nombre, fecha: v.querySelector('#inFechaNueva').value || null},
-      yo: pid, tab:'lista',
-      gente:[{id:pid, nombre:tu, admin:true}],
-      items:[], saldados:{},
-    };
-    guardar(); pintar();
-    toast('Fiesta creada. Añade la lista e invita a la peña');
+function conectarEntrada(v){
+  v.querySelector('#btnUnirme').onclick = () => {
+    const txt = v.querySelector('#inEnlace').value.trim();
+    if(!txt) return sheetUnirse();
+    if(!importar(txt)) toast('Ahí no hay ninguna fiesta que valga');
   };
-  v.querySelector('#btnTengoInv').onclick = () => sheetInvitacion();
+  v.querySelector('#btnCrear').onclick = sheetCrear;
   v.querySelector('#btnVerEjemplo').onclick = () => {
     S = demo(); guardar(); pintar(); sheetIdentidad(true);
   };
 }
 
 function conectar(v){
-  const on = (sel, ev, fn) => { const el = v.querySelector(sel); if(el) el.addEventListener(ev, fn); };
+  const on = (sel, fn) => { const el = v.querySelector(sel); if(el) el.onclick = fn; };
 
-  on('#formAddItem','submit', e => {
+  /* fiesta */
+  on('#btnInvitar', sheetInvitar);
+  on('#btnQuienSoy', () => sheetIdentidad(false));
+  on('#btnIrLista', () => { S.tab='lista'; guardar(); pintar(); });
+  on('#btnRenombrar', sheetRenombrar);
+  on('#btnNueva', () => sheetConfirmar('¿Empezar otra fiesta?',
+    'Esta se borra de tu móvil. Si quieres conservarla, copia antes el enlace de invitación: sirve de copia de seguridad.', () => {
+      S = null; localStorage.removeItem(CLAVE); pintar();
+    }));
+  on('#btnVerEjemplo', () => sheetConfirmar('¿Cargar la fiesta de ejemplo?',
+    'Se borrará la actual de este móvil (la de tus colegas no se toca).', () => {
+      S = demo(); guardar(); pintar(); sheetIdentidad(true);
+    }));
+
+  /* lista */
+  const form = v.querySelector('#formAddItem');
+  if(form) form.onsubmit = e => {
     e.preventDefault();
     const n = v.querySelector('#inItem').value.trim();
-    if(!n) return;
+    if(!n) return toast('Escribe algo, que la lista no adivina.');
     S.items.unshift({id:nuevoId('i'), nombre:n, estado:'pendiente'});
-    guardar(); pintar(); toast('«' + n + '» añadido');
+    guardar(); pintar(); toast('«' + n + '» apuntado');
+  };
+  v.querySelectorAll('[data-pillar]').forEach(b => b.onclick = () => {
+    if(!S.yo) return sheetIdentidad(true);
+    const it = S.items.find(x=>x.id===b.dataset.pillar);
+    it.estado='pillada'; it.pilladorId=S.yo;
+    guardar(); pintar(); toast('Apuntado: ' + it.nombre + ' corre de tu cuenta.');
   });
-  on('#formAddPersona','submit', e => {
+  v.querySelectorAll('[data-soltar]').forEach(b => b.onclick = () => {
+    const it = S.items.find(x=>x.id===b.dataset.soltar);
+    if(it.pilladorId !== S.yo && !soyAdmin()) return;
+    it.estado='pendiente'; delete it.pilladorId;
+    guardar(); pintar(); toast('Suelta. A ver quién se la pide ahora.');
+  });
+  v.querySelectorAll('[data-asignar]').forEach(b => b.onclick = () => {
+    if(!soyAdmin()) return toast('Eso es cosa de la llave');
+    sheetAsignar(b.dataset.asignar);
+  });
+  v.querySelectorAll('[data-comprar]').forEach(b => b.onclick = () => {
+    if(!S.yo) return sheetIdentidad(true);
+    sheetCompra(b.dataset.comprar);
+  });
+  v.querySelectorAll('[data-editar]').forEach(card => card.onclick = e => {
+    if(e.target.closest('button')) return;
+    const it = S.items.find(x=>x.id===card.dataset.editar);
+    if(!it) return;
+    if(!soyAdmin() && it.compradorId !== S.yo){
+      const quien = persona(it.compradorId);
+      return toast('Solo ' + (quien?quien.nombre:'quien la pagó') + ' o la llave pueden tocarla');
+    }
+    sheetCompra(card.dataset.editar);
+  });
+  v.querySelectorAll('[data-quitar]').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    S.items = S.items.filter(x=>x.id!==b.dataset.quitar);
+    guardar(); pintar();
+  });
+
+  /* peña */
+  const formP = v.querySelector('#formAddPersona');
+  if(formP) formP.onsubmit = e => {
     e.preventDefault();
     const n = v.querySelector('#inPersona').value.trim();
     if(!n) return;
     S.gente.push({id:nuevoId('p'), nombre:n, admin:false});
     guardar(); pintar(); toast(n + ' se une a la peña');
+  };
+  v.querySelectorAll('[data-persona]').forEach(f => f.onclick = () => sheetPersona(f.dataset.persona));
+
+  /* cuentas */
+  v.querySelectorAll('[data-bizum]').forEach(b => b.onclick = () => {
+    const key = b.dataset.bizum;
+    if(S.saldados[key]) delete S.saldados[key];
+    else {
+      S.saldados[key] = true;
+      const c = cuentas();
+      if(c.bizums.every(x=>S.saldados[x.de+'>'+x.a])) toast('Cuentas claras y el chocolate espeso.');
+      else toast('Bizum apuntado');
+    }
+    guardar(); pintar();
   });
-  on('#btnInvitar','click', () => sheetCompartir());
-  on('#btnCompartirCuentas','click', async () => {
+  on('#btnCompartirCuentas', async () => {
     const c = cuentas();
-    const lineas = ['Cuentas de «' + S.fiesta.nombre + '» — El Bote',
+    const lineas = ['Cuentas de «' + S.fiesta.nombre + '» — A Pachas',
       'Total: ' + eur(c.total) + ' entre ' + S.gente.length, ''];
     c.bizums.forEach(b => lineas.push(
       (S.saldados[b.de+'>'+b.a]?'✓ ':'· ') +
@@ -1057,62 +1113,14 @@ function conectar(v){
       toast(ok ? 'Cuentas copiadas' : 'No se ha podido copiar');
     }
   });
-
-  v.querySelectorAll('[data-pillar]').forEach(b => b.onclick = () => {
-    if(!S.yo) return sheetIdentidad(true);
-    const it = S.items.find(x=>x.id===b.dataset.pillar);
-    it.estado='pillada'; it.pilladorId=S.yo;
-    guardar(); pintar(); toast('Apuntado: lo traes tú');
-  });
-  v.querySelectorAll('[data-soltar]').forEach(b => b.onclick = () => {
-    const it = S.items.find(x=>x.id===b.dataset.soltar);
-    it.estado='pendiente'; delete it.pilladorId;
-    guardar(); pintar();
-  });
-  v.querySelectorAll('[data-asignar]').forEach(b => b.onclick = () => {
-    if(!soyAdmin()) return toast('Solo los admins pueden asignar');
-    sheetAsignar(b.dataset.asignar);
-  });
-  v.querySelectorAll('[data-comprar]').forEach(b => b.onclick = () => {
-    if(!S.yo) return sheetIdentidad(true);
-    sheetCompra(b.dataset.comprar);
-  });
-  v.querySelectorAll('[data-editar]').forEach(card => card.onclick = () => {
-    const it = S.items.find(x=>x.id===card.dataset.editar);
-    if(!it) return;
-    if(!soyAdmin() && it.compradorId !== S.yo){
-      const quien = persona(it.compradorId);
-      return toast('Solo ' + (quien?quien.nombre:'quien lo pagó') + ' o un admin pueden editarlo');
-    }
-    sheetCompra(card.dataset.editar);
-  });
-  v.querySelectorAll('[data-quitar]').forEach(b => b.onclick = e => {
-    e.stopPropagation();
-    S.items = S.items.filter(x=>x.id!==b.dataset.quitar);
-    guardar(); pintar();
-  });
-  v.querySelectorAll('[data-persona]').forEach(card => card.onclick = () => sheetPersona(card.dataset.persona));
-  v.querySelectorAll('[data-bizum]').forEach(b => b.onclick = () => {
-    const key = b.dataset.bizum;
-    if(S.saldados[key]) delete S.saldados[key];
-    else {
-      S.saldados[key] = true;
-      const c = cuentas();
-      if(c.bizums.every(x=>S.saldados[x.de+'>'+x.a])) toast('Cuentas en paz');
-      else toast('Pago apuntado');
-    }
-    guardar(); pintar();
-  });
 }
 
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
   if(!S) return;
   S.tab = t.dataset.tab; guardar(); pintar();
 }));
-$('#yoChip').addEventListener('click', () => { if(S) sheetIdentidad(false); });
-$('#btnMenu').addEventListener('click', () => { if(S) sheetMenu(); });
 
-/* invitación por enlace (#f=…) por si el navegador conserva el hash */
+/* invitación por enlace (#AP1:… o el antiguo #EB1:…) */
 (function(){
   if(location.hash && location.hash.length > 4){
     const obj = decodificar(decodeURIComponent(location.hash.slice(1)));

@@ -67,7 +67,9 @@
 
   /* ---------- botón tema ---------- */
   #btnTema{
-    position:fixed;top:14px;right:14px;z-index:50;
+    /* absolute y no fixed: al hacer scroll se va con la página en vez de
+       quedarse flotando encima de las cards */
+    position:absolute;top:14px;right:14px;z-index:50;
     width:38px;height:38px;border-radius:999px;border:1px solid var(--line);
     background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;
     color:var(--muted);
@@ -135,7 +137,9 @@
     width:100%;border:1.5px dashed var(--line);background:transparent;border-radius:var(--radius);
     color:var(--muted);font-size:14px;font-weight:600;padding:14px;cursor:pointer;
   }
-  .yo-fila{display:flex;align-items:center;gap:10px;padding:2px}
+  /* fila compacta dentro de .card: va después en la cascada, así que fija
+     su propio aire (2px dejaba el texto pegado al borde) */
+  .yo-fila{display:flex;align-items:center;gap:10px;padding:11px 14px}
   .yo-fila .quien{flex:1;font-size:14px;color:var(--muted)}
   .yo-fila b{color:var(--ink)}
 
@@ -1136,10 +1140,14 @@ function mensajeCompartir(tipo, pid){
 function sheetCompartir(tipo, pid){
   const txt = mensajeCompartir(tipo, pid);
   const puedeVivo = !S.remota && !S.fiesta.ejemplo;
+  // en modo local el enlace lleva la fiesta entera dentro: en la vista
+  // previa se abrevia (lo que se manda/copia lleva el enlace completo)
+  const vista = txt.replace(/(#(?:AP1|EB1):)[A-Za-z0-9_-]{24,}/g,
+    '$1… (enlace largo: lleva dentro la copia de la fiesta)');
   abrirSheet(`
     <h2 class="sheet-titulo">Mandar al grupo</h2>
     <p class="sheet-sub">Así queda el mensaje:</p>
-    <div class="previo">${esc(txt)}</div>
+    <div class="previo">${esc(vista)}</div>
     ${puedeVivo ? `<div class="nota">Esta fiesta va solo en este móvil: el enlace lleva una copia
       congelada. Ponla en vivo y todos apuntarán en la misma.</div>
       <button class="btn btn-soft btn-block" id="btnVivoDesdeCompartir" type="button"
@@ -1398,7 +1406,7 @@ function vistaLista(){
           <button class="link-quieto" data-comprar="${it.id}" type="button">ya comprada</button>
           ${admin ? `<button class="link-quieto" data-asignar="${it.id}" type="button">asignar</button>` : ''}`;
       } else if(admin){
-        acciones = `<button class="link-quieto" data-soltar="${it.id}" type="button">soltar (cosas de la llave)</button>
+        acciones = `<button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>
           <button class="link-quieto" data-comprar="${it.id}" type="button">apuntar precio</button>`;
       }
     }

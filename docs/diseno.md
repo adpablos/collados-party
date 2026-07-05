@@ -67,18 +67,38 @@ Castellano de pueblo, con guasa pero sin pasarse:
 - «¿Qué falta? (garrafón no)» · «Me lo pido» · «Ya está comprada»
 - «¿Quiénes la catan?» · «Sin dueño» · «La trae Marta»
 - «Ponle precio, que gratis no fue.» · «Alguien la catará, digo yo.»
+- «Pon qué fue.» · «Apuntado. Las cuentas ya lo saben.»
 - «Todo comprado. Vaya máquinas.» · «Cuentas claras y el chocolate espeso.»
+- Sincronización sin lenguaje técnico: «En vivo con la peña · al día hace
+  un momento» · «Solo en este móvil» · «Sin red. Tus cambios quedan
+  apuntados y se subirán solos.» Nada de sync/versión/conflicto.
 - Admin = «la llave» (icono de llave discreto, nada de "administrador").
 
 ## Pantallas
 
-1. **Fiesta**: hero (logo + wordmark + lema) · card «TU FIESTA» con meta y
-   «Invitar por enlace» · fila quién-eres · accesos (cambiar nombre/fecha si
-   llave, empezar otra, ejemplo). Sin fiesta: unirse por enlace / crear.
-2. **Lista**: sub «{n} cosas por resolver de {total}» · añadir · cards con
-   chip de estado y acciones según rol; comprada muestra
-   «{precio} · pagó {N} · entre {n}» y se edita tocándola.
+1. **Fiesta (inicio accionable)**: hero mini (logo pequeño + wordmark) ·
+   card «TU FIESTA» con meta, «Mandar al grupo», «Ponerla en vivo» si es
+   local y línea de estado (`#syncEstado`) · card «¿QUÉ TOCA?» con UNA
+   acción contextual (lista vacía → apuntar; cosas sin dueño → a la lista;
+   todo comprado → a las cuentas; si no → apuntar un gasto) · tu saldo en
+   una línea con «Mis cuentas» · fila quién-eres · accesos (cambiar
+   nombre/fecha si llave, empezar otra, ejemplo). Sin fiesta: hero grande
+   + unirse por enlace / crear.
+2. **Lista**: sub «{n} cosas por resolver de {total}» · añadir · botón
+   discontinuo «+ Apuntar un gasto ya pagado» · cards con chip de estado y
+   acciones según rol; sección «YA COMPRADAS» separa lo resuelto; comprada
+   muestra «{precio} · pagó {N} · entre {n}» y se edita tocándola ·
+   enlace «Mandar lo que falta al grupo» si hay cosas sin dueño.
 3. **Peña**: filas avatar + nombre (+llave) + saldo («le deben»/«debe»/«en
-   paz») · «Invitar por enlace» · añadir a mano. Ficha por persona al tocar.
-4. **Cuentas**: total + por cabeza · bizums mínimos con check circular ·
-   compartir al grupo.
+   paz») · «Mandar al grupo» · añadir a mano. Ficha por persona al tocar,
+   con desglose (pagado · le tocaba · saldo) y recordatorio compartible.
+4. **Cuentas**: card «TU CUENTA» primero (Estás en paz / Debes X / Te
+   deben X + desglose «Pagaste · te tocaba» + tus bizums con copiar) ·
+   total («por cabeza» solo si todas las compras son entre todos; si no,
+   «repartido según quién cata cada cosa») · bizums de todos con check
+   circular · mandar al grupo.
+5. **Sheet de gasto** (directo, marcar comprada o editar): Qué · Precio ·
+   Pagó (pills) · ¿Quiénes lo catan? (pills) · borrar con confirmación y
+   línea de historial («La apuntó Marta · tocada por Edu hace 5 min»).
+6. **Sheet de mandar al grupo**: vista previa del mensaje (bloque `previo`)
+   · botones Copiar / WhatsApp · «Mandar con otra app» si hay share nativo.

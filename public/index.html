@@ -5,49 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Pachas — los gastos de la peña</title>
 <meta name="description" content="Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='24' cy='24' r='19' stroke='%232E6E9E' stroke-width='4.5'/%3E%3Cg stroke='%232E6E9E' stroke-width='4.5' stroke-linecap='round'%3E%3Cline x1='24' y1='24' x2='24' y2='5'/%3E%3Cline x1='24' y1='24' x2='42.1' y2='18.1'/%3E%3Cline x1='24' y1='24' x2='35.2' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='12.8' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='5.9' y2='18.1'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='24' cy='24' r='19' stroke='%235A50EC' stroke-width='4.5'/%3E%3Cg stroke='%235A50EC' stroke-width='4.5' stroke-linecap='round'%3E%3Cline x1='24' y1='24' x2='24' y2='5'/%3E%3Cline x1='24' y1='24' x2='42.1' y2='18.1'/%3E%3Cline x1='24' y1='24' x2='35.2' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='12.8' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='5.9' y2='18.1'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
 <style>
+  /* Paleta v2 (rediseño Claude Design): base neutra luminosa, primario
+     violeta festivo, verde = te deben, coral = debes. Oscuro en tinta. */
   :root{
-    --bg:#EFE7D8;
-    --card:#FBF7ED;
-    --ink:#2B251C;
-    --muted:#80735C;
-    --line:#E0D5BE;
-    --sky:#2E6E9E;
-    --onsky:#FFFFFF;
-    --skysoft:#DCE7EE;
-    --green:#57704E;
-    --greensoft:#E3E9DA;
-    --terra:#A64B2A;
-    --terrasoft:#F1E0D3;
-    --chip:#E8DDC5;
-    --velo:rgba(24,19,11,.45);
-    --radius:14px;
+    --bg:#F5F6FA;
+    --card:#FFFFFF;
+    --ink:#171A21;
+    --muted:#6A7186;
+    --line:#E6E8F0;
+    --primary:#5A50EC;
+    --onprimary:#FFFFFF;
+    --primarysoft:#ECEAFE;
+    --green:#0E9256;
+    --greensoft:#DCF5E7;
+    --coral:#E5484D;
+    --coralsoft:#FDE8E8;
+    --chip:#EFF1F6;
+    --shadow:0 1px 2px rgba(16,18,24,.04);
+    --velo:rgba(13,15,22,.5);
+    --radius:16px;
     --display:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;
     --texto:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --bg:#1D1811; --card:#292219; --ink:#F0E8D6; --muted:#A2947B; --line:#3B3224;
-      --sky:#7FB0D9; --onsky:#14212C; --skysoft:#26333E;
-      --green:#98B089; --greensoft:#2B3524; --terra:#D98F66; --terrasoft:#3B2A1E;
-      --chip:#352D1F; --velo:rgba(0,0,0,.55);
+      --bg:#101218; --card:#191C25; --ink:#EDEFF6; --muted:#99A0B4; --line:#2A2E3C;
+      --primary:#9D96FF; --onprimary:#1B1747; --primarysoft:#2A2750;
+      --green:#45D48F; --greensoft:#17362A; --coral:#FF8080; --coralsoft:#3D2226;
+      --chip:#242836; --shadow:none; --velo:rgba(13,15,22,.5);
     }
   }
   :root[data-theme="light"]{
-    --bg:#EFE7D8; --card:#FBF7ED; --ink:#2B251C; --muted:#80735C; --line:#E0D5BE;
-    --sky:#2E6E9E; --onsky:#FFFFFF; --skysoft:#DCE7EE;
-    --green:#57704E; --greensoft:#E3E9DA; --terra:#A64B2A; --terrasoft:#F1E0D3;
-    --chip:#E8DDC5; --velo:rgba(24,19,11,.45);
+    --bg:#F5F6FA; --card:#FFFFFF; --ink:#171A21; --muted:#6A7186; --line:#E6E8F0;
+    --primary:#5A50EC; --onprimary:#FFFFFF; --primarysoft:#ECEAFE;
+    --green:#0E9256; --greensoft:#DCF5E7; --coral:#E5484D; --coralsoft:#FDE8E8;
+    --chip:#EFF1F6; --shadow:0 1px 2px rgba(16,18,24,.04); --velo:rgba(13,15,22,.5);
   }
   :root[data-theme="dark"]{
-    --bg:#1D1811; --card:#292219; --ink:#F0E8D6; --muted:#A2947B; --line:#3B3224;
-    --sky:#7FB0D9; --onsky:#14212C; --skysoft:#26333E;
-    --green:#98B089; --greensoft:#2B3524; --terra:#D98F66; --terrasoft:#3B2A1E;
-    --chip:#352D1F; --velo:rgba(0,0,0,.55);
+    --bg:#101218; --card:#191C25; --ink:#EDEFF6; --muted:#99A0B4; --line:#2A2E3C;
+    --primary:#9D96FF; --onprimary:#1B1747; --primarysoft:#2A2750;
+    --green:#45D48F; --greensoft:#17362A; --coral:#FF8080; --coralsoft:#3D2226;
+    --chip:#242836; --shadow:none; --velo:rgba(13,15,22,.5);
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -63,7 +66,7 @@
   body.sin-fiesta #tabbar{display:none}
   body.sin-fiesta main{padding-bottom:30px}
   button{font-family:inherit;color:inherit}
-  :focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 
   /* ---------- botón tema ---------- */
   #btnTema{
@@ -84,21 +87,21 @@
 
   /* ---------- hero (Fiesta) ---------- */
   .hero{text-align:center;padding:34px 0 6px}
-  .hero .logo{color:var(--sky)}
+  .hero .logo{color:var(--primary)}
   .hero .logo svg{width:76px;height:76px}
   .hero h1{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.5px;margin:10px 0 6px}
   .hero .lema{color:var(--muted);font-size:14px;line-height:1.5;margin:0 auto 24px;max-width:34ch}
 
   /* ---------- comunes ---------- */
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-bottom:10px}
+    padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
   .label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
     color:var(--muted);display:block;margin:16px 0 7px}
   .card .label:first-child, .campo .label{margin-top:0}
   .btn{border:none;border-radius:11px;padding:12px 16px;font-size:15px;font-weight:600;cursor:pointer}
-  .btn-sky{background:var(--sky);color:var(--onsky)}
-  .btn-green{background:var(--green);color:var(--onsky)}
-  .btn-soft{background:var(--skysoft);color:var(--sky)}
+  .btn-primary{background:var(--primary);color:var(--onprimary)}
+  .btn-green{background:var(--green);color:var(--onprimary)}
+  .btn-soft{background:var(--primarysoft);color:var(--primary)}
   .btn-borde{background:var(--card);border:1px solid var(--line);color:var(--ink)}
   .btn-mini{padding:8px 13px;font-size:13.5px;border-radius:9px}
   .btn-block{width:100%}
@@ -109,7 +112,7 @@
     border:1px solid var(--line);border-radius:11px;padding:12px 13px;width:100%;
   }
   input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
-  input:focus,textarea:focus{outline:none;border-color:var(--sky)}
+  input:focus,textarea:focus{outline:none;border-color:var(--primary)}
   input[type=date]{min-height:47px}
   textarea{resize:vertical;min-height:90px}
   .fila-add{display:flex;gap:8px;margin-bottom:14px}
@@ -117,20 +120,30 @@
   .campo{margin-bottom:16px}
   .vacio{text-align:center;color:var(--muted);padding:36px 20px;font-size:14px;line-height:1.6}
   .avatar{
-    width:40px;height:40px;border-radius:999px;background:var(--chip);flex:none;
+    width:40px;height:40px;border-radius:999px;background:var(--primarysoft);flex:none;
     display:inline-flex;align-items:center;justify-content:center;
-    font-family:var(--display);font-weight:700;font-size:16px;
+    font-family:var(--display);font-weight:700;font-size:16px;color:var(--primary);
   }
   .avatar.mini{width:24px;height:24px;font-size:11px}
   .chip-estado{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
   .chip-neutro{background:var(--chip);color:var(--muted)}
-  .chip-sky{background:var(--skysoft);color:var(--sky)}
-  .chip-green{background:var(--greensoft);color:var(--green)}
+  .chip-primary{background:var(--primarysoft);color:var(--primary)}
   .llave{width:13px;height:13px;color:var(--muted);flex:none}
 
-  /* ---------- fiesta ---------- */
-  .fiesta-card .titulo{font-family:var(--display);font-weight:700;font-size:20px;margin:2px 0 3px}
-  .fiesta-card .meta{color:var(--muted);font-size:13px;margin-bottom:12px}
+  /* ---------- fiesta (card violeta de marca, igual en ambos temas) ---------- */
+  .fiesta-card{position:relative;overflow:hidden;background:#5A50EC;border-color:#5A50EC;color:#fff}
+  .fiesta-card .label{color:#fff;opacity:.72}
+  .fiesta-card .titulo{font-family:var(--display);font-weight:700;font-size:21px;margin:2px 0 3px}
+  .fiesta-card .meta{font-size:13px;opacity:.82;margin-bottom:10px}
+  .fiesta-card .oculo-marca{position:absolute;right:-42px;top:-34px;width:200px;height:200px;
+    color:#fff;opacity:.16;pointer-events:none}
+  .fiesta-card .oculo-marca svg{width:100%;height:100%}
+  .btn-blanco{background:var(--card);color:var(--primary)}
+  .btn-vivo{background:rgba(255,255,255,.16);color:#fff}
+  .fiesta-card .estado-sync{color:#fff;opacity:.95;font-weight:600;font-size:13px}
+  .estado-sync.vivo::before{content:'';display:inline-block;width:8px;height:8px;
+    border-radius:999px;background:#3DDC84;margin-right:7px}
+  .quetoca-txt{margin:0 0 12px;font-family:var(--display);font-weight:700;font-size:18px;line-height:1.3}
   .separador-o{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:18px 0}
   .separador-o::before,.separador-o::after{content:'';flex:1;height:1px;background:var(--line)}
   .crear-dashed{
@@ -152,6 +165,11 @@
     padding:4px 6px;line-height:1;opacity:.6;flex:none}
   .comprada-card{cursor:pointer}
   .comprada-card:active{filter:brightness(.97)}
+  .check-comprada{width:26px;height:26px;border-radius:999px;background:var(--greensoft);
+    color:var(--green);display:inline-flex;align-items:center;justify-content:center;
+    flex:none;margin-top:1px}
+  .check-comprada svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6;
+    stroke-linecap:round;stroke-linejoin:round}
 
   /* ---------- peña ---------- */
   .persona-fila{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer}
@@ -163,13 +181,15 @@
   .persona-fila .saldo .cifra{font-weight:600;font-size:14.5px}
   .persona-fila .saldo .estado{display:block;font-size:11px;color:var(--muted)}
   .saldo-verde{color:var(--green)}
-  .saldo-terra{color:var(--terra)}
+  .saldo-coral{color:var(--coral)}
   .saldo-neutro{color:var(--muted)}
 
   /* ---------- cuentas ---------- */
-  .total-card{text-align:center;padding:20px 14px}
-  .total-card .cifra{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.5px}
-  .total-card .porcabeza{color:var(--muted);font-size:13px;margin-top:3px}
+  .total-card{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    padding:18px 16px;text-align:left}
+  .total-card .cifra{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.5px;
+    font-variant-numeric:tabular-nums}
+  .total-card .porcabeza{color:var(--muted);font-size:13px;text-align:right}
   .bizum-fila{display:flex;align-items:center;gap:11px}
   .bizum-fila.hecho{opacity:.55}
   .bizum-fila .quien{flex:1;font-size:14.5px;font-weight:600;min-width:0}
@@ -180,12 +200,13 @@
     background:transparent;cursor:pointer;flex:none;
     display:inline-flex;align-items:center;justify-content:center;color:transparent;
   }
-  .check.on{background:var(--green);border-color:var(--green);color:var(--onsky)}
+  .check.on{background:var(--green);border-color:var(--green);color:var(--onprimary)}
   .check svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;
     stroke-linecap:round;stroke-linejoin:round}
   .enpaz{color:var(--green);text-align:center;font-weight:600;font-size:14.5px;padding:18px 10px 6px}
   .pie-nota{color:var(--muted);font-size:12.5px;text-align:center;margin-top:14px}
-  .micuenta-cifra{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.4px;line-height:1.1}
+  .micuenta-cifra{font-family:var(--display);font-weight:800;font-size:32px;letter-spacing:-.5px;
+    line-height:1.1;font-variant-numeric:tabular-nums}
   .micuenta-desglose{color:var(--muted);font-size:13px;margin-top:3px}
   .micuenta-accion{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);
     margin-top:12px;padding-top:11px;font-size:14px}
@@ -193,10 +214,16 @@
   .micuenta-accion .btn{flex:none}
 
   /* ---------- inicio accionable / compartir ---------- */
-  .hero-mini{display:flex;align-items:center;justify-content:center;gap:8px;padding:18px 0 4px;color:var(--sky)}
-  .hero-mini svg{width:26px;height:26px}
-  .hero-mini .marca{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.3px;color:var(--ink)}
-  .estado-sync{color:var(--muted);font-size:12.5px;margin-top:8px}
+  .hero-mini{display:flex;align-items:center;gap:8px;padding:14px 2px 12px;color:var(--primary)}
+  .hero-mini svg{width:24px;height:24px}
+  .hero-mini .marca{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.3px;color:var(--ink)}
+  .estado-sync{color:var(--muted);font-size:12.5px;margin-top:10px}
+  .saldo-card{display:flex;align-items:center;gap:10px}
+  .saldo-card .centro{flex:1;min-width:0}
+  .saldo-card .label{margin:0 0 1px}
+  .saldo-card .cifra{font-family:var(--display);font-weight:800;font-size:24px;
+    letter-spacing:-.4px;font-variant-numeric:tabular-nums;line-height:1.15}
+  .btn-texto{background:none;border:none;color:var(--primary);font-weight:600;font-size:14.5px;cursor:pointer;padding:6px 4px}
   .previo{white-space:pre-wrap;overflow-wrap:break-word;background:var(--bg);border:1px solid var(--line);
     border-radius:11px;padding:12px 13px;font-size:13px;line-height:1.55;max-height:36dvh;overflow-y:auto}
   .historial-linea{color:var(--muted);font-size:12.5px;text-align:center;margin-top:14px}
@@ -216,10 +243,10 @@
   }
   .tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;
     stroke-linecap:round;stroke-linejoin:round}
-  .tab.activa{color:var(--sky)}
+  .tab.activa{color:var(--primary)}
   .tab .badge{
     position:absolute;top:3px;right:calc(50% - 24px);
-    background:var(--terra);color:var(--onsky);font-size:9.5px;font-weight:700;
+    background:var(--coral);color:var(--onprimary);font-size:9.5px;font-weight:700;
     min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;
     font-variant-numeric:tabular-nums;
   }
@@ -250,13 +277,13 @@
   .pill.on{border-color:var(--green);background:var(--greensoft)}
   .pill.off{opacity:.4}
   .pill.solo-texto{padding:6px 13px}
-  .pill.on.pill-sky{border-color:var(--sky);background:var(--skysoft)}
+  .pill.on.pill-primary{border-color:var(--primary);background:var(--primarysoft)}
   .precio-input{display:flex;align-items:center;gap:10px}
   .precio-input input{font-size:24px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
   .precio-input .eur{font-size:19px;font-weight:600;color:var(--muted)}
   .sheet-botones{display:flex;gap:10px;margin-top:22px}
   .sheet-botones .btn{flex:1}
-  .link-borrar{background:none;border:none;color:var(--terra);font-size:13.5px;
+  .link-borrar{background:none;border:none;color:var(--coral);font-size:13.5px;
     font-weight:600;margin:16px auto 0;display:block;cursor:pointer}
   .opcion-menu{
     display:block;width:100%;background:var(--card);
@@ -264,7 +291,7 @@
     font-size:14.5px;font-weight:600;padding:13px 14px;margin-bottom:8px;cursor:pointer;text-align:left;
   }
   .opcion-menu small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
-  .nota{border:1px solid var(--line);border-left:3px solid var(--sky);
+  .nota{border:1px solid var(--line);border-left:3px solid var(--primary);
     border-radius:9px;padding:11px 13px;font-size:13px;color:var(--muted);line-height:1.5;margin-top:16px}
 
   /* ---------- toast ---------- */
@@ -437,7 +464,7 @@ function fechaBonita(f){
 const hechoBizum = k => { const v = S.saldados[k]; return v === true || !!(v && v.hecho); };
 const claveBizum = b => b.de + '>' + b.a;
 const bizumsPendientes = c => c.bizums.filter(b => !hechoBizum(claveBizum(b)));
-const claseSaldo = s => s > 0 ? 'saldo-verde' : (s < 0 ? 'saldo-terra' : 'saldo-neutro');
+const claseSaldo = s => s > 0 ? 'saldo-verde' : (s < 0 ? 'saldo-coral' : 'saldo-neutro');
 
 // sello de última edición: de esto vive la fusión entre móviles
 function tocar(x){ x.mod = ahora(); x.modPor = S.yo || null; return x; }
@@ -647,7 +674,10 @@ function textoSync(){
 }
 function refrescarSync(){
   const el = $('#syncEstado');
-  if(el) el.textContent = textoSync();
+  if(!el) return;
+  el.textContent = textoSync();
+  el.classList.toggle('vivo',
+    !!(S && S.remota && !S.fiesta.ejemplo && !sync.sinRed && !sync.rechazado));
 }
 
 const sheetAbierto = () => $('#sheet').classList.contains('abierto');
@@ -845,7 +875,7 @@ function cerrarSheet(){
 /* --- quién eres --- */
 function sheetIdentidad(forzado){
   const pills = S.gente.map(p =>
-    pillPersona(p, 'quien', 'pill-sky ' + (p.id===S.yo?'on':''))).join('');
+    pillPersona(p, 'quien', 'pill-primary ' + (p.id===S.yo?'on':''))).join('');
   abrirSheet(`
     <h2 class="sheet-titulo">¿Quién eres?</h2>
     <p class="sheet-sub">Estás en «${esc(S.fiesta.nombre)}». Di quién eres o apúntate.</p>
@@ -853,7 +883,7 @@ function sheetIdentidad(forzado){
     <label class="label" for="nuevoNombre">O apúntate</label>
     <div class="fila-add">
       <input type="text" id="nuevoNombre" placeholder="Tu nombre" maxlength="20" autocomplete="off">
-      <button class="btn btn-sky" id="btnApuntame" type="button">Entrar</button>
+      <button class="btn btn-primary" id="btnApuntame" type="button">Entrar</button>
     </div>
   `, forzado);
   document.querySelectorAll('[data-quien]').forEach(b => b.onclick = () => {
@@ -884,7 +914,7 @@ function sheetGasto(itemId){
   const pillsCons = S.gente.map(p =>
     pillPersona(p, 'cons', marcados.has(p.id)?'on':'off')).join('');
   const pillsComp = S.gente.map(p =>
-    pillPersona(p, 'comp', 'pill-sky ' + (p.id===compradorSel?'on':''))).join('');
+    pillPersona(p, 'comp', 'pill-primary ' + (p.id===compradorSel?'on':''))).join('');
 
   let historial = '';
   if(editando){
@@ -991,7 +1021,7 @@ function sheetGasto(itemId){
 function sheetAsignar(itemId){
   const it = S.items.find(x=>x.id===itemId); if(!it) return;
   const pills = S.gente.map(p =>
-    pillPersona(p, 'asig', 'pill-sky ' + (it.pilladorId===p.id?'on':''))).join('');
+    pillPersona(p, 'asig', 'pill-primary ' + (it.pilladorId===p.id?'on':''))).join('');
   abrirSheet(`
     <h2 class="sheet-titulo">¿Quién trae «${esc(it.nombre)}»?</h2>
     <p class="sheet-sub">Le saldrá como suya en la lista.</p>
@@ -1028,7 +1058,7 @@ function sheetPersona(pid){
   const saldoTxt = s === 0 ? 'está en paz' : s > 0 ? `le deben ${eur(s)}` : `debe ${eur(-s)}`;
 
   abrirSheet(`
-    <h2 class="sheet-titulo">${esc(p.nombre)}${p.admin?' '+LLAVE:''}${esYo?' <span class="chip-estado chip-sky">tú</span>':''}</h2>
+    <h2 class="sheet-titulo">${esc(p.nombre)}${p.admin?' '+LLAVE:''}${esYo?' <span class="chip-estado chip-primary">tú</span>':''}</h2>
     <p class="sheet-sub">Ha pagado <strong>${eur(c.pagado[pid]||0)}</strong> en ${compras.length} compra${compras.length===1?'':'s'} ·
       le tocaba ${eur(c.debe[pid]||0)} · ${saldoTxt}.</p>
     <span class="label">Le toca traer</span>
@@ -1187,7 +1217,7 @@ function sheetUnirse(){
     <textarea id="inCodigo" placeholder="Pega el enlace del grupo"></textarea>
     <div class="sheet-botones">
       <button class="btn btn-borde" id="btnCancelarInv" type="button">Cancelar</button>
-      <button class="btn btn-sky" id="btnEntrarInv" type="button">Unirme</button>
+      <button class="btn btn-primary" id="btnEntrarInv" type="button">Unirme</button>
     </div>
   `);
   $('#btnCancelarInv').onclick = cerrarSheet;
@@ -1212,7 +1242,7 @@ function sheetCrear(){
       <label class="label" for="inFechaNueva">Fecha (opcional)</label>
       <input type="date" id="inFechaNueva">
     </div>
-    <button class="btn btn-sky btn-block" id="btnCrearFiesta" type="button" style="padding:14px">Crear la fiesta</button>
+    <button class="btn btn-primary btn-block" id="btnCrearFiesta" type="button" style="padding:14px">Crear la fiesta</button>
   `);
   $('#btnCrearFiesta').onclick = async () => {
     const nombre = $('#inFiestaNueva').value.trim();
@@ -1251,7 +1281,7 @@ function sheetRenombrar(){
     </div>
     <div class="sheet-botones">
       <button class="btn btn-borde" id="btnCancelarRen" type="button">Cancelar</button>
-      <button class="btn btn-sky" id="btnGuardarRen" type="button">Guardar</button>
+      <button class="btn btn-primary" id="btnGuardarRen" type="button">Guardar</button>
     </div>
   `);
   $('#btnCancelarRen').onclick = cerrarSheet;
@@ -1271,7 +1301,7 @@ function sheetConfirmar(titulo, aviso, accion){
     <p class="sheet-sub">${esc(aviso)}</p>
     <div class="sheet-botones">
       <button class="btn btn-borde" id="btnNo" type="button">Cancelar</button>
-      <button class="btn btn-sky" id="btnSi" type="button">Sí, adelante</button>
+      <button class="btn btn-primary" id="btnSi" type="button">Sí, adelante</button>
     </div>
   `);
   $('#btnNo').onclick = cerrarSheet;
@@ -1291,7 +1321,7 @@ function vistaEntrada(){
   return `${heroHtml()}
     <div class="fila-add">
       <input type="text" id="inEnlace" placeholder="Pega el enlace del grupo" autocomplete="off">
-      <button class="btn btn-borde" id="btnUnirme" type="button">Unirme</button>
+      <button class="btn btn-primary" id="btnUnirme" type="button">Unirme</button>
     </div>
     <button class="crear-dashed" id="btnCrear" type="button">+ Crear fiesta nueva</button>
     <div style="text-align:center;margin-top:22px">
@@ -1329,39 +1359,44 @@ function vistaFiesta(c){
       btn:'Apuntar un gasto', ir:'gasto'};
   }
 
-  // tu saldo en una línea
+  // tu saldo, con el número de protagonista
   let miLinea = '';
   if(yo && c.total){
     const s = c.saldo[S.yo] || 0;
-    const cls = claseSaldo(s);
-    const txt = s === 0 ? 'Estás en paz' : s > 0 ? `Te deben ${eur(s)}` : `Debes ${eur(-s)}`;
-    miLinea = `<div class="card yo-fila">
-      <span class="quien"><b class="${cls}">${txt}</b></span>
+    const txt = s === 0 ? 'En paz' : (s > 0 ? '+' : '−') + eur(Math.abs(s));
+    miLinea = `<div class="card saldo-card">
+      <div class="centro">
+        <span class="label">Tu saldo</span>
+        <div class="cifra ${claseSaldo(s)}">${txt}</div>
+      </div>
       <button class="btn btn-borde btn-mini" id="btnMiCuenta" type="button">Mis cuentas</button>
     </div>`;
   }
 
+  const enVivo = S.remota && !S.fiesta.ejemplo && !sync.sinRed && !sync.rechazado;
   return `${heroMiniHtml()}
     <div class="card fiesta-card">
+      <span class="oculo-marca" aria-hidden="true">${LOGO}</span>
       <span class="label">Tu fiesta</span>
       <div class="titulo">${esc(S.fiesta.nombre)}</div>
       <div class="meta">${f ? esc(f) + ' · ' : ''}${S.gente.length} en la peña · ${S.items.length} cosa${S.items.length===1?'':'s'} en la lista · ${eur(c.total)}</div>
-      <button class="btn btn-sky btn-block" id="btnInvitar" type="button">Mandar al grupo</button>
+      <button class="btn btn-blanco btn-block" id="btnInvitar" type="button">Mandar al grupo</button>
       ${!S.remota && !S.fiesta.ejemplo ? `
-        <button class="btn btn-soft btn-block" id="btnPonerVivo" type="button" style="margin-top:8px">
+        <button class="btn btn-vivo btn-block" id="btnPonerVivo" type="button" style="margin-top:8px">
           Ponerla en vivo pa que todos apunten</button>` : ''}
-      <div class="estado-sync" id="syncEstado">${esc(textoSync())}</div>
+      <div class="estado-sync${enVivo ? ' vivo' : ''}" id="syncEstado">${esc(textoSync())}</div>
     </div>
     <div class="card">
       <span class="label">¿Qué toca?</span>
-      <p style="margin:0 0 11px;font-size:14px;color:var(--muted)">${accion.txt}</p>
+      <p class="quetoca-txt">${accion.txt}</p>
       <button class="btn ${accion.ir==='gasto'?'btn-green':'btn-soft'} btn-block" id="btnAccion"
         data-ir="${accion.ir}" type="button">${accion.btn}</button>
     </div>
     ${miLinea}
     <div class="card yo-fila">
+      ${yo ? avatarHtml(S.yo) : ''}
       <span class="quien">${yo ? `Eres <b>${esc(yo.nombre)}</b>` : 'Aún no has dicho quién eres'}</span>
-      <button class="btn btn-borde btn-mini" id="btnQuienSoy" type="button">${yo ? 'Cambiar' : '¿Quién eres?'}</button>
+      <button class="btn-texto" id="btnQuienSoy" type="button">${yo ? 'Cambiar' : '¿Quién eres?'}</button>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:22px">
       ${soyAdmin() ? '<button class="link-quieto" id="btnRenombrar" type="button">Cambiar nombre o fecha</button>' : ''}
@@ -1381,42 +1416,47 @@ function vistaLista(){
 
   const cardItem = it => {
     const comprada = it.estado === 'comprada';
+
+    // comprada: check verde a la izquierda, se toca para editar
+    if(comprada){
+      const n = consumidores(it).length;
+      return `<div class="card item-card comprada-card" data-editar="${it.id}">
+        <div class="fila" style="align-items:center">
+          <span class="check-comprada" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+          <div style="flex:1;min-width:0">
+            <div class="nombre">${esc(it.nombre)}</div>
+            <div class="meta" style="margin-top:1px">${eur(it.precio)} · pagó ${esc(persona(it.compradorId)?.nombre || '—')} · entre ${n===S.gente.length?'todos':n}</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
     const p = it.pilladorId ? persona(it.pilladorId) : null;
     const esMia = it.estado==='pillada' && it.pilladorId === S.yo;
 
     let chip;
-    if(comprada) chip = '<span class="chip-estado chip-green">Comprada</span>';
-    else if(esMia) chip = '<span class="chip-estado chip-sky">La traes tú</span>';
-    else if(p) chip = `<span class="chip-estado chip-sky">La trae ${esc(p.nombre)}</span>`;
+    if(esMia) chip = '<span class="chip-estado chip-primary">La traes tú</span>';
+    else if(p) chip = `<span class="chip-estado chip-primary">La trae ${esc(p.nombre)}</span>`;
     else chip = '<span class="chip-estado chip-neutro">Sin dueño</span>';
 
-    let meta = '';
-    if(comprada){
-      const n = consumidores(it).length;
-      meta = `<div class="meta">${eur(it.precio)} · pagó ${esc(persona(it.compradorId)?.nombre || '—')} · entre ${n===S.gente.length?'todos':n}</div>`;
-    }
-
     let acciones = '';
-    if(!comprada){
-      if(esMia){
-        acciones = `<button class="btn btn-green btn-mini" data-comprar="${it.id}" type="button">Ya está comprada</button>
-          <button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>`;
-      } else if(!p){
-        acciones = `<button class="btn btn-soft btn-mini" data-pillar="${it.id}" type="button">Me lo pido</button>
-          <button class="link-quieto" data-comprar="${it.id}" type="button">ya comprada</button>
-          ${admin ? `<button class="link-quieto" data-asignar="${it.id}" type="button">asignar</button>` : ''}`;
-      } else if(admin){
-        acciones = `<button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>
-          <button class="link-quieto" data-comprar="${it.id}" type="button">apuntar precio</button>`;
-      }
+    if(esMia){
+      acciones = `<button class="btn btn-green btn-mini" data-comprar="${it.id}" type="button">Ya está comprada</button>
+        <button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>`;
+    } else if(!p){
+      acciones = `<button class="btn btn-soft btn-mini" data-pillar="${it.id}" type="button">Me lo pido</button>
+        <button class="link-quieto" data-comprar="${it.id}" type="button">ya comprada</button>
+        ${admin ? `<button class="btn btn-borde btn-mini" data-asignar="${it.id}" type="button">Asignar</button>` : ''}`;
+    } else if(admin){
+      acciones = `<button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>
+        <button class="link-quieto" data-comprar="${it.id}" type="button">apuntar precio</button>`;
     }
 
-    const puedeQuitar = !comprada && (admin || !p);
-    return `<div class="card item-card ${comprada?'comprada-card':''}" ${comprada?`data-editar="${it.id}"`:''}>
+    const puedeQuitar = admin || !p;
+    return `<div class="card item-card">
       <div class="fila">
         <div style="flex:1;min-width:0">
           <div class="nombre">${esc(it.nombre)}</div>
-          ${meta}
           ${acciones ? `<div class="acciones">${acciones}</div>` : ''}
         </div>
         <div style="display:flex;align-items:center;gap:4px">
@@ -1435,7 +1475,7 @@ function vistaLista(){
     <div class="cabecera"><h1>La lista</h1><div class="sub">${sub}</div></div>
     <form class="fila-add" id="formAddItem">
       <input type="text" id="inItem" placeholder="¿Qué falta? (garrafón no)" maxlength="40" autocomplete="off">
-      <button class="btn btn-sky" type="submit">Apuntar</button>
+      <button class="btn btn-primary" type="submit">Apuntar</button>
     </form>
     <button class="crear-dashed" id="btnGastoDirecto" type="button" style="margin-bottom:14px">
       + Apuntar un gasto ya pagado</button>
@@ -1474,7 +1514,7 @@ function vistaPena(c){
   return `
     <div class="cabecera"><h1>La peña</h1><div class="sub">${S.gente.length} en la cuadrilla</div></div>
     <div class="card" style="padding:4px 14px">${filas}</div>
-    <button class="btn btn-sky btn-block" id="btnInvitar" type="button" style="margin-top:6px">Mandar al grupo</button>
+    <button class="btn btn-primary btn-block" id="btnInvitar" type="button" style="margin-top:6px">Mandar al grupo</button>
     <form class="fila-add" id="formAddPersona" style="margin-top:14px">
       <input type="text" id="inPersona" placeholder="Añadir a alguien a mano" maxlength="20" autocomplete="off">
       <button class="btn btn-borde" type="submit">Añadir</button>
@@ -1501,7 +1541,7 @@ function vistaCuentas(c){
       <span class="label">Tu cuenta</span>
       <div class="micuenta-accion" style="border-top:none;margin-top:0;padding-top:2px">
         <span class="texto">Di quién eres y te digo cómo vas.</span>
-        <button class="btn btn-sky btn-mini" id="btnQuienSoy" type="button">¿Quién eres?</button>
+        <button class="btn btn-primary btn-mini" id="btnQuienSoy" type="button">¿Quién eres?</button>
       </div>
     </div>`;
   } else {
@@ -1555,7 +1595,7 @@ function vistaCuentas(c){
     ${todoEnPaz ? '<div class="enpaz">Cuentas claras y el chocolate espeso.</div>'
       : c.bizums.length ? '<div class="pie-nota">Marca el círculo cuando el bizum esté hecho.</div>'
       : '<div class="enpaz">Cuentas en paz. Ni pa ti ni pa mí.</div>'}
-    <button class="btn btn-borde btn-block" id="btnCompartirCuentas" type="button" style="margin-top:14px">
+    <button class="btn btn-primary btn-block" id="btnCompartirCuentas" type="button" style="margin-top:14px;padding:14px">
       Mandar las cuentas al grupo</button>
   `;
 }

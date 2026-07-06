@@ -624,10 +624,15 @@ const estadoJson = () => JSON.stringify(estadoCompartido());
 // a = normalmente el servidor, b = lo local.
 function fusionar(a, b){
   const mod = x => (x && x.mod) || 0;
+  // de dos lápidas para el mismo id gana la que más versión vio (la mejor
+  // informada), no la de reloj más tardío: un borrado a ciegas posterior no
+  // puede degradar a uno informado
+  const fuerza = l => l.vio != null ? l.vio : (l.t || 0);
   const pap = new Map();
   [...(a.papelera||[]), ...(b.papelera||[])].forEach(p => {
     const previa = pap.get(p.id);
-    if(!previa || p.t > previa.t) pap.set(p.id, p);
+    if(!previa || fuerza(p) > fuerza(previa) ||
+       (fuerza(p) === fuerza(previa) && (p.t||0) > (previa.t||0))) pap.set(p.id, p);
   });
   const enterrado = x => {
     const l = pap.get(x.id);
@@ -750,11 +755,14 @@ async function subir(){
   sync.subiendo = true;
   try {
     for(let intento = 0; intento < 4; intento++){
+      const fiestaPedida = S.remota.id;
       const estado = estadoCompartido();
       const json = JSON.stringify(estado);
       if(json === sync.subido) break;
-      const r = await pedir('PUT', '/fiestas/' + S.remota.id,
+      const r = await pedir('PUT', '/fiestas/' + fiestaPedida,
         {clave: S.remota.clave, rev: S.remota.rev, estado});
+      // si durante el vuelo se cambió de fiesta, esta respuesta ya no pinta nada
+      if(!S || !S.remota || S.remota.id !== fiestaPedida) break;
       if(r.status === 200){
         S.remota.rev = r.cuerpo.rev; sync.subido = json;
         guardarLocal(); alDia();
@@ -791,9 +799,11 @@ async function subir(){
 
 async function bajar(){
   if(!S || !S.remota || S.fiesta.ejemplo) return;
+  const fiestaPedida = S.remota.id;
   try {
-    const r = await pedir('GET', '/fiestas/' + S.remota.id + '?rev=' + S.remota.rev);
-    if(!S || !S.remota) return; // la fiesta cambió mientras esperábamos
+    const r = await pedir('GET', '/fiestas/' + fiestaPedida + '?rev=' + S.remota.rev);
+    // si durante el vuelo se cambió de fiesta, esta respuesta es de la anterior
+    if(!S || !S.remota || S.remota.id !== fiestaPedida) return;
     if(r.status === 204){ alDia(); return; }
     if(r.status === 200 && r.cuerpo && r.cuerpo.estado){
       const antes = estadoJson();
@@ -815,10 +825,12 @@ async function bajar(){
 
 async function crearRemota(){
   if(!S || S.fiesta.ejemplo || S.remota) return !!(S && S.remota); // la demo jamás se sube
+  const fiestaLocal = S; // si S cambia durante el POST, la respuesta no es de esta
   const estado = estadoCompartido();
   const json = JSON.stringify(estado); // foto de lo que de verdad mandamos
   try {
     const r = await pedir('POST', '/fiestas', {estado});
+    if(S !== fiestaLocal) return false;
     if(r.status === 201 && r.cuerpo && r.cuerpo.id){
       S.remota = {id: r.cuerpo.id, clave: r.cuerpo.clave, rev: r.cuerpo.rev};
       sync.subido = json;

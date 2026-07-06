@@ -423,16 +423,26 @@ try {
   if(S && !['fiesta','lista','pena','cuentas'].includes(S.tab)) S.tab = 'fiesta';
 } catch(e){ S = null; }
 
-function guardarLocal(){ try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }catch(e){} }
+function guardarLocal(){
+  // foto de lo compartido tal y como queda guardado: guardar() la compara
+  // para distinguir cambios de verdad de guardados puramente locales (tab, yo)
+  if(S && S.remota) sync.compartidoActual = estadoJson();
+  try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }catch(e){}
+}
 // Guardar de verdad: al móvil siempre, y si la fiesta está en vivo, al
 // servidor con un pelín de retardo (agrupa toques seguidos).
 // S.pendienteSubida (local, persistido) recuerda entre sesiones que hay
 // cambios sin subir: al reabrir no se confunden con estar al día.
 function guardar(){
-  if(S && S.remota && !S.fiesta.ejemplo && estadoJson() !== sync.subido){
-    S.pendienteSubida = true;
-    sync.rechazado = false; // cambio nuevo: otra oportunidad de subir
-    programarSubida();
+  if(S && S.remota && !S.fiesta.ejemplo){
+    const j = estadoJson();
+    const esCambio = j !== sync.compartidoActual;                 // este guardado tocó lo compartido
+    const sinSubir = sync.subido !== null && j !== sync.subido;   // difiere de lo confirmado
+    if(esCambio || sinSubir){
+      S.pendienteSubida = true;
+      sync.rechazado = false; // cambio nuevo: otra oportunidad de subir
+      programarSubida();
+    }
   }
   guardarLocal();
 }
@@ -543,10 +553,13 @@ const RE_VIVO = /F:([a-z2-9]{6,}):([a-z2-9]{6,})/i;
 function codigoFiesta(){
   const limpio = {...S, yo:null, tab:'fiesta'};
   delete limpio.remota;
+  delete limpio.pendienteSubida;
   // los AP1 los leen también clientes viejos cacheados: saldados en su
-  // formato (solo claves hechas, a true), que un {hecho:false} les sale ✓
+  // formato (solo claves hechas, a true), que un {hecho:false} les sale ✓.
+  // Se exporta lo saldado según las cuentas de AHORA (una marca con importe
+  // desfasado ya no cuenta como hecha).
   limpio.saldados = {};
-  for(const k in S.saldados){ if(hechoBizum(k)) limpio.saldados[k] = true; }
+  cuentas().bizums.forEach(b => { if(hechoBizum(b)) limpio.saldados[claveBizum(b)] = true; });
   const json = JSON.stringify(limpio);
   const b64 = btoa(unescape(encodeURIComponent(json)))
     .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -592,6 +605,7 @@ function importar(texto){
 /* ================= fiesta viva (sincronización) ================= */
 const sync = {
   subido: null,       // JSON del último estado compartido confirmado en el server
+  compartidoActual: null, // JSON de lo compartido tal y como está guardado en local
   timer: null,
   subiendo: false,
   otraVez: false,     // llegó un cambio mientras subíamos
@@ -766,6 +780,9 @@ function programarSubida(){
 
 async function subir(){
   if(!S || !S.remota || S.fiesta.ejemplo || sync.rechazado) return;
+  // sin línea base del server y sin nada pendiente de verdad, un PUT sería
+  // churn a ciegas: que el primer sondeo siembre sync.subido antes
+  if(sync.subido === null && !S.pendienteSubida) return;
   if(sync.subiendo){ sync.otraVez = true; return; }
   sync.subiendo = true;
   try {
@@ -1896,6 +1913,9 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 
 /* arranque: enlace vivo (#F:id:clave), snapshot (#AP1:/#EB1:) o lo guardado */
 (function(){
+  // línea base de lo compartido tal cual se cargó: sin esto, el primer
+  // guardado local (cambiar de tab) contaría como cambio de la fiesta
+  if(S && S.remota) sync.compartidoActual = estadoJson();
   let hash = location.hash || '';
   try { hash = decodeURIComponent(hash); } catch(e){ /* un % suelto no tumba la app */ }
   const limpiarHash = () => {
@@ -1931,12 +1951,13 @@ setInterval(() => {
   refrescarSync();
   if(sync.pintarLuego) pintarOLuego();
   bajar();
-  if(sync.sinRed || estadoJson() !== sync.subido) subir();
+  if(sync.sinRed || S.pendienteSubida) subir();
 }, 12000);
 document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible') bajar();
 });
-window.addEventListener('online', () => { subir(); bajar(); });
+// al volver la red: primero sondear (siembra la línea base), luego subir
+window.addEventListener('online', async () => { await bajar(); subir(); });
 </script>
 </body>
 </html>

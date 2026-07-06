@@ -1084,7 +1084,14 @@ function sheetGasto(itemId){
     const val = precioACentimos($('#inPrecio').value);
     if(isNaN(val) || val<=0) return toast('Ponle precio, que gratis no fue.');
     if(!persona(compradorSel)) return toast('¿Quién lo pagó?');
-    const consumen = marcados.size === S.gente.length ? null : [...marcados];
+    // la peña puede haber cambiado con el sheet abierto: un id borrado en
+    // consumen resucitaría a esa persona en la siguiente fusión
+    const marcadosVivos = [...marcados].filter(id => persona(id));
+    if(!marcadosVivos.length){
+      cerrarSheet(); pintar();
+      return toast('La peña ha cambiado por debajo: revisa quiénes lo catan.');
+    }
+    const consumen = marcadosVivos.length === S.gente.length ? null : marcadosVivos;
     if(directo){
       S.items.unshift(tocar({id:nuevoId('i'), nombre, estado:'comprada', precio:val,
         compradorId:compradorSel, consumen,

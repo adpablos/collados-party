@@ -1234,6 +1234,11 @@ function sheetPersona(pid){
     if(!q){ cerrarSheet(); pintar(); return toast('Esa persona ya no está en la peña.'); }
     if(S.items.some(i=>i.estado==='comprada' && i.compradorId===pid))
       return toast('Tiene compras apuntadas: reasígnalas antes');
+    // si es el único que cata una compra, quitarlo dejaría consumen vacío,
+    // que significa «entre todos»: el gasto se recolocaría solo y a callar
+    if(S.items.some(i=>i.estado==='comprada' && i.consumen &&
+        i.consumen.length === 1 && i.consumen[0] === pid))
+      return toast('Hay compras que solo cata esa persona: corrígelas antes');
     if(q.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
     S.items.forEach(i => {
       if(i.pilladorId === pid){ i.estado='pendiente'; delete i.pilladorId; tocar(i); }

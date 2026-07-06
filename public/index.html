@@ -1074,6 +1074,9 @@ function sheetAsignar(itemId){
     const quien = persona(b.dataset.asig);
     let vivo = S.items.find(x=>x.id===itemId);
     if(!vivo){ cerrarSheet(); pintar(); return toast('Esa cosa ya no está en la lista.'); }
+    if(vivo.estado === 'comprada'){
+      cerrarSheet(); pintar(); return toast('Esa ya está comprada: no hay nada que asignar.');
+    }
     if(quien){ vivo.estado='pillada'; vivo.pilladorId=quien.id; toast('Se la lleva ' + quien.nombre); }
     else { vivo.estado='pendiente'; delete vivo.pilladorId; toast('Suelta. A ver quién se la pide ahora.'); }
     tocar(vivo);
@@ -1725,17 +1728,24 @@ function conectar(v){
     sheetGasto(null);
   });
   on('#btnMandarLista', () => sheetCompartir('lista'));
+  // ojo: la fiesta puede haber cambiado por debajo con el repintado aplazado
+  // (texto a medias en un input); cada acción revalida el estado del item
+  // para no pisar una compra que otro móvil acaba de resolver
   v.querySelectorAll('[data-pillar]').forEach(b => b.onclick = () => {
     if(!S.yo) return sheetIdentidad(true);
     const it = S.items.find(x=>x.id===b.dataset.pillar);
-    if(!it) return pintar(); // la borraron desde otro móvil
+    if(!it || it.estado !== 'pendiente'){
+      pintar(); return toast('Alguien se ha adelantado: esa ya está resuelta.');
+    }
     it.estado='pillada'; it.pilladorId=S.yo;
     tocar(it);
     guardar(); pintar(); toast('Apuntado: ' + it.nombre + ' corre de tu cuenta.');
   });
   v.querySelectorAll('[data-soltar]').forEach(b => b.onclick = () => {
     const it = S.items.find(x=>x.id===b.dataset.soltar);
-    if(!it) return pintar();
+    if(!it || it.estado !== 'pillada'){
+      pintar(); return toast('Esa ya ha cambiado de manos.');
+    }
     if(it.pilladorId !== S.yo && !soyAdmin()) return;
     it.estado='pendiente'; delete it.pilladorId;
     tocar(it);
@@ -1761,6 +1771,12 @@ function conectar(v){
   });
   v.querySelectorAll('[data-quitar]').forEach(b => b.onclick = e => {
     e.stopPropagation();
+    const it = S.items.find(x=>x.id===b.dataset.quitar);
+    if(!it) return pintar();
+    if(it.estado === 'comprada'){
+      // acaba de comprarse desde otro móvil: borrar dinero va con confirmación
+      pintar(); return toast('Esa ya está comprada: tócala si quieres corregirla.');
+    }
     S.items = S.items.filter(x=>x.id!==b.dataset.quitar);
     S.papelera.push({id:b.dataset.quitar, t:ahora()});
     guardar(); pintar();

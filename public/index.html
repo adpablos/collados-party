@@ -631,7 +631,13 @@ function fusionar(a, b){
   });
   const enterrado = x => {
     const l = pap.get(x.id);
-    return !!l && (l.t || 0) >= mod(x);
+    if(!l) return false;
+    // la lápida guarda qué versión vio quien borró (vio): solo entierra lo
+    // que conocía. Un borrado a ciegas no puede llevarse una compra que se
+    // apuntó en una revisión que el borrador nunca llegó a descargar.
+    // Lápidas antiguas sin vio: se comparan por hora, como antes.
+    const visto = l.vio != null ? l.vio : (l.t || 0);
+    return visto >= mod(x);
   };
   const mezcla = (la, lb) => {
     const enA = new Map(la.map(x=>[x.id,x]));
@@ -1057,8 +1063,14 @@ function sheetGasto(itemId){
   if(del) del.onclick = () => {
     sheetConfirmar('¿Borrar esta compra?',
       `«${it.nombre}» (${eur(it.precio||0)}) se quita de la lista y de las cuentas.`, () => {
+        // revalidar sobre lo vivo: la fiesta puede haber cambiado por debajo
+        const vivo = S.items.find(x=>x.id===itemId);
+        if(!vivo){ pintar(); return toast('Ya no está: alguien la ha quitado antes.'); }
+        if(!soyAdmin() && vivo.compradorId !== S.yo){
+          pintar(); return toast('Esa compra ha cambiado de manos: solo quien la pagó o la llave pueden borrarla.');
+        }
         S.items = S.items.filter(x=>x.id!==itemId);
-        S.papelera.push({id:itemId, t:ahora()});
+        S.papelera.push({id:itemId, t:ahora(), vio: vivo.mod || 0});
         guardar(); pintar(); toast('Fuera de la lista');
       });
   };
@@ -1079,6 +1091,7 @@ function sheetAsignar(itemId){
     </div>
   `);
   document.querySelectorAll('[data-asig]').forEach(b => b.onclick = () => {
+    if(!soyAdmin()){ cerrarSheet(); pintar(); return toast('La llave ya no es tuya: eso no te toca.'); }
     const quien = persona(b.dataset.asig);
     let vivo = S.items.find(x=>x.id===itemId);
     if(!vivo){ cerrarSheet(); pintar(); return toast('Esa cosa ya no está en la lista.'); }
@@ -1128,9 +1141,11 @@ function sheetPersona(pid){
   `);
   const rec = $('#btnRecordar');
   if(rec) rec.onclick = () => sheetCompartir('persona', pid);
-  // los handlers rebuscan por id: la fiesta puede haberse fusionado mientras
+  // los handlers rebuscan por id y reconfirman la llave: la fiesta puede
+  // haberse fusionado por debajo mientras el sheet estaba abierto
   const tog = $('#btnToggleAdmin');
   if(tog) tog.onclick = () => {
+    if(!soyAdmin()){ cerrarSheet(); pintar(); return toast('La llave ya no es tuya: eso no te toca.'); }
     const q = persona(pid);
     if(!q){ cerrarSheet(); pintar(); return toast('Esa persona ya no está en la peña.'); }
     if(q.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
@@ -1141,6 +1156,7 @@ function sheetPersona(pid){
   };
   const eli = $('#btnEliminar');
   if(eli) eli.onclick = () => {
+    if(!soyAdmin()){ cerrarSheet(); pintar(); return toast('La llave ya no es tuya: eso no te toca.'); }
     const q = persona(pid);
     if(!q){ cerrarSheet(); pintar(); return toast('Esa persona ya no está en la peña.'); }
     if(S.items.some(i=>i.estado==='comprada' && i.compradorId===pid))
@@ -1151,7 +1167,7 @@ function sheetPersona(pid){
       if(i.consumen && i.consumen.includes(pid)){ i.consumen = i.consumen.filter(x=>x!==pid); tocar(i); }
     });
     S.gente = S.gente.filter(x=>x.id!==pid);
-    S.papelera.push({id:pid, t:ahora()});
+    S.papelera.push({id:pid, t:ahora(), vio: q.mod || 0});
     guardar(); cerrarSheet(); pintar();
     toast(q.nombre + ' ya no está en la peña');
   };
@@ -1339,6 +1355,7 @@ function sheetRenombrar(){
   `);
   $('#btnCancelarRen').onclick = cerrarSheet;
   $('#btnGuardarRen').onclick = () => {
+    if(!soyAdmin()){ cerrarSheet(); pintar(); return toast('La llave ya no es tuya: eso no te toca.'); }
     const n = $('#inNombreF').value.trim();
     if(!n) return toast('La fiesta necesita un nombre');
     S.fiesta.nombre = n;
@@ -1786,7 +1803,7 @@ function conectar(v){
       pintar(); return toast('Esa ya está comprada: tócala si quieres corregirla.');
     }
     S.items = S.items.filter(x=>x.id!==b.dataset.quitar);
-    S.papelera.push({id:b.dataset.quitar, t:ahora()});
+    S.papelera.push({id:b.dataset.quitar, t:ahora(), vio: it.mod || 0});
     guardar(); pintar();
   });
 

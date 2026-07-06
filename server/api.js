@@ -151,7 +151,8 @@ function estadoValido(estado) {
   if (estado.papelera != null) {
     if (!Array.isArray(estado.papelera) || estado.papelera.length > 500) return null;
     for (const l of estado.papelera) {
-      if (!l || typeof l !== 'object' || !idValido(l.id) || !numOpc(l.t)) return null;
+      if (!l || typeof l !== 'object' || !idValido(l.id) ||
+          !numOpc(l.t) || !numOpc(l.vio)) return null;
     }
   }
 

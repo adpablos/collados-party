@@ -470,8 +470,18 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>'
 const consumidores = it => (it.consumen && it.consumen.length ? it.consumen : S.gente.map(p=>p.id));
 const soyAdmin = () => { const p = persona(S && S.yo); return !!(p && p.admin); };
 const numAdmins = () => S.gente.filter(p=>p.admin).length;
+// id nuevo = prefijo + momento + azar + contador. El azar es imprescindible
+// en fiestas vivas: dos móviles creando su primera cosa en el mismo
+// milisegundo colisionarían y la fusión las fundiría en una sola.
 let uid = 0;
-const nuevoId = pre => pre + Date.now().toString(36) + (uid++);
+function azarCorto(){
+  try {
+    const b = new Uint32Array(1);
+    crypto.getRandomValues(b);
+    return b[0].toString(36);
+  } catch(e){ return Math.random().toString(36).slice(2, 9); }
+}
+const nuevoId = pre => pre + Date.now().toString(36) + azarCorto() + (uid++);
 
 function fechaBonita(f){
   if(!f) return null;

@@ -1,7 +1,7 @@
 # Server stack: nginx serves public/ and proxies /api/ to the api container for
 # shared parties; cloudflared exposes it at https://collados.alexdepablos.es.
 # Intended for the Hetzner server. For local development, `node server/api.js`
-# is enough. See docs/despliegue.md.
+# is enough. See docs/deployment.md.
 name: collados
 
 services:
@@ -37,7 +37,7 @@ services:
       - ./server/api.js:/srv/api.js:ro
       - api-data:/data
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8010/api/salud"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8010/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3

@@ -10,26 +10,26 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
 - `public/index.html` — the entire frontend: HTML, CSS, and vanilla JS.
 - `server/api.js` — the shared-party API: create/read/save with optimistic
   revisions; in local development it also serves `public/`.
-- `docs/producto.md` — product specification: diagnosis, decisions, P0
+- `docs/product.md` — product specification: diagnosis, decisions, P0
   acceptance criteria, and backlog.
-- `docs/diseno.md` — identity and UI rules: logo, exact tokens, typography,
+- `docs/design.md` — identity and UI rules: logo, exact tokens, typography,
   user-facing voice, and screen structure.
 - `compose.yaml` — server stack: nginx, API, and cloudflared.
 - `deployment/nginx/default.conf` — nginx static serving plus `/api/` proxy.
 - `scripts/deploy.sh` — one-command deployment from the Mac.
-- `docs/despliegue.md` — infrastructure runbook.
+- `docs/deployment.md` — infrastructure runbook.
 
 ## Language Policy
 
 1. Source code, identifiers, implementation comments, commit messages, and
    technical/repository documentation must be written in English.
 2. User-facing product copy stays in Spanish from Spain, with the village tone
-   defined in `docs/diseno.md`.
+   defined in `docs/design.md`.
 3. The admin role is called "la llave" in the UI. In code and docs, call it
    "admin" or "key holder" unless quoting visible product copy.
-4. Persisted data fields that already shipped in Spanish (`fiesta`, `gente`,
-   `nombre`, `saldados`, `papelera`, etc.) are a compatibility exception. Do
-   not rename them without an explicit migration.
+4. Persisted data fields, API payloads, endpoints, filenames, internal CSS
+   classes, and local implementation identifiers are English. Spanish is only
+   for user-facing product copy.
 
 ## Rules
 
@@ -37,10 +37,9 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
    build system, framework, runtime dependency, or `npm install` unless the user
    explicitly asks for it. The only agreed exception is Google Fonts, with a
    system fallback.
-2. Preserve data compatibility. The localStorage key is `a-pachas-v1`; legacy
-   `el-bote-proto-*` keys migrate. Live links use `#F:id:key`; local snapshot
-   links use `AP1:` and legacy `EB1:` remains accepted. Do not break these
-   without a migration.
+2. Use the current English-only data contract. The localStorage key is
+   `a-pachas-v1`; live links use `#F:id:key`; local snapshot links use `AP2:`.
+   Do not add Spanish payload aliases unless explicitly requested.
 3. Local mode must keep working. If the API is unavailable, the app remains
    usable from localStorage and explains the situation without technical jargon.
 4. The deployment server is shared with the World Cup pool production app. Do

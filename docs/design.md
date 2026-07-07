@@ -118,6 +118,6 @@ bit of humor, but not overdone.
 5. **Expense sheet**: direct expense, mark bought, or edit. Fields: Qué, Precio,
    Pagó with violet pills, ¿Quiénes lo catan? with green pills, green save
    button, delete with confirmation, and history line.
-6. **Share sheet**: message preview in `previo`, abbreviated AP1 links, Copiar
+6. **Share sheet**: message preview, abbreviated AP2 links, Copiar
    and WhatsApp green buttons, and "Mandar con otra app" when native share is
    available.

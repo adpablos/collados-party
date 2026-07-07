@@ -77,17 +77,16 @@ Snapshots end: a shared party lives on the server and the short link references
 it. No accounts, no users, no database: one JSON document per party.
 
 - **Single-file API**: `server/api.js`, Node >=18, no dependencies, matching the
-  one-file frontend. Endpoints: `POST /api/fiestas` to create,
-  `GET /api/fiestas/:id` to read with `?rev=` for cheap polling, and
-  `PUT /api/fiestas/:id` to save with optimistic revision control.
+  one-file frontend. Endpoints: `POST /api/parties` to create,
+  `GET /api/parties/:id` to read with `?rev=` for cheap polling, and
+  `PUT /api/parties/:id` to save with optimistic revision control.
 - **Link**: `https://collados.alexdepablos.es/#F:<id>:<key>`. The key lives in
   the hash, so nginx and Cloudflare never see it in logs. Anyone with the link
   can edit, matching the current trust model; sensitive actions remain guarded
   by "la llave" inside the app.
 - **Local mode stays alive**: if the network or server is down, the app keeps
-  working as before through localStorage and `AP1:` snapshot links. A local
-  party can be made live in one tap. Legacy `AP1:` and `EB1:` links still
-  import.
+  working through localStorage and `AP2:` snapshot links. A local party can be
+  made live in one tap.
 - **No technical sync language**: upload shortly after each change; download on
   open, when the app becomes visible, and about every 12 seconds. User-facing
   status is "al día hace un momento". If offline, say changes are saved and will
@@ -103,11 +102,11 @@ is the highest-return change in the spec.
 ### D2. One Item Model, Not Two Collections
 
 The original analysis proposed separate `shoppingItems` and `expenses`. Do not
-do that. The existing model, `item.estado: pendiente | pillada | comprada`,
+do that. The current item model, `item.status: pending | claimed | bought`,
 already captures planning -> expense with a single object. That is A Pachas'
 own advantage: the list and accounts are the same thing seen at two moments. A
-direct expense is simply an item born `comprada`. Splitting collections would
-duplicate UI, merge logic, and migration without enough benefit at this scale.
+direct expense is simply an item born `bought`. Splitting collections would
+duplicate UI and merge logic without enough benefit at this scale.
 
 ### D3. Quick Expense as a Primary Action
 
@@ -152,44 +151,38 @@ confirmation. No activity feed in P0.
 
 Everything in this section is implemented by this branch.
 
-### Data Model, v4
-
-Persisted field names stay in Spanish for compatibility. Do not rename them
-without a migration.
+### Data Model, v5
 
 ```js
 // Shared: sent to the server and encoded in links.
 {
-  v: 4,
-  fiesta: { nombre, fecha, mod },          // mod is last-edit ms epoch
-  gente:  [{ id, nombre, admin, mod }],
+  v: 5,
+  party: { name, date, updatedAt },
+  people: [{ id, name, admin, updatedAt }],
   items:  [{
-    id, nombre,
-    estado: 'pendiente' | 'pillada' | 'comprada',
-    pilladorId?,                            // only for pillada
-    precio?, compradorId?, consumen?,       // only for comprada; null consumers = everyone
-    creadoEn?, creadoPor?, mod, modPor?,
+    id, name,
+    status: 'pending' | 'claimed' | 'bought',
+    claimerId?,                             // only for claimed
+    priceCents?, payerId?, consumers?,      // only for bought; null consumers = everyone
+    createdAt?, createdBy?, updatedAt, updatedBy?,
   }],
-  saldados: { 'pDe>pA': { hecho, t, por } }, // legacy true is accepted
-  papelera: [{ id, t }],                     // people/item tombstones
+  settled: { 'pFrom>pTo': { done, at, by, cents } },
+  tombstones: [{ id, at, seenAt }],
 }
-// Local only, never uploaded: yo, tab, remota: { id, clave, rev }
+// Local only, never uploaded: me, tab, remote: { id, key, rev }, pendingUpload
 ```
 
-v3 -> v4 migration on load/import: `mod: 0`, `saldados[k] === true` becomes
-`{hecho: true, t: 0}`, and `papelera: []`. The localStorage key remains
-`a-pachas-v1`. `AP1:` and `EB1:` links remain accepted, and `AP1:` links are
-generated as local-mode backups. New v4 `AP1:` links also open in old cached
-clients because they preserve shape and extra fields are ignored.
+The localStorage key remains `a-pachas-v1`. `AP2:` links are generated as
+local-mode backups. The app does not accept Spanish payload aliases.
 
 ### API
 
-- `POST /api/fiestas` body `{estado}` -> `201 {id, clave, rev:1}`.
-- `GET /api/fiestas/:id[?rev=n]` -> `200 {rev, estado, updatedAt}` or `204`.
+- `POST /api/parties` body `{state}` -> `201 {id, key, rev:1}`.
+- `GET /api/parties/:id[?rev=n]` -> `200 {rev, state, updatedAt}` or `204`.
   Use 204, not 304, because `fetch` handles it more cleanly here.
-- `PUT /api/fiestas/:id` body `{clave, rev, estado}` -> `200 {rev}`,
-  `409 {rev, estado}`, `403`, `404`, `413`, or `400`.
-- `GET /api/salud` -> `200`.
+- `PUT /api/parties/:id` body `{key, rev, state}` -> `200 {rev}`,
+  `409 {rev, state}`, `403`, `404`, `413`, or `400`.
+- `GET /api/health` -> `200`.
 - Guardrails: JSON <= 256 KB, strict shape validation, crypto IDs, atomic
   tmp+rename writes, best-effort rate limit by IP, global party cap on disk, and
   no party content or IDs in logs. The party ID alone grants read access.
@@ -215,8 +208,8 @@ clients because they preserve shape and extra fields are ignored.
    and copy fallback.
 6. **Offline / no server**: the app does not break; it saves locally, warns
    once, and uploads when network returns.
-7. **Compatibility**: an old `AP1:` link imports; an existing local party can go
-   live in one tap; the demo never uploads.
+7. **Local to live**: an existing local party can go live in one tap; the demo
+   never uploads.
 
 ## P1, Next Batch
 
@@ -252,7 +245,7 @@ clients because they preserve shape and extra fields are ignored.
 ## Risks and Mitigations
 
 - **Backend breaks the "no infra" magic**: one file, one JSON per party, zero
-  dependencies; full local mode remains; `AP1:` links remain manual backup.
+  dependencies; full local mode remains; `AP2:` links remain manual backup.
 - **Anyone with the link can edit**: acceptable for village groups and matches
   the current trust model. Destructive actions remain behind "la llave";
   read-only links are P1; IDs are not guessable and the key stays in the hash.
@@ -261,7 +254,7 @@ clients because they preserve shape and extra fields are ignored.
   order and can be corrected in one tap.
 - **Server is shared with the World Cup pool**: the `collados` stack remains
   isolated; the API only adds one container to that project. Guardrails in
-  `docs/despliegue.md` remain active.
+  `docs/deployment.md` remain active.
 
 ## Metrics Without Invasive Analytics
 
@@ -274,7 +267,7 @@ content, or IDs. If more is needed later, use anonymous events with opt-out.
 1. The proposed join flow already exists: "¿Quién eres?" sheet with person
    pills, "apúntate", and the ability to inspect without choosing. Keep it.
 2. Splitting `shoppingItems` and `expenses` is rejected by D2. The current
-   `pendiente|pillada|comprada` state already unifies planning and expense.
+   `pending|claimed|bought` state already unifies planning and expense.
 3. Direct expense is not just hidden; it currently takes two steps and only the
    key holder can change payer. Both problems must be fixed.
 4. "Per head" is truly misleading today: it divides total by the whole group

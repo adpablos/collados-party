@@ -17,8 +17,8 @@ The product is intentionally small:
 - `server/api.js` contains the whole API, using only the Node standard library.
 - There is no build step and no dependency install.
 
-Brand and UI rules live in [docs/diseno.md](docs/diseno.md). Product decisions
-live in [docs/producto.md](docs/producto.md).
+Brand and UI rules live in [docs/design.md](docs/design.md). Product decisions
+live in [docs/product.md](docs/product.md).
 
 ## Language Policy
 
@@ -26,9 +26,9 @@ Source code, identifiers, implementation comments, commit messages, and
 technical/repository documentation are written in English.
 
 User-facing product copy stays in Spanish from Spain, with the village tone
-defined in `docs/diseno.md`. Persisted data fields that already shipped in
-Spanish are a compatibility exception and must not be renamed without a
-migration.
+defined in `docs/design.md`. Persisted data fields, API payloads, endpoints,
+filenames, internal CSS classes, and local implementation identifiers are
+English.
 
 ## Development
 
@@ -52,4 +52,4 @@ python3 -m http.server -d public
 scripts/deploy.sh
 ```
 
-The full infrastructure runbook is in [docs/despliegue.md](docs/despliegue.md).
+The full infrastructure runbook is in [docs/deployment.md](docs/deployment.md).

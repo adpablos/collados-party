@@ -73,7 +73,7 @@ cd /opt/collados-party
 git pull --ff-only
 sudo docker compose up -d --wait
 curl -fsS http://127.0.0.1:3200/ >/dev/null && echo OK
-curl -fsS http://127.0.0.1:3200/api/salud >/dev/null && echo API OK
+curl -fsS http://127.0.0.1:3200/api/health >/dev/null && echo API OK
 ```
 
 ## Initial Setup

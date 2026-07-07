@@ -10,15 +10,15 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
 - `public/index.html` — the entire frontend: HTML, CSS, and vanilla JS.
 - `server/api.js` — the shared-party API: create/read/save with optimistic
   revisions; in local development it also serves `public/`.
-- `docs/producto.md` — product specification: diagnosis, decisions, P0
+- `docs/product.md` — product specification: diagnosis, decisions, P0
   acceptance criteria, and backlog. Read it before changing functionality.
-- `docs/diseno.md` — identity and UI rules: logo, exact tokens, typography,
+- `docs/design.md` — identity and UI rules: logo, exact tokens, typography,
   user-facing voice, and screen structure. Read it before touching styles or
   product copy.
 - `compose.yaml` — server stack: nginx, API, and cloudflared.
 - `deployment/nginx/default.conf` — nginx static serving plus `/api/` proxy.
 - `scripts/deploy.sh` — one-command deployment from the Mac.
-- `docs/despliegue.md` — infrastructure runbook. Read it before touching the
+- `docs/deployment.md` — infrastructure runbook. Read it before touching the
   server.
 
 ## Language Policy
@@ -26,12 +26,12 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
 1. Source code, identifiers, implementation comments, commit messages, and
    technical/repository documentation must be written in English.
 2. User-facing product copy stays in Spanish from Spain, with the village tone
-   defined in `docs/diseno.md`.
+   defined in `docs/design.md`.
 3. The admin role is called "la llave" in the UI. In code and docs, call it
    "admin" or "key holder" unless quoting visible product copy.
-4. Persisted data fields that already shipped in Spanish (`fiesta`, `gente`,
-   `nombre`, `saldados`, `papelera`, etc.) are a compatibility exception. Do
-   not rename them without an explicit migration.
+4. Persisted data fields, API payloads, endpoints, filenames, internal CSS
+   classes, and local implementation identifiers are English. Spanish is only
+   for user-facing product copy.
 
 ## Rules
 
@@ -39,11 +39,10 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
    build system, framework, runtime dependency, or `npm install` unless the user
    explicitly asks for it. The only agreed exception is Google Fonts, with a
    system fallback.
-2. Preserve data compatibility. The localStorage key is `a-pachas-v1`; legacy
-   `el-bote-proto-*` keys migrate. Live links use `#F:id:key` and keep the key
-   in the hash so it does not reach logs. Local snapshot links use `AP1:` and
-   legacy `EB1:` remains accepted. v3 state migrates to v4 in `migrar()`. Do
-   not break any of this without a migration.
+2. Use the current English-only data contract. The localStorage key is
+   `a-pachas-v1`; live links use `#F:id:key` and keep the key in the hash so it
+   does not reach logs. Local snapshot links use `AP2:`. Do not add legacy
+   Spanish payload aliases unless explicitly requested.
 3. Local mode must keep working. If the API is unavailable, the app remains
    usable from localStorage and explains the situation without technical
    jargon. Do not mention sync, revisions, or conflicts in user-facing copy.
@@ -77,6 +76,6 @@ python3 -m http.server -d public
 
 Test on a mobile viewport around 390px wide. "Ver una fiesta de ejemplo" loads
 demo data and must never upload it to the server. A second client can be
-simulated with `curl` against `/api/fiestas/:id` or by opening the `#F:...`
+simulated with `curl` against `/api/parties/:id` or by opening the `#F:...`
 link in another tab/profile. There is no automated test suite; verification is
 browser-based.

@@ -94,10 +94,11 @@ None.
   - User-controlled strings are routed through `escapeHtml()` before HTML
     insertion in reviewed paths.
   - Basic headers were added in this pass: `X-Content-Type-Options`,
-    `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options`. Because
-    nginx does not inherit parent `add_header` directives into locations that
-    define their own `add_header`, these headers are duplicated on `/` and
-    `/index.html`, where `Cache-Control` is also set.
+    `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options`, factored
+    into `deployment/nginx/security-headers.conf`. Because nginx does not
+    inherit parent `add_header` directives into locations that define their
+    own `add_header`, this file is `include`d again on `/` and `/index.html`,
+    where `Cache-Control` is also set.
 - False positive notes: This is not an exploitable XSS finding by itself; it is
   a hardening gap around a frontend style that relies heavily on disciplined
   escaping.

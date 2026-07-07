@@ -539,6 +539,22 @@ function enterrar(coleccion, ent){
 
 const elItem = id => S && S.items.find(x => x.id === id);
 
+// fuera de los repartos la gente que ya no está en la peña; si un gasto se
+// quedara sin nadie que lo cate, pasa a «entre todos» antes que descuadrar
+// las cuentas. Sin sello nuevo: es limpieza derivada, no una edición — así
+// nunca pisa en la fusión algo que este móvil no haya visto.
+function normalizarRepartos(items, gente){
+  const vivos = new Set(gente.map(p => p.id));
+  for(let i = 0; i < items.length; i++){
+    const it = items[i];
+    if(!it.consumen) continue;
+    const vivosCons = it.consumen.filter(id => vivos.has(id));
+    if(vivosCons.length !== it.consumen.length){
+      items[i] = {...it, consumen: vivosCons.length ? vivosCons : null};
+    }
+  }
+}
+
 // las marcas de bizum no pueden crecer sin freno ni referirse a gente que ya
 // no está (el servidor rechaza estados con más de 500 claves): se poda al
 // fusionar Y al marcar (el camino normal de un solo móvil nunca fusiona).
@@ -786,17 +802,6 @@ function fusionar(a, b){
       presentes.add(id);
     }
   }
-  // 2) con la peña ya asentada, fuera de los repartos la gente que de verdad
-  //    ya no está (borrado consolidado); si nadie recuperable queda, el gasto
-  //    pasa a «entre todos» antes que descuadrar las cuentas
-  for(let i = 0; i < items.length; i++){
-    const it = items[i];
-    if(!it.consumen) continue;
-    const vivosCons = it.consumen.filter(id => presentes.has(id));
-    if(vivosCons.length !== it.consumen.length){
-      items[i] = {...it, consumen: vivosCons.length ? vivosCons : null};
-    }
-  }
   // la peña no puede quedarse vacía: dos llaves borrando en paralelo pueden
   // enterrar a todo el mundo (cada guard local pasa en su móvil). Nadie
   // quiso eso: se recupera el id más bajo, elección determinista.
@@ -811,9 +816,11 @@ function fusionar(a, b){
   if(gente.length && !gente.some(p => p.admin)){
     [...gente].sort((x,y) => x.id < y.id ? -1 : 1)[0].admin = true;
   }
-  // podar DESPUÉS de las resurrecciones: las marcas de alguien que vuelve
-  // por estar referenciado no pueden borrarse (sus bizums saldados saldrían
-  // otra vez como pendientes)
+  // con la peña definitivamente asentada (resurrecciones y repescas hechas):
+  // 2) fuera de los repartos la gente cuyo borrado se ha consolidado
+  normalizarRepartos(items, gente);
+  // y podar saldados DESPUÉS de las resurrecciones: las marcas de alguien
+  // que vuelve no pueden borrarse (sus bizums saldados saldrían pendientes)
   podarSaldados(saldados, gente);
   const vivos = new Set([...gente, ...items].map(x => x.id));
   return {
@@ -1380,11 +1387,13 @@ function sheetPersona(pid){
         i.consumen.length === 1 && i.consumen[0] === pid))
       return toast('Hay compras que solo cata esa persona: corrígelas antes');
     if(q.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
-    // ojo: aquí NO se reescriben sus items. La limpieza (soltar lo que traía,
-    // sacarla de los repartos) se deriva de la lápida en la fusión, y solo si
-    // el borrado de verdad se consolida: si la persona resucita porque compró
-    // algo que este móvil aún no había visto, sus partes se quedan como están.
+    // ojo: aquí NO se reescriben sus items con sello nuevo. Sus claims quedan
+    // huérfanos (la UI los trata como «Sin dueño») y el reparto se limpia con
+    // la pasada derivada — la misma que corre en la fusión, donde además solo
+    // se aplica si el borrado de verdad se consolida: si la persona resucita
+    // porque compró algo que este móvil no había visto, sus partes se quedan.
     enterrar('gente', q);
+    normalizarRepartos(S.items, S.gente);
     guardar(); cerrarSheet(); pintar();
     toast(q.nombre + ' ya no está en la peña');
   };

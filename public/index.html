@@ -488,6 +488,8 @@ const persona = id => S && S.gente.find(p=>p.id===id);
 const inicial = n => n.trim()[0].toUpperCase();
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const consumidores = it => (it.consumen && it.consumen.length ? it.consumen : S.gente.map(p=>p.id));
+const itemSinDueno = it => it && (it.estado === 'pendiente' ||
+  (it.estado === 'pillada' && !persona(it.pilladorId)));
 const soyAdmin = () => { const p = persona(S && S.yo); return !!(p && p.admin); };
 const numAdmins = () => S.gente.filter(p=>p.admin).length;
 // id nuevo = prefijo + momento + azar + contador. El azar es imprescindible
@@ -1408,7 +1410,7 @@ function mensajeCompartir(tipo, pid){
       `Entra, di quién eres y apunta lo que pilles:\n${enlace}`;
   }
   if(tipo === 'lista'){
-    const pend = S.items.filter(i=>i.estado==='pendiente');
+    const pend = S.items.filter(itemSinDueno);
     return `Faltan cosas pa «${n}»:\n` +
       pend.map(i=>'· ' + i.nombre).join('\n') +
       `\n\nQuien pueda, que se lo pida aquí:\n${enlace}`;
@@ -1653,7 +1655,7 @@ function heroMiniHtml(){
 function vistaFiesta(c){
   const yo = persona(S.yo);
   const f = fechaBonita(S.fiesta.fecha);
-  const sinDueno = S.items.filter(i=>i.estado==='pendiente').length;
+  const sinDueno = S.items.filter(itemSinDueno).length;
   const porResolver = S.items.filter(i=>i.estado!=='comprada').length;
   const pendBizums = bizumsPendientes(c).length;
 
@@ -1788,7 +1790,7 @@ function vistaLista(){
 
   const porComprar = S.items.filter(i=>i.estado!=='comprada');
   const compradas = S.items.filter(i=>i.estado==='comprada');
-  const sinDueno = S.items.filter(i=>i.estado==='pendiente').length;
+  const sinDueno = S.items.filter(itemSinDueno).length;
 
   return `
     <div class="cabecera"><h1>La lista</h1><div class="sub">${sub}</div></div>
@@ -2011,11 +2013,7 @@ function conectar(v){
   v.querySelectorAll('[data-pillar]').forEach(b => b.onclick = () => {
     if(!S.yo) return sheetIdentidad(true);
     const it = elItem(b.dataset.pillar);
-    // pendiente, o pillada por alguien que ya no está en la peña (su claim
-    // queda huérfano tras el borrado y la cosa vuelve a estar libre)
-    const libre = it && (it.estado === 'pendiente' ||
-      (it.estado === 'pillada' && !persona(it.pilladorId)));
-    if(!libre){
+    if(!itemSinDueno(it)){
       pintar(); return toast('Alguien se ha adelantado: esa ya está resuelta.');
     }
     it.estado='pillada'; it.pilladorId=S.yo;

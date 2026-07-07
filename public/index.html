@@ -1364,8 +1364,18 @@ function sheetPersona(pid){
       return toast('Hay compras que solo cata esa persona: corrígelas antes');
     if(q.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
     S.items.forEach(i => {
-      if(i.pilladorId === pid){ i.estado='pendiente'; delete i.pilladorId; tocar(i); }
-      if(i.consumen && i.consumen.includes(pid)){ i.consumen = i.consumen.filter(x=>x!==pid); tocar(i); }
+      // retoque mínimo (+1 sobre lo VISTO, sin reloj): esta limpieza derivada
+      // solo puede ganar a la versión que la llave tenía delante. Una compra
+      // concurrente que aún no había bajado gana la fusión y conserva su
+      // dinero (y resucita al pagador, bloqueando el borrado como es debido).
+      if(i.pilladorId === pid){
+        i.estado='pendiente'; delete i.pilladorId;
+        i.mod = (i.mod || 0) + 1; i.modPor = S.yo || null;
+      }
+      if(i.consumen && i.consumen.includes(pid)){
+        i.consumen = i.consumen.filter(x=>x!==pid);
+        i.mod = (i.mod || 0) + 1; i.modPor = S.yo || null;
+      }
     });
     enterrar('gente', q);
     guardar(); cerrarSheet(); pintar();

@@ -1726,7 +1726,7 @@ function listView(){
     // Bought item: green checkIcon on the left, tap to edit.
     if(isBought){
       const n = consumerIds(it).length;
-      return `<div class="card item-card bought-card" data-editar="${escapeHtml(it.id)}" role="button" tabindex="0"
+      return `<div class="card item-card bought-card" data-edit="${escapeHtml(it.id)}" role="button" tabindex="0"
         aria-label="Comprada: ${escapeHtml(it.name)}, ${eur(it.priceCents||0)}. Tocar para corregirla.">
         <div class="fila" style="align-items:center">
           <span class="bought-checkIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
@@ -2027,19 +2027,19 @@ function bindView(v){
     if(!S.me) return identitySheet(true);
     expenseSheet(b.dataset.buy);
   });
-  v.querySelectorAll('[data-editar]').forEach(card => card.onclick = e => {
+  v.querySelectorAll('[data-edit]').forEach(card => card.onclick = e => {
     if(e.target.closest('button')) return;
-    const it = S.items.find(x=>x.id===card.dataset.editar);
+    const it = S.items.find(x=>x.id===card.dataset.edit);
     if(!it) return;
     if(!isAdmin() && it.payerId !== S.me){
       const who = personById(it.payerId);
       return toast('Solo ' + (who?who.name:'quien la pagó') + ' o la llave pueden tocarla');
     }
-    expenseSheet(card.dataset.editar);
+    expenseSheet(card.dataset.edit);
   });
   v.querySelectorAll('[data-remove-button]').forEach(b => b.onclick = e => {
     e.stopPropagation();
-    const it = itemById(b.dataset.remove-button);
+    const it = itemById(b.dataset.removeButton);
     if(!it) return render();
     if(it.status === 'bought'){
       // Another phone just bought it; deleting money requires confirmation.

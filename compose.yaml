@@ -1,19 +1,44 @@
-# Stack de servidor: nginx sirve public/ y cloudflared lo expone en
-# https://collados.alexdepablos.es. Pensado para el server de Hetzner
-# (ver docs/despliegue.md); en local no hace falta, abre public/index.html.
-name: collados
+# Server stack: nginx serves public/ and proxies /api/ to the api container for
+# shared parties; cloudflared exposes it at https://apachas.alexdepablos.es.
+# Intended for the Hetzner server. For local development, `node server/api.js`
+# is enough. See docs/deployment.md.
+name: apachas
 
 services:
   web:
     image: nginx:1.28-alpine
     restart: unless-stopped
     ports:
-      # Solo loopback: el acceso público entra por el túnel, no por el puerto.
+      # Loopback only: public access enters through the tunnel, not this port.
       - "127.0.0.1:3200:80"
     volumes:
       - ./public:/usr/share/nginx/html:ro
+      - ./deployment/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deployment/nginx/security-headers.conf:/etc/nginx/security-headers.conf:ro
+    depends_on:
+      # Intentionally service_started instead of healthy. If the API goes down,
+      # static serving stays up, the app works in local mode, and /api returns
+      # 502.
+      api:
+        condition: service_started
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  api:
+    image: node:22-alpine
+    restart: unless-stopped
+    command: ["node", "/srv/api.js"]
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - ./server/api.js:/srv/api.js:ro
+      - api-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8010/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -25,7 +50,12 @@ services:
     user: "0:0"
     command: tunnel --config /etc/cloudflared/config.yml run
     volumes:
-      - ${COLLADOS_CLOUDFLARED_CONFIG_DIR:-/etc/collados-party/cloudflared}:/etc/cloudflared:ro
+      - ${APACHAS_CLOUDFLARED_CONFIG_DIR:-/etc/apachas/cloudflared}:/etc/cloudflared:ro
     depends_on:
       web:
         condition: service_healthy
+
+volumes:
+  # Shared parties, one JSON document each. Survives redeployments and is only
+  # lost with `docker compose down -v`.
+  api-data:

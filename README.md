@@ -1,32 +1,55 @@
 # A Pachas
 
-Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí.
+Party expenses for the Collado Hermoso crew, split evenly and settled with
+minimum Bizums.
 
-**En producción:** https://collados.alexdepablos.es
+**Production:** https://apachas.alexdepablos.es
 
-Apuntáis la lista de la compra de la fiesta, cada uno se pide lo que trae,
-se apunta lo que costó y quiénes lo catan, y A Pachas saca los bizums
-mínimos para quedar en paz. Se comparte por enlace, sin cuentas ni registros:
-todo vive en el navegador de cada uno.
+The group writes the party shopping list, each person claims what they will
+bring, bought items record price, payer, and consumers, and A Pachas calculates
+the minimum transfers required to settle up. The party is shared by WhatsApp
+link, with no accounts and no sign-in. If the network is unavailable, the app
+keeps working locally and uploads changes when connectivity returns.
 
-Es una sola página (`public/index.html`), sin build ni base de datos. El
-logo y la identidad salen del óculo del monasterio de Santa María de la
-Sierra, el monumento de Collado Hermoso — ver [docs/diseno.md](docs/diseno.md).
+The product is intentionally small:
 
-## Desarrollo
+- `public/index.html` contains the whole frontend.
+- `server/api.js` contains the whole API, using only the Node standard library.
+- There is no build step and no dependency install.
 
-No hay build ni dependencias. Abre `public/index.html` en el navegador o
-sirve la carpeta:
+Brand and UI rules live in [docs/design.md](docs/design.md). Product decisions
+live in [docs/product.md](docs/product.md).
+
+## Language Policy
+
+Source code, identifiers, implementation comments, commit messages, and
+technical/repository documentation are written in English.
+
+User-facing product copy stays in Spanish from Spain, with the village tone
+defined in `docs/design.md`. Persisted data fields, API payloads, endpoints,
+filenames, internal CSS classes, and local implementation identifiers are
+English.
+
+## Development
+
+Run the local API and frontend together:
+
+```sh
+node server/api.js
+```
+
+Open `http://localhost:8010`.
+
+For frontend-only local mode:
 
 ```sh
 python3 -m http.server -d public
 ```
 
-## Despliegue
+## Deployment
 
 ```sh
 scripts/deploy.sh
 ```
 
-Runbook completo (arquitectura, setup inicial, operación, rollback):
-[docs/despliegue.md](docs/despliegue.md).
+The full infrastructure runbook is in [docs/deployment.md](docs/deployment.md).

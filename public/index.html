@@ -5,182 +5,227 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Pachas — los gastos de la peña</title>
 <meta name="description" content="Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='24' cy='24' r='19' stroke='%232E6E9E' stroke-width='4.5'/%3E%3Cg stroke='%232E6E9E' stroke-width='4.5' stroke-linecap='round'%3E%3Cline x1='24' y1='24' x2='24' y2='5'/%3E%3Cline x1='24' y1='24' x2='42.1' y2='18.1'/%3E%3Cline x1='24' y1='24' x2='35.2' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='12.8' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='5.9' y2='18.1'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none'%3E%3Ccircle cx='24' cy='24' r='19' stroke='%235A50EC' stroke-width='4.5'/%3E%3Cg stroke='%235A50EC' stroke-width='4.5' stroke-linecap='round'%3E%3Cline x1='24' y1='24' x2='24' y2='5'/%3E%3Cline x1='24' y1='24' x2='42.1' y2='18.1'/%3E%3Cline x1='24' y1='24' x2='35.2' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='12.8' y2='39.4'/%3E%3Cline x1='24' y1='24' x2='5.9' y2='18.1'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
 <style>
+  /* v2 palette from the Claude Design redesign: bright neutral base, festive
+     violet primary, green = owed to you, coral = you owe. Ink-dark mode. */
   :root{
-    --bg:#EFE7D8;
-    --card:#FBF7ED;
-    --ink:#2B251C;
-    --muted:#80735C;
-    --line:#E0D5BE;
-    --sky:#2E6E9E;
-    --onsky:#FFFFFF;
-    --skysoft:#DCE7EE;
-    --green:#57704E;
-    --greensoft:#E3E9DA;
-    --terra:#A64B2A;
-    --terrasoft:#F1E0D3;
-    --chip:#E8DDC5;
-    --velo:rgba(24,19,11,.45);
-    --radius:14px;
+    --bg:#F5F6FA;
+    --card:#FFFFFF;
+    --ink:#171A21;
+    --muted:#6A7186;
+    --line:#E6E8F0;
+    --primary:#5A50EC;
+    --onprimary:#FFFFFF;
+    --primarysoft:#ECEAFE;
+    --green:#0E9256;
+    --greensoft:#DCF5E7;
+    --coral:#E5484D;
+    --coralsoft:#FDE8E8;
+    --chip:#EFF1F6;
+    --shadow:0 1px 2px rgba(16,18,24,.04);
+    --overlay:rgba(13,15,22,.5);
+    --radius:16px;
     --display:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;
-    --texto:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --text:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --bg:#1D1811; --card:#292219; --ink:#F0E8D6; --muted:#A2947B; --line:#3B3224;
-      --sky:#7FB0D9; --onsky:#14212C; --skysoft:#26333E;
-      --green:#98B089; --greensoft:#2B3524; --terra:#D98F66; --terrasoft:#3B2A1E;
-      --chip:#352D1F; --velo:rgba(0,0,0,.55);
+      --bg:#101218; --card:#191C25; --ink:#EDEFF6; --muted:#99A0B4; --line:#2A2E3C;
+      --primary:#9D96FF; --onprimary:#1B1747; --primarysoft:#2A2750;
+      --green:#45D48F; --greensoft:#17362A; --coral:#FF8080; --coralsoft:#3D2226;
+      --chip:#242836; --shadow:none; --overlay:rgba(13,15,22,.5);
     }
   }
   :root[data-theme="light"]{
-    --bg:#EFE7D8; --card:#FBF7ED; --ink:#2B251C; --muted:#80735C; --line:#E0D5BE;
-    --sky:#2E6E9E; --onsky:#FFFFFF; --skysoft:#DCE7EE;
-    --green:#57704E; --greensoft:#E3E9DA; --terra:#A64B2A; --terrasoft:#F1E0D3;
-    --chip:#E8DDC5; --velo:rgba(24,19,11,.45);
+    --bg:#F5F6FA; --card:#FFFFFF; --ink:#171A21; --muted:#6A7186; --line:#E6E8F0;
+    --primary:#5A50EC; --onprimary:#FFFFFF; --primarysoft:#ECEAFE;
+    --green:#0E9256; --greensoft:#DCF5E7; --coral:#E5484D; --coralsoft:#FDE8E8;
+    --chip:#EFF1F6; --shadow:0 1px 2px rgba(16,18,24,.04); --overlay:rgba(13,15,22,.5);
   }
   :root[data-theme="dark"]{
-    --bg:#1D1811; --card:#292219; --ink:#F0E8D6; --muted:#A2947B; --line:#3B3224;
-    --sky:#7FB0D9; --onsky:#14212C; --skysoft:#26333E;
-    --green:#98B089; --greensoft:#2B3524; --terra:#D98F66; --terrasoft:#3B2A1E;
-    --chip:#352D1F; --velo:rgba(0,0,0,.55);
+    --bg:#101218; --card:#191C25; --ink:#EDEFF6; --muted:#99A0B4; --line:#2A2E3C;
+    --primary:#9D96FF; --onprimary:#1B1747; --primarysoft:#2A2750;
+    --green:#45D48F; --greensoft:#17362A; --coral:#FF8080; --coralsoft:#3D2226;
+    --chip:#242836; --shadow:none; --overlay:rgba(13,15,22,.5);
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
     background:var(--bg); color:var(--ink);
-    font-family:var(--texto);
+    font-family:var(--text);
     font-size:15px; line-height:1.45;
     min-height:100dvh;
   }
   #app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
   main{flex:1;padding:14px 20px 104px;overflow-x:hidden}
-  body.sin-fiesta #tabbar{display:none}
-  body.sin-fiesta main{padding-bottom:30px}
+  body.no-party #tabbar{display:none}
+  body.no-party main{padding-bottom:30px}
   button{font-family:inherit;color:inherit}
-  :focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 
-  /* ---------- botón tema ---------- */
-  #btnTema{
-    position:fixed;top:14px;right:14px;z-index:50;
+  /* ---------- theme button ---------- */
+  #themeButton{
+    /* absolute instead of fixed: it scrolls with the page instead of floating
+       over cards. */
+    position:absolute;top:14px;right:14px;z-index:50;
     width:38px;height:38px;border-radius:999px;border:1px solid var(--line);
     background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;
     color:var(--muted);
   }
-  #btnTema svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;
+  #themeButton svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;
     stroke-linecap:round;stroke-linejoin:round}
 
-  /* ---------- cabeceras de pantalla ---------- */
-  .cabecera{margin:18px 2px 16px}
-  .cabecera h1{font-family:var(--display);font-size:26px;font-weight:700;margin:0;line-height:1.15}
-  .cabecera .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  /* ---------- screen headers ---------- */
+  .screen-header{margin:18px 2px 16px}
+  .screen-header h1{font-family:var(--display);font-size:26px;font-weight:700;margin:0;line-height:1.15}
+  .screen-header .sub{color:var(--muted);font-size:13px;margin-top:3px}
 
-  /* ---------- hero (Fiesta) ---------- */
+  /* ---------- party hero ---------- */
   .hero{text-align:center;padding:34px 0 6px}
-  .hero .logo{color:var(--sky)}
+  .hero .logo{color:var(--primary)}
   .hero .logo svg{width:76px;height:76px}
   .hero h1{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.5px;margin:10px 0 6px}
-  .hero .lema{color:var(--muted);font-size:14px;line-height:1.5;margin:0 auto 24px;max-width:34ch}
+  .hero .tagline{color:var(--muted);font-size:14px;line-height:1.5;margin:0 auto 24px;max-width:34ch}
 
-  /* ---------- comunes ---------- */
+  /* ---------- common ---------- */
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-bottom:10px}
+    padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
   .label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
     color:var(--muted);display:block;margin:16px 0 7px}
-  .card .label:first-child, .campo .label{margin-top:0}
+  .card .label:first-child, .field .label{margin-top:0}
   .btn{border:none;border-radius:11px;padding:12px 16px;font-size:15px;font-weight:600;cursor:pointer}
-  .btn-sky{background:var(--sky);color:var(--onsky)}
-  .btn-green{background:var(--green);color:var(--onsky)}
-  .btn-soft{background:var(--skysoft);color:var(--sky)}
-  .btn-borde{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+  .btn-primary{background:var(--primary);color:var(--onprimary)}
+  .btn-green{background:var(--green);color:var(--onprimary)}
+  .btn-soft{background:var(--primarysoft);color:var(--primary)}
+  .btn-outline{background:var(--card);border:1px solid var(--line);color:var(--ink)}
   .btn-mini{padding:8px 13px;font-size:13.5px;border-radius:9px}
   .btn-block{width:100%}
-  .link-quieto{background:none;border:none;color:var(--muted);font-size:13px;font-weight:500;
+  .quiet-link{background:none;border:none;color:var(--muted);font-size:13px;font-weight:500;
     cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px 2px}
   input[type=text],input[type=tel],input[type=date],textarea{
     font-family:inherit;font-size:16px;background:var(--card);color:var(--ink);
     border:1px solid var(--line);border-radius:11px;padding:12px 13px;width:100%;
   }
   input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
-  input:focus,textarea:focus{outline:none;border-color:var(--sky)}
+  input:focus,textarea:focus{outline:none;border-color:var(--primary)}
   input[type=date]{min-height:47px}
   textarea{resize:vertical;min-height:90px}
-  .fila-add{display:flex;gap:8px;margin-bottom:14px}
-  .fila-add input{flex:1;min-width:0}
-  .campo{margin-bottom:16px}
-  .vacio{text-align:center;color:var(--muted);padding:36px 20px;font-size:14px;line-height:1.6}
+  .add-row{display:flex;gap:8px;margin-bottom:14px}
+  .add-row input{flex:1;min-width:0}
+  .field{margin-bottom:16px}
+  .empty-state{text-align:center;color:var(--muted);padding:36px 20px;font-size:14px;line-height:1.6}
   .avatar{
-    width:40px;height:40px;border-radius:999px;background:var(--chip);flex:none;
+    width:40px;height:40px;border-radius:999px;background:var(--primarysoft);flex:none;
     display:inline-flex;align-items:center;justify-content:center;
-    font-family:var(--display);font-weight:700;font-size:16px;
+    font-family:var(--display);font-weight:700;font-size:16px;color:var(--primary);
   }
   .avatar.mini{width:24px;height:24px;font-size:11px}
-  .chip-estado{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
-  .chip-neutro{background:var(--chip);color:var(--muted)}
-  .chip-sky{background:var(--skysoft);color:var(--sky)}
-  .chip-green{background:var(--greensoft);color:var(--green)}
-  .llave{width:13px;height:13px;color:var(--muted);flex:none}
+  .status-chip{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .chip-neutral{background:var(--chip);color:var(--muted)}
+  .chip-primary{background:var(--primarysoft);color:var(--primary)}
+  .key-icon{width:13px;height:13px;color:var(--muted);flex:none}
 
-  /* ---------- fiesta ---------- */
-  .fiesta-card .titulo{font-family:var(--display);font-weight:700;font-size:20px;margin:2px 0 3px}
-  .fiesta-card .meta{color:var(--muted);font-size:13px;margin-bottom:12px}
-  .separador-o{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:18px 0}
-  .separador-o::before,.separador-o::after{content:'';flex:1;height:1px;background:var(--line)}
-  .crear-dashed{
+  /* ---------- party card (brand violet, same in both themes) ---------- */
+  .party-card{position:relative;overflow:hidden;background:#5A50EC;border-color:#5A50EC;color:#fff}
+  .party-card .label{color:#fff;opacity:.72}
+  .party-card .title{font-family:var(--display);font-weight:700;font-size:21px;margin:2px 0 3px}
+  .party-card .meta{font-size:13px;opacity:.82;margin-bottom:10px}
+  .party-card .brand-mark{position:absolute;right:-42px;top:-34px;width:200px;height:200px;
+    color:#fff;opacity:.16;pointer-events:none}
+  .party-card .brand-mark svg{width:100%;height:100%}
+  .btn-white{background:var(--card);color:var(--primary)}
+  .btn-live{background:rgba(255,255,255,.16);color:#fff}
+  .party-card .sync-status{color:#fff;opacity:.95;font-weight:600;font-size:13px}
+  .sync-status.live::before{content:'';display:inline-block;width:8px;height:8px;
+    border-radius:999px;background:#3DDC84;margin-right:7px}
+  .next-action-text{margin:0 0 12px;font-family:var(--display);font-weight:700;font-size:18px;line-height:1.3}
+  .create-dashed{
     width:100%;border:1.5px dashed var(--line);background:transparent;border-radius:var(--radius);
     color:var(--muted);font-size:14px;font-weight:600;padding:14px;cursor:pointer;
   }
-  .yo-fila{display:flex;align-items:center;gap:10px;padding:2px}
-  .yo-fila .quien{flex:1;font-size:14px;color:var(--muted)}
-  .yo-fila b{color:var(--ink)}
+  /* Compact row inside .card. It comes later in the cascade, so it owns its
+     spacing; 2px left the text pressed against the border. */
+  .identity-row{display:flex;align-items:center;gap:10px;padding:11px 14px}
+  .identity-row .who{flex:1;font-size:14px;color:var(--muted)}
+  .identity-row b{color:var(--ink)}
 
-  /* ---------- lista ---------- */
-  .item-card .fila{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}
-  .item-card .nombre{font-weight:600;font-size:15px;line-height:1.35;padding-top:2px}
+  /* ---------- list ---------- */
+  .item-card .item-row{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}
+  .item-card .name{font-weight:600;font-size:15px;line-height:1.35;padding-top:2px}
   .item-card .meta{color:var(--muted);font-size:13px;margin-top:3px}
-  .item-card .acciones{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:11px}
-  .quitar{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;
+  .item-card .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:11px}
+  .remove-button{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;
     padding:4px 6px;line-height:1;opacity:.6;flex:none}
-  .comprada-card{cursor:pointer}
-  .comprada-card:active{filter:brightness(.97)}
+  .bought-card{cursor:pointer}
+  .bought-card:active{filter:brightness(.97)}
+  .bought-checkIcon{width:26px;height:26px;border-radius:999px;background:var(--greensoft);
+    color:var(--green);display:inline-flex;align-items:center;justify-content:center;
+    flex:none;margin-top:1px}
+  .bought-checkIcon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6;
+    stroke-linecap:round;stroke-linejoin:round}
 
-  /* ---------- peña ---------- */
-  .persona-fila{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer}
-  .persona-fila:last-child{border-bottom:none}
-  .persona-fila .centro{flex:1;min-width:0}
-  .persona-fila .nombre{font-weight:600;font-size:15px;display:flex;align-items:center;gap:6px}
-  .persona-fila .subtexto{color:var(--muted);font-size:13px;margin-top:1px}
-  .persona-fila .saldo{text-align:right;font-variant-numeric:tabular-nums}
-  .persona-fila .saldo .cifra{font-weight:600;font-size:14.5px}
-  .persona-fila .saldo .estado{display:block;font-size:11px;color:var(--muted)}
-  .saldo-verde{color:var(--green)}
-  .saldo-terra{color:var(--terra)}
-  .saldo-neutro{color:var(--muted)}
+  /* ---------- group ---------- */
+  .person-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+  .person-row:last-child{border-bottom:none}
+  .person-row .center{flex:1;min-width:0}
+  .person-row .name{font-weight:600;font-size:15px;display:flex;align-items:center;gap:6px}
+  .person-row .secondary-text{color:var(--muted);font-size:13px;margin-top:1px}
+  .person-row .balance{text-align:right;font-variant-numeric:tabular-nums}
+  .person-row .balance .amount{font-weight:600;font-size:14.5px}
+  .person-row .balance .status{display:block;font-size:11px;color:var(--muted)}
+  .balance-green{color:var(--green)}
+  .balance-coral{color:var(--coral)}
+  .balance-neutral{color:var(--muted)}
 
-  /* ---------- cuentas ---------- */
-  .total-card{text-align:center;padding:20px 14px}
-  .total-card .cifra{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.5px}
-  .total-card .porcabeza{color:var(--muted);font-size:13px;margin-top:3px}
-  .bizum-fila{display:flex;align-items:center;gap:11px}
-  .bizum-fila.hecho{opacity:.55}
-  .bizum-fila .quien{flex:1;font-size:14.5px;font-weight:600;min-width:0}
-  .bizum-fila .quien svg{width:14px;height:14px;color:var(--muted);vertical-align:-2px;margin:0 3px}
-  .bizum-fila .cuanto{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .check{
+  /* ---------- accounts ---------- */
+  .total-card{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    padding:18px 16px;text-align:left}
+  .total-card .amount{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.5px;
+    font-variant-numeric:tabular-nums}
+  .total-card .per-head{color:var(--muted);font-size:13px;text-align:right}
+  .bizum-row{display:flex;align-items:center;gap:11px}
+  .bizum-row.done{opacity:.55}
+  .bizum-row .who{flex:1;font-size:14.5px;font-weight:600;min-width:0}
+  .bizum-row .who svg{width:14px;height:14px;color:var(--muted);vertical-align:-2px;margin:0 3px}
+  .bizum-row .transfer-amount{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .checkIcon{
     width:30px;height:30px;border-radius:999px;border:1.5px solid var(--line);
     background:transparent;cursor:pointer;flex:none;
     display:inline-flex;align-items:center;justify-content:center;color:transparent;
   }
-  .check.on{background:var(--green);border-color:var(--green);color:var(--onsky)}
-  .check svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;
+  .checkIcon.on{background:var(--green);border-color:var(--green);color:var(--onprimary)}
+  .checkIcon svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;
     stroke-linecap:round;stroke-linejoin:round}
-  .enpaz{color:var(--green);text-align:center;font-weight:600;font-size:14.5px;padding:18px 10px 6px}
-  .pie-nota{color:var(--muted);font-size:12.5px;text-align:center;margin-top:14px}
+  .settled-message{color:var(--green);text-align:center;font-weight:600;font-size:14.5px;padding:18px 10px 6px}
+  .footnote{color:var(--muted);font-size:12.5px;text-align:center;margin-top:14px}
+  .my-account-amount{font-family:var(--display);font-weight:800;font-size:32px;letter-spacing:-.5px;
+    line-height:1.1;font-variant-numeric:tabular-nums}
+  .my-account-breakdown{color:var(--muted);font-size:13px;margin-top:3px}
+  .my-account-action{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);
+    margin-top:12px;padding-top:11px;font-size:14px}
+  .my-account-action .text{flex:1;min-width:0}
+  .my-account-action .btn{flex:none}
+
+  /* ---------- actionable home / sharing ---------- */
+  .hero-mini{display:flex;align-items:center;gap:8px;padding:14px 2px 12px;color:var(--primary)}
+  .hero-mini svg{width:24px;height:24px}
+  .hero-mini .wordmark{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.3px;color:var(--ink)}
+  .sync-status{color:var(--muted);font-size:12.5px;margin-top:10px}
+  .balance-card{display:flex;align-items:center;gap:10px}
+  .balance-card .center{flex:1;min-width:0}
+  .balance-card .label{margin:0 0 1px}
+  .balance-card .amount{font-family:var(--display);font-weight:800;font-size:24px;
+    letter-spacing:-.4px;font-variant-numeric:tabular-nums;line-height:1.15}
+  .btn-text{background:none;border:none;color:var(--primary);font-weight:600;font-size:14.5px;cursor:pointer;padding:6px 4px}
+  .preview{white-space:pre-wrap;overflow-wrap:break-word;background:var(--bg);border:1px solid var(--line);
+    border-radius:11px;padding:12px 13px;font-size:13px;line-height:1.55;max-height:36dvh;overflow-y:auto}
+  .history-line{color:var(--muted);font-size:12.5px;text-align:center;margin-top:14px}
+  .centered{display:block;margin:10px auto 0;text-align:center}
 
   /* ---------- tab bar ---------- */
   nav#tabbar{
@@ -196,18 +241,19 @@
   }
   .tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;
     stroke-linecap:round;stroke-linejoin:round}
-  .tab.activa{color:var(--sky)}
+  .tab.active{color:var(--primary)}
   .tab .badge{
     position:absolute;top:3px;right:calc(50% - 24px);
-    background:var(--terra);color:var(--onsky);font-size:9.5px;font-weight:700;
+    background:var(--coral);color:var(--onprimary);font-size:9.5px;font-weight:700;
     min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;
     font-variant-numeric:tabular-nums;
   }
+  .tab .badge[hidden]{display:none}
 
   /* ---------- sheet ---------- */
-  #velo{position:fixed;inset:0;background:var(--velo);z-index:60;opacity:0;
+  #overlay{position:fixed;inset:0;background:var(--overlay);z-index:60;opacity:0;
     pointer-events:none;transition:opacity .2s}
-  #velo.abierto{opacity:1;pointer-events:auto}
+  #overlay.open{opacity:1;pointer-events:auto}
   #sheet{
     position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--card);
     border-radius:18px 18px 0 0;border-top:1px solid var(--line);
@@ -215,9 +261,9 @@
     max-width:480px;margin:0 auto;transform:translateY(105%);transition:transform .25s;
     max-height:85dvh;overflow-y:auto;
   }
-  #sheet.abierto{transform:translateY(0)}
-  .asa{width:36px;height:4px;border-radius:99px;background:var(--line);margin:6px auto 16px}
-  .sheet-titulo{font-family:var(--display);font-size:20px;font-weight:700;margin:0 0 4px;text-wrap:balance}
+  #sheet.open{transform:translateY(0)}
+  .sheet-handle{width:36px;height:4px;border-radius:99px;background:var(--line);margin:6px auto 16px}
+  .sheet-title{font-family:var(--display);font-size:20px;font-weight:700;margin:0 0 4px;text-wrap:balance}
   .sheet-sub{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
   .pills{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
   .pill{
@@ -228,22 +274,22 @@
   .pill .avatar{width:24px;height:24px;font-size:11px}
   .pill.on{border-color:var(--green);background:var(--greensoft)}
   .pill.off{opacity:.4}
-  .pill.solo-texto{padding:6px 13px}
-  .pill.on.pill-sky{border-color:var(--sky);background:var(--skysoft)}
-  .precio-input{display:flex;align-items:center;gap:10px}
-  .precio-input input{font-size:24px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
-  .precio-input .eur{font-size:19px;font-weight:600;color:var(--muted)}
-  .sheet-botones{display:flex;gap:10px;margin-top:22px}
-  .sheet-botones .btn{flex:1}
-  .link-borrar{background:none;border:none;color:var(--terra);font-size:13.5px;
+  .pill.text-only{padding:6px 13px}
+  .pill.on.pill-primary{border-color:var(--primary);background:var(--primarysoft)}
+  .price-input{display:flex;align-items:center;gap:10px}
+  .price-input input{font-size:24px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+  .price-input .eur{font-size:19px;font-weight:600;color:var(--muted)}
+  .sheet-actions{display:flex;gap:10px;margin-top:22px}
+  .sheet-actions .btn{flex:1}
+  .delete-link{background:none;border:none;color:var(--coral);font-size:13.5px;
     font-weight:600;margin:16px auto 0;display:block;cursor:pointer}
-  .opcion-menu{
+  .menu-option{
     display:block;width:100%;background:var(--card);
     border:1px solid var(--line);border-radius:11px;
     font-size:14.5px;font-weight:600;padding:13px 14px;margin-bottom:8px;cursor:pointer;text-align:left;
   }
-  .opcion-menu small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
-  .nota{border:1px solid var(--line);border-left:3px solid var(--sky);
+  .menu-option small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
+  .note{border:1px solid var(--line);border-left:3px solid var(--primary);
     border-radius:9px;padding:11px 13px;font-size:13px;color:var(--muted);line-height:1.5;margin-top:16px}
 
   /* ---------- toast ---------- */
@@ -253,7 +299,7 @@
     padding:10px 17px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;
     max-width:86vw;text-align:center;
   }
-  #toast.ver{opacity:1;transform:translate(-50%,0)}
+  #toast.visible{opacity:1;transform:translate(-50%,0)}
   @media (prefers-reduced-motion:reduce){
     *{transition:none !important;animation:none !important}
   }
@@ -261,118 +307,190 @@
 </head>
 <body>
 
-<button id="btnTema" type="button" aria-label="Cambiar entre modo claro y oscuro">
+<button id="themeButton" type="button" aria-label="Cambiar entre modo claro y oscuro">
   <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
 </button>
 
 <div id="app">
-  <main id="vista"></main>
+  <main id="preview"></main>
   <nav id="tabbar">
     <div class="tabbar-in">
-      <button class="tab" data-tab="fiesta" type="button">
+      <button class="tab" data-tab="party" type="button">
         <svg viewBox="0 0 48 48" stroke-width="3.4"><circle cx="24" cy="24" r="19"/><g stroke-linecap="round"><line x1="24" y1="24" x2="24" y2="5"/><line x1="24" y1="24" x2="42.1" y2="18.1"/><line x1="24" y1="24" x2="35.2" y2="39.4"/><line x1="24" y1="24" x2="12.8" y2="39.4"/><line x1="24" y1="24" x2="5.9" y2="18.1"/></g></svg>
         Fiesta</button>
-      <button class="tab" data-tab="lista" type="button">
+      <button class="tab" data-tab="list" type="button">
         <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
         Lista</button>
-      <button class="tab" data-tab="pena" type="button">
+      <button class="tab" data-tab="group" type="button">
         <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.4c2.3.2 4 1.7 4.5 4.1"/></svg>
         Peña</button>
-      <button class="tab" data-tab="cuentas" type="button">
+      <button class="tab" data-tab="accounts" type="button">
         <svg viewBox="0 0 24 24"><path d="M4 7h13M17 7l-3-3M17 7l-3 3"/><path d="M20 17H7M7 17l3-3M7 17l3 3"/></svg>
-        Cuentas<span class="badge" id="badgeCuentas" hidden></span></button>
+        Cuentas<span class="badge" id="accountsBadge" hidden></span></button>
     </div>
   </nav>
 </div>
 
-<div id="velo"></div>
+<div id="overlay"></div>
 <div id="sheet" role="dialog" aria-modal="true"></div>
 <div id="toast" role="status"></div>
 
 <script>
 'use strict';
-/* ================= estado ================= */
-const CLAVE = 'a-pachas-v1';
-const CLAVES_VIEJAS = ['el-bote-proto-v2', 'el-bote-proto-v1'];
-const CLAVE_TEMA = 'a-pachas-tema';
+/* ================= state ================= */
+const STORAGE_KEY = 'a-pachas-v2';
+const THEME_KEY = 'a-pachas-theme';
+const API = '/api';
+const now = () => Date.now();
+
+// Normalize current v5 state loaded from localStorage, AP2 links, or the server.
+// IDs are sanitized because they eventually get interpolated into DOM attributes;
+// a poisoned state cannot smuggle a weird ID into HTML.
+const ID_RE = /^[A-Za-z0-9_-]{1,40}$/;
+const SETTLED_KEY_RE = /^[A-Za-z0-9_-]{1,40}>[A-Za-z0-9_-]{1,40}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+function migrateState(o){
+  if(!o) return o;
+  o.v = 5;
+  if(!o.party || typeof o.party !== 'object') o.party = {name:'A Pachas', date:null, updatedAt:0};
+  if(!o.party.updatedAt) o.party.updatedAt = 0;
+  // The date ends up in value="...": it is YYYY-MM-DD or nothing.
+  if(o.party.date != null && !DATE_RE.test(o.party.date)) o.party.date = null;
+  o.people = (o.people || []).filter(p => p && typeof p.id === 'string' && ID_RE.test(p.id));
+  o.people.forEach((p,i) => {
+    if(p.admin === undefined) p.admin = i < 2;
+    if(!p.updatedAt) p.updatedAt = 0;
+  });
+  o.items = (o.items || []).filter(it => it && typeof it.id === 'string' && ID_RE.test(it.id));
+  o.items.forEach(it => { if(!it.updatedAt) it.updatedAt = 0; });
+  o.settled = o.settled || {};
+  for(const k in o.settled){
+    if(!SETTLED_KEY_RE.test(k)){ delete o.settled[k]; continue; }
+    if(!o.settled[k] || typeof o.settled[k] !== 'object') delete o.settled[k];
+    else if(!o.settled[k].at) o.settled[k].at = 0;
+  }
+  o.tombstones = (o.tombstones || []).filter(l => l && typeof l.id === 'string' && ID_RE.test(l.id));
+  o.tombstones.forEach(l => {
+    if(!l.at) l.at = 0;
+    if(l.seenAt == null) l.seenAt = l.at;
+  });
+  return o;
+}
 
 const LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4.5"><circle cx="24" cy="24" r="19"/><g stroke-linecap="round"><line x1="24" y1="24" x2="24" y2="5"/><line x1="24" y1="24" x2="42.1" y2="18.1"/><line x1="24" y1="24" x2="35.2" y2="39.4"/><line x1="24" y1="24" x2="12.8" y2="39.4"/><line x1="24" y1="24" x2="5.9" y2="18.1"/></g></svg>`;
-const LLAVE = `<svg class="llave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Admin"><circle cx="8" cy="8" r="4.5"/><path d="M11 11l9 9M17 17l2.5-2.5M14 14l2.5-2.5"/></svg>`;
+const KEY_ICON = `<svg class="key-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="La llave"><circle cx="8" cy="8" r="4.5"/><path d="M11 11l9 9M17 17l2.5-2.5M14 14l2.5-2.5"/></svg>`;
 
-function demo(){
-  return {
-    v:3,
-    fiesta: {nombre:'Fiestas de Collado 2026', fecha:null, ejemplo:true},
-    yo: null,
-    tab: 'fiesta',
-    gente: [
-      {id:'p1', nombre:'Edu',    admin:true},
-      {id:'p2', nombre:'Marta',  admin:true},
-      {id:'p3', nombre:'Paco',   admin:false},
-      {id:'p4', nombre:'Lucía',  admin:false},
-      {id:'p5', nombre:'Andrés', admin:false},
+function demoState(){
+  return migrateState({
+    party: {name:'Fiestas de Collado 2026', date:null, demo:true},
+    me: null,
+    tab: 'party',
+    remote: null,
+    people: [
+      {id:'p1', name:'Edu',    admin:true},
+      {id:'p2', name:'Marta',  admin:true},
+      {id:'p3', name:'Paco',   admin:false},
+      {id:'p4', name:'Lucía',  admin:false},
+      {id:'p5', name:'Andrés', admin:false},
     ],
     items: [
-      {id:'i1', nombre:'Leña para la caldereta', estado:'comprada', compradorId:'p3', precio:1800, consumen:null},
-      {id:'i2', nombre:'Barril de cerveza',      estado:'comprada', compradorId:'p1', precio:8450, consumen:['p1','p2','p3','p5']},
-      {id:'i3', nombre:'Hielo (3 bolsas)',       estado:'comprada', compradorId:'p4', precio:600,  consumen:null},
-      {id:'i4', nombre:'Cordero',                estado:'pillada',  pilladorId:'p1'},
-      {id:'i5', nombre:'Vasos y servilletas',    estado:'pillada',  pilladorId:'p2'},
-      {id:'i6', nombre:'Pan (mucho pan)',        estado:'pendiente'},
-      {id:'i7', nombre:'Café y orujo pa después',estado:'pendiente'},
+      {id:'i1', name:'Leña para la caldereta', status:'bought', payerId:'p3', priceCents:1800, consumers:null},
+      {id:'i2', name:'Barril de cerveza',      status:'bought', payerId:'p1', priceCents:8450, consumers:['p1','p2','p3','p5']},
+      {id:'i3', name:'Hielo (3 bolsas)',       status:'bought', payerId:'p4', priceCents:600,  consumers:null},
+      {id:'i4', name:'Cordero',                status:'claimed',  claimerId:'p1'},
+      {id:'i5', name:'Vasos y servilletas',    status:'claimed',  claimerId:'p2'},
+      {id:'i6', name:'Pan (mucho pan)',        status:'pending'},
+      {id:'i7', name:'Café y orujo pa después',status:'pending'},
     ],
-    saldados: {},
-  };
+    settled: {},
+  });
 }
 
 let S = null;
 try {
-  S = JSON.parse(localStorage.getItem(CLAVE));
-  if(!S){
-    for(const vieja of CLAVES_VIEJAS){
-      const v = JSON.parse(localStorage.getItem(vieja));
-      if(v && v.gente){
-        v.v = 3;
-        if(typeof v.fiesta === 'string') v.fiesta = {nombre:v.fiesta, fecha:null, ejemplo:true};
-        v.gente.forEach((p,i) => { if(p.admin === undefined) p.admin = i < 2; });
-        if(!['fiesta','lista','pena','cuentas'].includes(v.tab)) v.tab = 'fiesta';
-        S = v;
-        break;
-      }
-    }
-  }
-  if(S && !['fiesta','lista','pena','cuentas'].includes(S.tab)) S.tab = 'fiesta';
+  S = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(S) migrateState(S);
+  if(S && !['party','list','group','accounts'].includes(S.tab)) S.tab = 'party';
 } catch(e){ S = null; }
 
-function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }catch(e){} }
+function saveLocal(sharedJson){
+  // Snapshot of the shared state as stored. save() compares this to
+  // distinguish real shared changes from purely local saves (tab, me). Callers
+  // that already have the serialization can pass it to avoid recalculating.
+  if(S && S.remote) sync.actualSharedJson = sharedJson || stateJson();
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){}
+}
+// Real save: always to the phone, and if the party is live, to the server after
+// a small delay so quick successive taps are batched.
+// S.pendingUpload is local and persisted; it remembers across sessions that
+// there are unsent changes, so reopening does not confuse them with being
+// up-to-date.
+function save(){
+  if(isRemoteParty()){
+    const j = stateJson();
+    const sharedChanged = j !== sync.actualSharedJson;                 // This save touched shared state.
+    if(sharedChanged) sync.rejected = false; // Real change: allow another upload attempt.
+    const notUploaded = sync.uploadedJson !== null && j !== sync.uploadedJson;   // Differs from confirmed server state.
+    if(sharedChanged || notUploaded){
+      S.pendingUpload = true;
+      // Retrying the last server-rejected state without new changes only
+      // repeats the 400 and toast.
+      if(!sync.rejected) scheduleUpload();
+    }
+    saveLocal(j);
+    return;
+  }
+  saveLocal();
+}
 
-/* ================= tema ================= */
+// When switching parties (open link, create, import, demoState, start another), the
+// previous party's sync state is irrelevant to the new one.
+function resetSync(){
+  clearTimeout(sync.timer);
+  sync.uploadedJson = null; sync.actualSharedJson = null; sync.uploadAgain = false;
+  sync.renderLater = false; sync.lastSeenAt = 0; sync.markOffline = false;
+  sync.offlineNotified = false; sync.rejected = false;
+}
+
+/* ================= theme ================= */
 (function(){
-  const t = localStorage.getItem(CLAVE_TEMA);
+  const t = localStorage.getItem(THEME_KEY);
   if(t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
 })();
-document.getElementById('btnTema').addEventListener('click', () => {
-  const raiz = document.documentElement;
-  const actual = raiz.dataset.theme ||
+document.getElementById('themeButton').addEventListener('click', () => {
+  const root = document.documentElement;
+  const currentTheme = root.dataset.theme ||
     (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  const nuevo = actual === 'dark' ? 'light' : 'dark';
-  raiz.dataset.theme = nuevo;
-  try{ localStorage.setItem(CLAVE_TEMA, nuevo); }catch(e){}
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = newTheme;
+  try{ localStorage.setItem(THEME_KEY, newTheme); }catch(e){}
 });
 
-/* ================= utilidades ================= */
+/* ================= utilities ================= */
 const $ = sel => document.querySelector(sel);
 const eur = c => (c/100).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
-const persona = id => S && S.gente.find(p=>p.id===id);
-const inicial = n => n.trim()[0].toUpperCase();
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const consumidores = it => (it.consumen && it.consumen.length ? it.consumen : S.gente.map(p=>p.id));
-const soyAdmin = () => { const p = persona(S && S.yo); return !!(p && p.admin); };
-const numAdmins = () => S.gente.filter(p=>p.admin).length;
+const personById = id => S && S.people.find(p=>p.id===id);
+const initial = n => n.trim()[0].toUpperCase();
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const consumerIds = it => (it.consumers && it.consumers.length ? it.consumers : S.people.map(p=>p.id));
+const isUnownedItem = it => it && (it.status === 'pending' ||
+  (it.status === 'claimed' && !personById(it.claimerId)));
+const isAdmin = () => { const p = personById(S && S.me); return !!(p && p.admin); };
+const adminCount = () => S.people.filter(p=>p.admin).length;
+// New ID = prefix + timestamp + random component + counter. Randomness is
+// required for live parties: two phones creating their first entity in the same
+// millisecond would otherwise collide and merge into one.
 let uid = 0;
-const nuevoId = pre => pre + Date.now().toString(36) + (uid++);
+function shortRandom(){
+  try {
+    const b = new Uint32Array(1);
+    crypto.getRandomValues(b);
+    return b[0].toString(36);
+  } catch(e){ return Math.random().toString(36).slice(2, 9); }
+}
+const newId = pre => pre + Date.now().toString(36) + shortRandom() + (uid++);
 
-function fechaBonita(f){
+function prettyDate(f){
   if(!f) return null;
   try {
     const d = new Date(f + 'T12:00:00');
@@ -381,18 +499,109 @@ function fechaBonita(f){
   } catch(e){ return null; }
 }
 
+// The mark stores the amount that was actually paid; if later accounts change
+// the Bizum between the same pair, the new amount becomes pending again.
+const bizumKey = b => b.de + '>' + b.a;
+const isBizumDone = b => {
+  const v = S.settled[bizumKey(b)];
+  return !!(v && v.done && (v.cents == null || v.cents === b.cents));
+};
+const pendingBizums = c => c.bizums.filter(b => !isBizumDone(b));
+const balanceClass = s => s > 0 ? 'balance-green' : (s < 0 ? 'balance-coral' : 'balance-neutral');
+
+// Last-edit stamp: cross-phone merging depends on this. It is monotonic against
+// the edited entity, so even if this phone's clock moves backwards, a real edit
+// always lands above the version and tombstone it overwrites.
+function touch(x){ x.updatedAt = Math.max(now(), (x.updatedAt || 0) + 1); x.updatedBy = S.me || null; return x; }
+
+// Protocol delete: remove from the collection and add an informed tombstone
+// (`seenAt`), keeping a local tombstone cap because the server rejects runaway
+// states.
+function tombstoneEntity(collection, entity){
+  S[collection] = S[collection].filter(x => x.id !== entity.id);
+  S.tombstones.push({id: entity.id, at: now(), seenAt: entity.updatedAt || 0});
+  if(S.tombstones.length > 300) S.tombstones = S.tombstones.slice(-300);
+}
+
+const itemById = id => S && S.items.find(x => x.id === id);
+
+// Remove deleted people from split lists. If an expense would be left with no
+// consumers, fall back to "everyone" rather than breaking accounts. No new edit
+// stamp: this is derived cleanup, not an edit, so merging never lets it
+// overwrite something this phone has not seen.
+function normalizeSplits(items, people){
+  const liveIds = new Set(people.map(p => p.id));
+  for(let i = 0; i < items.length; i++){
+    const it = items[i];
+    if(!it.consumers) continue;
+    const liveConsumerIds = it.consumers.filter(id => liveIds.has(id));
+    if(liveConsumerIds.length !== it.consumers.length){
+      items[i] = {...it, consumers: liveConsumerIds.length ? liveConsumerIds : null};
+    }
+  }
+}
+
+// Bizum marks cannot grow without bound or reference removed people; the server
+// rejects states with more than 500 keys. Prune both while merging and while
+// marking, because the normal single-phone path never merges.
+// Deterministic: the same state prunes the same way on every phone.
+function pruneSettled(settled, people){
+  const liveIds = new Set(people.map(p => p.id));
+  for(const k of Object.keys(settled)){
+    const pair = k.split('>');
+    if(!liveIds.has(pair[0]) || !liveIds.has(pair[1])) delete settled[k];
+  }
+  const keys = Object.keys(settled);
+  if(keys.length > 400){
+    keys.sort((x, y) => ((settled[x].at || 0) - (settled[y].at || 0)));
+    for(const k of keys.slice(0, keys.length - 400)) delete settled[k];
+  }
+}
+
+// Abort a sheet action whose premise is no longer true because the party changed
+// underneath it: close, repaint the truth, and notify consistently.
+function abortSheet(msg){ closeSheet(); render(); toast(msg); }
+function requireAdmin(){
+  if(isAdmin()) return true;
+  abortSheet('La llave ya no es tuya: eso no te toca.');
+  return false;
+}
+
+const personPill = (p, attr, classes) =>
+  `<button class="pill ${classes}" type="button" data-${attr}="${escapeHtml(p.id)}">${avatarHtml(p.id,true)}${escapeHtml(p.name)}</button>`;
+
+// Parse price into cents using Spanish notation: comma decimals and dot
+// thousands ("1.000" is one thousand euros, not one euro).
+function parsePriceCents(txt){
+  let s = String(txt).trim().replace(/[€\s]/g,'');
+  if(!s) return NaN;
+  if(s.includes(',')) s = s.replace(/\./g,'').replace(',', '.');
+  else if(/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,'');
+  if(!/^\d+(\.\d+)?$/.test(s)) return NaN;
+  return Math.round(parseFloat(s)*100);
+}
+
+function timeAgo(t){
+  if(!t) return 'hace nada';
+  const s = Math.max(0, Math.round((now() - t) / 1000));
+  if(s < 45) return 'hace un momento';
+  if(s < 3600) return `hace ${Math.round(s/60)} min`;
+  if(s < 86400) return `hace ${Math.round(s/3600)} h`;
+  return `hace ${Math.round(s/86400)} día${Math.round(s/86400)===1?'':'s'}`;
+}
+
 const avatarHtml = (id, mini) => {
-  const p = persona(id); if(!p) return '';
-  return `<span class="avatar ${mini?'mini':''}">${esc(inicial(p.nombre))}</span>`;
+  const p = personById(id); if(!p) return '';
+  return `<span class="avatar ${mini?'mini':''}">${escapeHtml(initial(p.name))}</span>`;
 };
 
 let toastTimer;
 function toast(msg){
-  const t = $('#toast'); t.textContent = msg; t.classList.add('ver');
-  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('ver'), 2600);
+  const t = $('#toast'); t.textContent = msg; t.classList.add('visible');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('visible'), 2600);
 }
 
-async function copiar(txt){
+async function copyToClipboard(txt){
   try { await navigator.clipboard.writeText(txt); return true; }
   catch(e){
     try {
@@ -405,734 +614,1570 @@ async function copiar(txt){
   }
 }
 
-/* ================= invitación por enlace ================= */
-function codigoFiesta(){
-  const limpio = {...S, yo:null, tab:'fiesta'};
-  const json = JSON.stringify(limpio);
+/* ================= links ================= */
+// Live link: #F:<id>:<key>. It intentionally lives in the hash so neither nginx
+// nor Cloudflare sees the write key. AP2 full-state links are local backups.
+const LIVE_LINK_RE = /F:([a-z2-9]{6,}):([a-z2-9]{6,})/i;
+
+function partyCode(){
+  // Whitelist through sharedFrom, which defines shared state. A new local
+  // field can never accidentally leak into snapshot links.
+  const snapshot = {...sharedFrom(S), me:null, tab:'party'};
+  snapshot.settled = {};
+  accounts().bizums.forEach(b => {
+    if(isBizumDone(b)) snapshot.settled[bizumKey(b)] = {...S.settled[bizumKey(b)]};
+  });
+  const json = JSON.stringify(snapshot);
   const b64 = btoa(unescape(encodeURIComponent(json)))
     .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-  return 'AP1:' + b64;
+  return 'AP2:' + b64;
 }
-function enlaceFiesta(){
-  return location.origin + location.pathname + '#' + codigoFiesta();
+function partyLink(){
+  if(S.remote) return location.origin + location.pathname + '#F:' + S.remote.id + ':' + S.remote.key;
+  return location.origin + location.pathname + '#' + partyCode();
 }
-function decodificar(texto){
-  const m = String(texto).match(/(?:AP1|EB1):([A-Za-z0-9_-]+)/);
+function decodeSnapshot(text){
+  const m = String(text).match(/AP2:([A-Za-z0-9_-]+)/);
   if(!m) return null;
   try {
     let b64 = m[1].replace(/-/g,'+').replace(/_/g,'/');
     while(b64.length % 4) b64 += '=';
     const obj = JSON.parse(decodeURIComponent(escape(atob(b64))));
-    if(!obj || !obj.gente || !obj.items || !obj.fiesta) return null;
-    obj.yo = null; obj.tab = 'fiesta'; obj.v = 3;
-    return obj;
+    if(!obj || !obj.people || !obj.items || !obj.party) return null;
+    obj.me = null; obj.tab = 'party'; obj.remote = null;
+    return migrateState(obj);
   } catch(e){ return null; }
 }
-function importar(texto){
-  const obj = decodificar(texto);
+// Before replacing the current party with another, leave a localStorage backup.
+// Live parties still live on the server anyway.
+function backupCurrentParty(){
+  if(S && !S.party.demo && (S.items.length || S.people.length > 1)){
+    try{ localStorage.setItem(STORAGE_KEY + '-previous', JSON.stringify(S)); }catch(e){}
+  }
+}
+function applyImported(obj){
+  backupCurrentParty();
+  resetSync();
+  S = obj; saveLocal(); render(); identitySheet(true);
+}
+function importParty(text){
+  const mv = String(text).match(LIVE_LINK_RE);
+  if(mv){
+    closeSheet();
+    openLiveLink(mv[1].toLowerCase(), mv[2].toLowerCase());
+    return true;
+  }
+  const obj = decodeSnapshot(text);
   if(!obj) return false;
-  S = obj; guardar(); pintar(); sheetIdentidad(true);
+  // A snapshot link must not silently disconnect a live party.
+  if(isRemoteParty()){
+    closeSheet();
+    confirmSheet('¿Abrir la fiesta del enlace?',
+      'Ese enlace lleva una copia congelada. Tu fiesta en vivo se queda a salvo: vuelves a ella con el enlace del grupo.',
+      () => applyImported(obj));
+    return true;
+  }
+  applyImported(obj);
   return true;
 }
 
-/* ================= cálculo de cuentas ================= */
-function cuentas(){
-  const pagado = {}, debe = {};
-  S.gente.forEach(p => { pagado[p.id]=0; debe[p.id]=0; });
+/* ================= live party sync ================= */
+const sync = {
+  uploadedJson: null,       // JSON of the last shared state confirmed by the server.
+  actualSharedJson: null, // JSON of shared state as actually saved locally.
+  timer: null,
+  uploading: false,
+  uploadAgain: false,     // A change arrived while an upload was in flight.
+  renderLater: false, // New state exists but repaint is deferred.
+  lastSeenAt: 0,          // Last successful server contact.
+  markOffline: false,
+  offlineNotified: false,
+  rejected: false,   // Server rejected state (400/413): do not retry blindly.
+};
+
+async function apiRequest(method, route, body){
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 8000);
+  try {
+    const r = await fetch(API + route, {
+      method: method,
+      headers: body ? {'Content-Type':'application/json'} : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      cache: 'no-store',
+      signal: ctl.signal,
+    });
+    let data = null;
+    try { data = await r.json(); } catch(e){}
+    return {status: r.status, body: data};
+  } finally { clearTimeout(t); }
+}
+
+// What travels to the server and in links: the party without local fields
+// (me, tab, remote). sharedFrom also canonicalizes key order because
+// comparisons are JSON-based.
+const sharedFrom = o => ({v:5, party:o.party, people:o.people, items:o.items,
+  settled:o.settled, tombstones:o.tombstones});
+const sharedState = () => sharedFrom(S);
+const stateJson = () => JSON.stringify(sharedState());
+
+// A real (non-demo) party with a server-backed remote. Does not imply sync is
+// currently succeeding; see isLiveSyncing for that.
+function isRemoteParty(){ return !!(S && S.remote && !S.party.demo); }
+// Genuinely live right now: remote, not a demo, and not currently offline or rejected.
+function isLiveSyncing(){ return isRemoteParty() && !sync.markOffline && !sync.rejected; }
+// Local-only party that could still be switched on.
+function canGoLive(){ return !S.remote && !S.party.demo; }
+
+// Entity merge: latest edit wins by `mod`, and the tombstone list prevents
+// deleted entities from coming back. A tombstone only buries an entity if it is
+// newer than that entity's latest edit; if someone re-saves a purchase after
+// someone else deleted it, the real payment survives and the losing tombstone is
+// discarded. a is usually server state, b is local state.
+function mergeStates(a, b){
+  const mod = x => (x && x.updatedAt) || 0;
+  const byLowestId = (x,y) => x.id < y.id ? -1 : 1;
+  // For two tombstones with the same ID, keep the one that saw the highest
+  // version, not the latest wall-clock timestamp. A later blind delete cannot
+  // degrade an informed one.
+  const strength = l => l.seenAt != null ? l.seenAt : (l.at || 0);
+  const tombstoneMap = new Map();
+  [...(a.tombstones||[]), ...(b.tombstones||[])].forEach(p => {
+    const previous = tombstoneMap.get(p.id);
+    if(!previous || strength(p) > strength(previous) ||
+       (strength(p) === strength(previous) && (p.at||0) > (previous.at||0))) tombstoneMap.set(p.id, p);
+  });
+  // The tombstone stores the version seen by the deleter. It can only bury what
+  // it knew. A blind delete cannot remove a purchase saved in a revision it
+  // never downloaded.
+  const isBuried = x => {
+    const l = tombstoneMap.get(x.id);
+    return !!l && strength(l) >= mod(x);
+  };
+  const mergeEntities = (la, lb) => {
+    const inA = new Map(la.map(x=>[x.id,x]));
+    const inB = new Map(lb.map(x=>[x.id,x]));
+    const res = [];
+    for(const x of lb) if(!inA.has(x.id) && !isBuried(x)) res.push(x);
+    for(const x of la){
+      const y = inB.get(x.id);
+      const winner = y && mod(y) > mod(x) ? y : x;
+      if(!isBuried(winner)) res.push(winner);
+    }
+    return res;
+  };
+  const settled = {...a.settled};
+  for(const k in (b.settled||{})){
+    const va = settled[k], vb = b.settled[k];
+    if(!va || ((vb && vb.at) || 0) > ((va && va.at) || 0)) settled[k] = vb;
+  }
+  const people = mergeEntities(a.people, b.people);
+  const items = mergeEntities(a.items, b.items);
+  // Person-deletion cleanup is derived here, not written at delete time. A
+  // rewrite from a stale view would overwrite unseen edits. First: a payer of a
+  // surviving expense cannot disappear because their credit would vanish; and
+  // if removing someone would leave an expense with no consumers, recover them.
+  const presentIds = new Set(people.map(p => p.id));
+  const candidates = new Map();
+  [...(a.people||[]), ...(b.people||[])].forEach(p => {
+    const prev = candidates.get(p.id);
+    if(!prev || mod(p) > mod(prev)) candidates.set(p.id, p);
+  });
+  const restoreIds = new Set();
+  for(const it of items){
+    if(it.payerId && !presentIds.has(it.payerId)) restoreIds.add(it.payerId);
+    if(it.consumers && it.consumers.length && it.consumers.every(id => !presentIds.has(id))){
+      it.consumers.forEach(id => restoreIds.add(id));
+    }
+  }
+  for(const id of restoreIds){
+    if(!presentIds.has(id) && candidates.has(id)){
+      people.push(candidates.get(id));
+      presentIds.add(id);
+    }
+  }
+  // The group cannot become empty. Two key holders deleting in parallel can bury
+  // everyone while each local guard passes on its own phone. That is never the
+  // intent, so restore the lowest ID deterministically.
+  if(!people.length && candidates.size){
+    const survivor = [...candidates.values()].sort(byLowestId)[0];
+    people.push(survivor);
+    presentIds.add(survivor.id);
+  }
+  // The admin role cannot disappear. If two admins demote each other at the
+  // same time, merging would leave nobody able to fix the party. The lowest ID
+  // inherits the role deterministically.
+  if(people.length && !people.some(p => p.admin)){
+    [...people].sort(byLowestId)[0].admin = true;
+  }
+  // Once the people set is settled, including resurrections and fallback
+  // restores, remove people whose deletion consolidated from split lists.
+  normalizeSplits(items, people);
+  // Prune settled after resurrections so settled marks for restored people are
+  // not deleted and shown as pending again.
+  pruneSettled(settled, people);
+  const liveIds = new Set([...people, ...items].map(x => x.id));
+  return {
+    v: 5,
+    party: mod(b.party) > mod(a.party) ? b.party : a.party,
+    people,
+    items,
+    settled,
+    // Drop tombstones that lost to a newer edit. The cap removes the oldest
+    // tombstones, not the most recently arrived ones.
+    tombstones: [...tombstoneMap.values()].filter(l => !liveIds.has(l.id))
+      .sort((x,y)=>(x.at||0)-(y.at||0)).slice(-300),
+  };
+}
+
+function adoptSharedState(c){
+  S.v = 5; S.party = c.party; S.people = c.people; S.items = c.items;
+  S.settled = c.settled; S.tombstones = c.tombstones;
+  if(S.me && !personById(S.me)) S.me = null;
+}
+
+function markOnline(){
+  sync.lastSeenAt = now(); sync.markOffline = false; sync.offlineNotified = false;
+  refreshSync();
+}
+function markOffline(){
+  sync.markOffline = true;
+  if(!sync.offlineNotified && S && S.remote){
+    sync.offlineNotified = true;
+    toast('Sin red. Tus cambios quedan apuntados y se subirán solos.');
+  }
+  refreshSync();
+}
+function syncText(){
+  if(!S) return '';
+  if(S.party.demo) return 'Fiesta de ejemplo · solo en este móvil';
+  if(!S.remote) return 'Solo en este móvil';
+  if(sync.rejected) return 'En vivo · hay cambios que no se han podido subir';
+  if(sync.markOffline) return 'Sin red · los cambios se subirán solos';
+  if(!sync.lastSeenAt) return 'En vivo · poniéndose al día…';
+  return 'En vivo con la peña · al día ' + timeAgo(sync.lastSeenAt);
+}
+function refreshSync(){
+  const el = $('#syncStatus');
+  if(!el) return;
+  el.textContent = syncText();
+  el.classList.toggle('live', isLiveSyncing());
+}
+
+const isSheetOpen = () => $('#sheet').classList.contains('open');
+// Do not repaint under someone's fingers: open sheet or half-written text.
+// Inputs from a closed sheet do not count, even though their DOM remains.
+function isBusy(){
+  const a = document.activeElement;
+  if(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') &&
+     (!$('#sheet').contains(a) || isSheetOpen())) return true;
+  return [...document.querySelectorAll('#preview input, #preview textarea')].some(el => el.value);
+}
+// Repaint immediately if possible; otherwise repaint once the user lets go.
+function renderNowOrLater(){
+  if(!isSheetOpen() && !isBusy()){ sync.renderLater = false; render(); }
+  else sync.renderLater = true;
+}
+
+function scheduleUpload(){
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(upload, 600);
+}
+
+async function upload(){
+  if(!S || !S.remote || S.party.demo || sync.rejected) return;
+  // Without a server baseline and without truly pending changes, a PUT would be
+  // blind churn. Let the first poll seed sync.uploadedJson first.
+  if(sync.uploadedJson === null && !S.pendingUpload) return;
+  if(sync.uploading){ sync.uploadAgain = true; return; }
+  sync.uploading = true;
+  let requestedPartyId = null;
+  try {
+    for(let attempt = 0; attempt < 4; attempt++){
+      requestedPartyId = S.remote.id;
+      const state = sharedState();
+      const json = JSON.stringify(state);
+      if(json === sync.uploadedJson){
+        // Everything is confirmed; clear the persisted pending mark too.
+        if(S.pendingUpload){ S.pendingUpload = false; saveLocal(json); }
+        break;
+      }
+      const r = await apiRequest('PUT', '/parties/' + requestedPartyId,
+        {key: S.remote.key, rev: S.remote.rev, state});
+      // If the party changed during the request, this response is irrelevant.
+      if(!S || !S.remote || S.remote.id !== requestedPartyId) break;
+      if(r.status === 200){
+        S.remote.rev = r.body.rev; sync.uploadedJson = json;
+        const current = stateJson();
+        if(json === current) S.pendingUpload = false;
+        saveLocal(current); markOnline();
+        break;
+      } else if(r.status === 409 && r.body && r.body.state){
+        // Merge against the CURRENT shared state, not the pre-PUT snapshot. Edits
+        // made while the request was in flight must not be lost.
+        adoptSharedState(mergeStates(migrateState(r.body.state), sharedState()));
+        S.remote.rev = r.body.rev;
+        saveLocal();
+        renderNowOrLater();
+        // The next loop uploads the merged state.
+      } else if(r.status === 404){
+        disconnectRemote('Esa fiesta ya no está en vivo. Sigues con la copia de tu móvil.');
+        break;
+      } else if(r.status === 403){
+        disconnectRemote('Este enlace ya no puede editar la fiesta. Sigues con la copia de tu móvil.');
+        break;
+      } else if(r.status === 429){
+        break; // Server throttle; the interval will retry soon.
+      } else if(r.status === 400 || r.status === 413){
+        // The server rejects this state, likely shape or size. This is not a
+        // network issue, and blind retries will not fix it.
+        sync.rejected = true;
+        toast('Los últimos cambios no han podido subir. De momento se quedan en este móvil.');
+        refreshSync();
+        break;
+      } else { markOffline(); break; }
+    }
+  } catch(e){
+    // Same stale-rejection guard as download(): don't mark a party the user
+    // has since switched away from as offline.
+    if(S && S.remote && S.remote.id === requestedPartyId) markOffline();
+  }
+  sync.uploading = false;
+  if(sync.uploadAgain){ sync.uploadAgain = false; scheduleUpload(); }
+}
+
+async function download(){
+  if(!S || !S.remote || S.party.demo) return;
+  const requestedPartyId = S.remote.id;
+  try {
+    const r = await apiRequest('GET', '/parties/' + requestedPartyId + '?rev=' + S.remote.rev);
+    // If the party changed during the request, this response belongs to the old one.
+    if(!S || !S.remote || S.remote.id !== requestedPartyId) return;
+    if(r.status === 204){
+      // The server is at our revision. If no pending local changes exist, local
+      // state is the uploaded state; this avoids churn PUTs on reopen.
+      if(sync.uploadedJson === null && !S.pendingUpload) sync.uploadedJson = stateJson();
+      markOnline(); return;
+    }
+    if(r.status === 200 && r.body && r.body.state){
+      // Stale response: one of our PUTs already advanced the revision. Ignore it
+      // to avoid a rev/state bounce and re-upload loop.
+      if(!(r.body.rev > S.remote.rev)){ markOnline(); return; }
+      const beforeJson = stateJson();
+      const remoteState = migrateState(r.body.state);
+      adoptSharedState(mergeStates(remoteState, sharedState()));
+      S.remote.rev = r.body.rev;
+      const afterJson = stateJson();
+      if(afterJson === JSON.stringify(sharedFrom(remoteState))){
+        sync.uploadedJson = afterJson;
+        S.pendingUpload = false;
+      } else {
+        S.pendingUpload = true;
+        scheduleUpload(); // The merge has local changes the server has not seen.
+      }
+      markOnline();
+      saveLocal(afterJson);
+      if(afterJson !== beforeJson) renderNowOrLater();
+    } else if(r.status === 404){
+      disconnectRemote('Esa fiesta ya no está en vivo. Sigues con la copia de tu móvil.');
+    } else if(r.status === 429 || r.status >= 500){
+      markOffline(); // Saturation or outage: same honest treatment as no coverage.
+    }
+  } catch(e){
+    // A stale rejection (the user switched parties before this GET failed) must
+    // not mark the newly opened party offline.
+    if(S && S.remote && S.remote.id === requestedPartyId) markOffline();
+  }
+}
+
+let creatingRemote = false; // A double tap must not create two parties.
+async function createRemote(){
+  if(!S || S.party.demo || S.remote) return !!(S && S.remote); // The demoState never uploads.
+  if(creatingRemote) return false;
+  creatingRemote = true;
+  const localParty = S; // If S changes during the POST, the response is stale.
+  const state = sharedState();
+  const json = JSON.stringify(state); // Snapshot of what we actually send.
+  try {
+    const r = await apiRequest('POST', '/parties', {state});
+    if(S !== localParty) return false;
+    if(r.status === 201 && r.body && r.body.id){
+      resetSync();
+      S.remote = {id: r.body.id, key: r.body.key, rev: r.body.rev};
+      sync.uploadedJson = json;
+      // Upload edits made while the POST was in flight.
+      const current = stateJson();
+      if(current !== json){ S.pendingUpload = true; scheduleUpload(); }
+      else S.pendingUpload = false;
+      saveLocal(current); markOnline();
+      return true;
+    }
+  } catch(e){}
+  finally { creatingRemote = false; }
+  return false;
+}
+
+function disconnectRemote(msg){
+  S.remote = null;
+  resetSync();
+  saveLocal(); toast(msg);
+  renderNowOrLater();
+}
+
+async function enableLive(){
+  if(S.remote) return shareSheet('invite');
+  if(creatingRemote) return; // Already in progress, likely a double tap.
+  const btn = $('#enableLiveButton');
+  if(btn) btn.disabled = true;
+  if(await createRemote()){
+    render(); shareSheet('invite');
+  } else {
+    if(btn) btn.disabled = false;
+    toast('Ahora mismo no hay manera (¿sin red?). La fiesta sigue en tu móvil; prueba luego.');
+  }
+}
+
+async function openLiveLink(id, key){
+  const openParty = S; // If S changes during the GET, the response is stale.
+  const r = await apiRequest('GET', '/parties/' + id).catch(() => ({status: 0}));
+  if(S !== openParty) return false;
+  if(r.status !== 200 || !r.body || !r.body.state){
+    toast(r.status === 404
+      ? 'Ese enlace ya no lleva a ninguna fiesta.'
+      : 'No se ha podido abrir la fiesta del enlace. ¿Hay red?');
+    render();
+    return false;
+  }
+  const remoteState = migrateState(r.body.state);
+  const isSameParty = S && S.remote && S.remote.id === id;
+  if(!isSameParty) backupCurrentParty();
+  const me = isSameParty ? S.me : null;
+  // If this is already the open party, merge pending local state instead of
+  // overwriting it.
+  const base = isSameParty ? mergeStates(remoteState, sharedState()) : remoteState;
+  resetSync();
+  S = {...base, me, tab:'party', remote:{id, key, rev:r.body.rev}};
+  // The opener may have been removed from the group; do not let them act as a
+  // ghost participant.
+  if(S.me && !personById(S.me)) S.me = null;
+  const json = stateJson();
+  if(json === JSON.stringify(sharedFrom(remoteState))){
+    sync.uploadedJson = json;
+    S.pendingUpload = false;
+  } else {
+    sync.uploadedJson = JSON.stringify(sharedFrom(remoteState));
+    S.pendingUpload = true;
+    scheduleUpload();
+  }
+  saveLocal(json); markOnline(); render();
+  if(!S.me) identitySheet(true);
+  return true;
+}
+
+/* ================= account calculation ================= */
+function accounts(){
+  const payerTotals = {}, owes = {};
+  S.people.forEach(p => { payerTotals[p.id]=0; owes[p.id]=0; });
   let total = 0;
   for(const it of S.items){
-    if(it.estado !== 'comprada' || !it.precio) continue;
-    total += it.precio;
-    if(pagado[it.compradorId] !== undefined) pagado[it.compradorId] += it.precio;
-    const cons = consumidores(it).filter(id => debe[id] !== undefined);
+    if(it.status !== 'bought' || !it.priceCents) continue;
+    total += it.priceCents;
+    if(payerTotals[it.payerId] !== undefined) payerTotals[it.payerId] += it.priceCents;
+    const cons = consumerIds(it).filter(id => owes[id] !== undefined);
     if(!cons.length) continue;
-    const base = Math.floor(it.precio / cons.length);
-    let resto = it.precio - base*cons.length;
-    for(const id of cons){ debe[id] += base + (resto-- > 0 ? 1 : 0); }
+    const base = Math.floor(it.priceCents / cons.length);
+    let remainder = it.priceCents - base*cons.length;
+    for(const id of cons){ owes[id] += base + (remainder-- > 0 ? 1 : 0); }
   }
-  const saldo = {};
-  S.gente.forEach(p => saldo[p.id] = pagado[p.id] - debe[p.id]);
+  const balance = {};
+  S.people.forEach(p => balance[p.id] = payerTotals[p.id] - owes[p.id]);
 
-  const deudores = S.gente.filter(p=>saldo[p.id]<0).map(p=>({id:p.id, v:-saldo[p.id]})).sort((a,b)=>b.v-a.v);
-  const acreedores = S.gente.filter(p=>saldo[p.id]>0).map(p=>({id:p.id, v:saldo[p.id]})).sort((a,b)=>b.v-a.v);
+  const debtors = S.people.filter(p=>balance[p.id]<0).map(p=>({id:p.id, v:-balance[p.id]})).sort((a,b)=>b.v-a.v);
+  const creditors = S.people.filter(p=>balance[p.id]>0).map(p=>({id:p.id, v:balance[p.id]})).sort((a,b)=>b.v-a.v);
   const bizums = [];
   let i=0, j=0;
-  while(i<deudores.length && j<acreedores.length){
-    const m = Math.min(deudores[i].v, acreedores[j].v);
-    if(m>0) bizums.push({de:deudores[i].id, a:acreedores[j].id, cents:m});
-    deudores[i].v -= m; acreedores[j].v -= m;
-    if(deudores[i].v===0) i++;
-    if(acreedores[j].v===0) j++;
+  while(i<debtors.length && j<creditors.length){
+    const m = Math.min(debtors[i].v, creditors[j].v);
+    if(m>0) bizums.push({de:debtors[i].id, a:creditors[j].id, cents:m});
+    debtors[i].v -= m; creditors[j].v -= m;
+    if(debtors[i].v===0) i++;
+    if(creditors[j].v===0) j++;
   }
-  return {total, pagado, debe, saldo, bizums};
+  return {total, payerTotals, owes, balance, bizums};
 }
 
 /* ================= sheet ================= */
-function abrirSheet(html, bloqueado){
-  $('#sheet').innerHTML = '<div class="asa"></div>' + html;
-  $('#sheet').classList.add('abierto');
-  $('#velo').classList.add('abierto');
-  $('#velo').onclick = bloqueado ? null : cerrarSheet;
+function openSheet(html, locked){
+  $('#sheet').innerHTML = '<div class="sheet-handle"></div>' + html;
+  $('#sheet').classList.add('open');
+  $('#overlay').classList.add('open');
+  $('#overlay').onclick = locked ? null : closeSheet;
 }
-function cerrarSheet(){
-  $('#sheet').classList.remove('abierto');
-  $('#velo').classList.remove('abierto');
+function closeSheet(){
+  $('#sheet').classList.remove('open');
+  $('#overlay').classList.remove('open');
+  // Without this, a sheet input keeps focus and leaves the keyboard open.
+  const a = document.activeElement;
+  if(a && a.blur && $('#sheet').contains(a)) a.blur();
+  if(sync.renderLater) renderNowOrLater();
 }
 
-/* --- quién eres --- */
-function sheetIdentidad(forzado){
-  const pills = S.gente.map(p =>
-    `<button class="pill pill-sky ${p.id===S.yo?'on':''}" type="button" data-quien="${p.id}">${avatarHtml(p.id,true)}${esc(p.nombre)}</button>`
-  ).join('');
-  abrirSheet(`
-    <h2 class="sheet-titulo">¿Quién eres?</h2>
-    <p class="sheet-sub">Estás en «${esc(S.fiesta.nombre)}». Di quién eres o apúntate.</p>
+/* --- identity --- */
+function identitySheet(forced){
+  const pills = S.people.map(p =>
+    personPill(p, 'who', 'pill-primary ' + (p.id===S.me?'on':''))).join('');
+  openSheet(`
+    <h2 class="sheet-title">¿Quién eres?</h2>
+    <p class="sheet-sub">Estás en «${escapeHtml(S.party.name)}». Di quién eres o apúntate.</p>
     <div class="pills">${pills}</div>
-    <label class="label" for="nuevoNombre">O apúntate</label>
-    <div class="fila-add">
-      <input type="text" id="nuevoNombre" placeholder="Tu nombre" maxlength="20" autocomplete="off">
-      <button class="btn btn-sky" id="btnApuntame" type="button">Entrar</button>
+    <label class="label" for="newNameInput">O apúntate</label>
+    <div class="add-row">
+      <input type="text" id="newNameInput" placeholder="Tu nombre" maxlength="20" autocomplete="off">
+      <button class="btn btn-primary" id="joinButton" type="button">Entrar</button>
     </div>
-  `, forzado);
-  document.querySelectorAll('[data-quien]').forEach(b => b.onclick = () => {
-    S.yo = b.dataset.quien; guardar(); cerrarSheet(); pintar();
-    toast('Hola, ' + persona(S.yo).nombre);
+  `, forced);
+  document.querySelectorAll('[data-who]').forEach(b => b.onclick = () => {
+    const p = personById(b.dataset.who);
+    if(!p) return; // Removed while the sheet was open.
+    S.me = p.id; save(); closeSheet(); render();
+    toast('Hola, ' + p.name);
   });
-  $('#btnApuntame').onclick = () => {
-    const n = $('#nuevoNombre').value.trim();
+  $('#joinButton').onclick = () => {
+    const n = $('#newNameInput').value.trim();
     if(!n) return toast('Escribe tu nombre, que la lista no adivina.');
-    const p = {id: nuevoId('p'), nombre: n, admin:false};
-    S.gente.push(p); S.yo = p.id; guardar(); cerrarSheet(); pintar();
+    if(S.people.length >= 100) return toast('La peña no da pa más (100). Menuda fiesta.');
+    const p = touch({id: newId('p'), name: n, admin:false});
+    S.people.push(p); S.me = p.id; save(); closeSheet(); render();
     toast('Bienvenido, ' + n);
   };
 }
 
-/* --- apuntar compra / editar --- */
-function sheetCompra(itemId){
-  const it = S.items.find(x=>x.id===itemId); if(!it) return;
-  const editando = it.estado === 'comprada';
-  const marcados = new Set(consumidores(it));
-  let compradorSel = editando ? it.compradorId : (it.pilladorId || S.yo);
-  if(!persona(compradorSel)) compradorSel = S.yo;
+/* --- expense: direct, mark bought, or edit in one sheet --- */
+function expenseSheet(itemId){
+  const it = itemId ? itemById(itemId) : null;
+  if(itemId && !it){ render(); return toast('Esa ya no está en la lista.'); }
+  const direct = !it;
+  const editing = !!(it && it.status === 'bought');
+  let touchedConsumers = false; // If pills are never touched, "everyone" means everyone.
+  const selectedIds = new Set(it ? consumerIds(it) : S.people.map(p=>p.id));
+  let selectedPayerId = editing ? it.payerId : ((it && it.claimerId) || S.me);
+  if(!personById(selectedPayerId)) selectedPayerId = personById(S.me) ? S.me : null;
 
-  const pillsCons = S.gente.map(p => `
-    <button class="pill ${marcados.has(p.id)?'on':'off'}" type="button" data-cons="${p.id}">
-      ${avatarHtml(p.id,true)}${esc(p.nombre)}
-    </button>`).join('');
+  const consumerPills = S.people.map(p =>
+    personPill(p, 'consumer', selectedIds.has(p.id)?'on':'off')).join('');
+  const payerPills = S.people.map(p =>
+    personPill(p, 'payer', 'pill-primary ' + (p.id===selectedPayerId?'on':''))).join('');
 
-  const filaComprador = soyAdmin()
-    ? `<span class="label">Pagó</span>
-       <div class="pills">${S.gente.map(p => `
-         <button class="pill pill-sky ${p.id===compradorSel?'on':''}" type="button" data-comp="${p.id}">
-           ${avatarHtml(p.id,true)}${esc(p.nombre)}
-         </button>`).join('')}</div>`
-    : `<p class="sheet-sub" style="margin:14px 0 0">Se apunta como pagada por <strong>${esc(persona(compradorSel)?.nombre || '—')}</strong>.</p>`;
+  let history = '';
+  if(editing){
+    const creator = it.createdBy && personById(it.createdBy);
+    const editor = it.updatedBy && it.updatedBy !== it.createdBy && personById(it.updatedBy);
+    const parts = [];
+    if(creator) parts.push(`La apuntó ${escapeHtml(creator.name)}${it.createdAt ? ' ' + timeAgo(it.createdAt) : ''}`);
+    if(editor) parts.push(`tocada por ${escapeHtml(editor.name)} ${timeAgo(it.updatedAt)}`);
+    if(parts.length) history = `<div class="history-line">${parts.join(' · ')}</div>`;
+  }
 
-  const precioIni = editando && it.precio ? (it.precio/100).toFixed(2).replace('.',',') : '';
-  abrirSheet(`
-    <h2 class="sheet-titulo">${esc(it.nombre)}</h2>
-    <p class="sheet-sub">${editando ? 'Corrige el precio, quién pagó o quiénes la catan.' : 'Apunta lo que ha costado y quién la cata.'}</p>
-    <label class="label" for="inPrecio">Precio</label>
-    <div class="precio-input">
-      <input type="tel" id="inPrecio" inputmode="decimal" placeholder="0,00" value="${precioIni}" autocomplete="off">
+  const title = direct ? 'Apuntar un gasto' : escapeHtml(it.name);
+  const sub = direct ? 'Qué fue, cuánto costó y quiénes lo catan.'
+    : editing ? 'Corrige lo que haga falta.'
+    : 'Apunta lo que ha costado y quién la cata.';
+  const initialPrice = editing && it.priceCents ? (it.priceCents/100).toFixed(2).replace('.',',') : '';
+  openSheet(`
+    <h2 class="sheet-title">${title}</h2>
+    <p class="sheet-sub">${sub}</p>
+    <label class="label" for="expenseNameInput" style="margin-top:0">Qué</label>
+    <input type="text" id="expenseNameInput" placeholder="Hielo, pan, el bar…" maxlength="40"
+      autocomplete="off" value="${it ? escapeHtml(it.name) : ''}">
+    <label class="label" for="priceInput">Precio</label>
+    <div class="price-input">
+      <input type="tel" id="priceInput" inputmode="decimal" placeholder="0,00" value="${initialPrice}" autocomplete="off">
       <span class="eur">€</span>
     </div>
-    <span class="label">¿Quiénes la catan?</span>
-    <div class="pills">${pillsCons}</div>
-    ${filaComprador}
-    <div class="sheet-botones">
-      <button class="btn btn-borde" id="btnCancelar" type="button">Cancelar</button>
-      <button class="btn btn-green" id="btnGuardarCompra" type="button">${editando?'Guardar':'Apuntar la compra'}</button>
+    <span class="label">Pagó</span>
+    <div class="pills">${payerPills}</div>
+    <span class="label">¿Quiénes lo catan?</span>
+    <div class="pills">${consumerPills}</div>
+    <div class="sheet-actions">
+      <button class="btn btn-outline" id="cancelButton" type="button">Cancelar</button>
+      <button class="btn btn-green" id="saveExpenseButton" type="button">
+        ${editing ? 'Guardar' : direct ? 'Apuntar el gasto' : 'Apuntar la compra'}</button>
     </div>
-    ${editando ? '<button class="link-borrar" id="btnBorrarItem" type="button">Borrar esta cosa de la lista</button>' : ''}
+    ${editing ? '<button class="delete-link" id="deleteItemButton" type="button">Borrar esta compra</button>' : ''}
+    ${history}
   `);
-  document.querySelectorAll('[data-cons]').forEach(b => b.onclick = () => {
-    const id = b.dataset.cons;
-    if(marcados.has(id)){
-      if(marcados.size === 1) return toast('Alguien la catará, digo yo.');
-      marcados.delete(id);
-    } else marcados.add(id);
-    b.classList.toggle('on', marcados.has(id));
-    b.classList.toggle('off', !marcados.has(id));
+  document.querySelectorAll('[data-consumer]').forEach(b => b.onclick = () => {
+    const id = b.dataset.consumer;
+    touchedConsumers = true; // No longer an intentional "everyone" split.
+    if(selectedIds.has(id)){
+      if(selectedIds.size === 1) return toast('Alguien lo catará, digo yo.');
+      selectedIds.delete(id);
+    } else selectedIds.add(id);
+    b.classList.toggle('on', selectedIds.has(id));
+    b.classList.toggle('off', !selectedIds.has(id));
   });
-  document.querySelectorAll('[data-comp]').forEach(b => b.onclick = () => {
-    compradorSel = b.dataset.comp;
-    document.querySelectorAll('[data-comp]').forEach(x =>
-      x.classList.toggle('on', x.dataset.comp === compradorSel));
+  document.querySelectorAll('[data-payer]').forEach(b => b.onclick = () => {
+    selectedPayerId = b.dataset.payer;
+    document.querySelectorAll('[data-payer]').forEach(x =>
+      x.classList.toggle('on', x.dataset.payer === selectedPayerId));
   });
-  $('#btnCancelar').onclick = cerrarSheet;
-  $('#btnGuardarCompra').onclick = () => {
-    const bruto = $('#inPrecio').value.trim().replace(',','.');
-    const val = Math.round(parseFloat(bruto)*100);
-    if(!bruto || isNaN(val) || val<=0) return toast('Ponle precio, que gratis no fue.');
-    it.precio = val;
-    it.consumen = marcados.size === S.gente.length ? null : [...marcados];
-    it.compradorId = compradorSel;
-    if(!editando){
-      it.estado = 'comprada';
-      delete it.pilladorId;
-      toast('Apuntada. Las cuentas ya lo saben.');
+  $('#cancelButton').onclick = closeSheet;
+  $('#saveExpenseButton').onclick = () => {
+    const name = $('#expenseNameInput').value.trim();
+    if(!name) return toast('Pon qué fue.');
+    const priceCents = parsePriceCents($('#priceInput').value);
+    if(isNaN(priceCents) || priceCents<=0) return toast('Ponle precio, que gratis no fue.');
+    if(priceCents > 100000000) return toast('¿' + eur(priceCents) + '? Repasa ese precio, anda.');
+    if(!personById(selectedPayerId)) return toast('¿Quién lo pagó?');
+    // The group may have changed while the sheet was open. A removed ID in
+    // consumers would resurrect that person in the next merge. If the user never
+    // touched the pills from an "everyone" starting point, the intent is still
+    // EVERYONE, so a new joiner during the sheet is included.
+    let consumers;
+    if(!touchedConsumers && (!it || !it.consumers)){
+      consumers = null;
     } else {
-      toast('Guardado');
+      const liveSelectedIds = [...selectedIds].filter(id => personById(id));
+      if(!liveSelectedIds.length){
+        return abortSheet('La peña ha cambiado por debajo: revisa quiénes lo catan.');
+      }
+      consumers = liveSelectedIds.length === S.people.length ? null : liveSelectedIds;
     }
-    guardar(); cerrarSheet(); pintar();
+    if(direct){
+      if(S.items.length >= 500) return toast('La lista no da pa más (500 cosas). Quita algo primero.');
+      S.items.unshift(touch({id:newId('i'), name, status:'bought', priceCents:priceCents,
+        payerId:selectedPayerId, consumers,
+        createdAt:now(), createdBy:S.me || null}));
+      toast('Apuntado. Las cuentas ya lo saben.');
+    } else {
+      // Find by ID again: the party may have refreshed while the sheet was
+      // open. Permission is revalidated before anything else, including the
+      // resurrection path, so someone who lost admin cannot revive another
+      // person's purchase.
+      let live = S.items.find(x=>x.id===itemId);
+      const target = live || it;
+      if(editing && !isAdmin() && target.payerId !== S.me){
+        return abortSheet('Esa compra acaba de cambiar de manos: solo quien la pagó o la llave pueden tocarla.');
+      }
+      if(live && !editing && live.status === 'bought'){
+        // Someone else bought it while the sheet was open; do not overwrite
+        // their payment with this form.
+        return abortSheet('Alguien la ha apuntado ya como comprada: revísala antes de corregirla.');
+      }
+      if(!live){
+        // If someone else deleted it, add it again: the payment was real.
+        live = it;
+        S.items.unshift(live);
+        S.tombstones = S.tombstones.filter(t=>t.id!==itemId);
+      }
+      live.name = name;
+      live.priceCents = priceCents;
+      live.consumers = consumers;
+      live.payerId = selectedPayerId;
+      touch(live);
+      if(!editing){
+        live.status = 'bought';
+        delete live.claimerId;
+        toast('Apuntada. Las cuentas ya lo saben.');
+      } else {
+        toast('Guardado');
+      }
+    }
+    save(); closeSheet(); render();
   };
-  const del = $('#btnBorrarItem');
+  const del = $('#deleteItemButton');
   if(del) del.onclick = () => {
-    S.items = S.items.filter(x=>x.id!==itemId);
-    guardar(); cerrarSheet(); pintar(); toast('Fuera de la lista');
+    confirmSheet('¿Borrar esta compra?',
+      `«${it.name}» (${eur(it.priceCents||0)}) se quita de la lista y de las cuentas.`, () => {
+        // Revalidate against live state; the party may have changed underneath.
+        const live = itemById(itemId);
+        if(!live){ render(); return toast('Ya no está: alguien la ha quitado antes.'); }
+        if(!isAdmin() && live.payerId !== S.me){
+          render(); return toast('Esa compra ha cambiado de manos: solo quien la pagó o la llave pueden borrarla.');
+        }
+        tombstoneEntity('items', live);
+        save(); render(); toast('Fuera de la lista');
+      });
   };
-  setTimeout(()=>$('#inPrecio').focus(), 250);
+  setTimeout(()=>$(direct ? '#expenseNameInput' : '#priceInput').focus(), 250);
 }
 
-/* --- asignar (solo admins) --- */
-function sheetAsignar(itemId){
+/* --- assign, admins only --- */
+function assignSheet(itemId){
   const it = S.items.find(x=>x.id===itemId); if(!it) return;
-  const pills = S.gente.map(p => `
-    <button class="pill pill-sky ${it.pilladorId===p.id?'on':''}" type="button" data-asig="${p.id}">
-      ${avatarHtml(p.id,true)}${esc(p.nombre)}
-    </button>`).join('');
-  abrirSheet(`
-    <h2 class="sheet-titulo">¿Quién trae «${esc(it.nombre)}»?</h2>
+  const pills = S.people.map(p =>
+    personPill(p, 'assign-person', 'pill-primary ' + (it.claimerId===p.id?'on':''))).join('');
+  openSheet(`
+    <h2 class="sheet-title">¿Quién trae «${escapeHtml(it.name)}»?</h2>
     <p class="sheet-sub">Le saldrá como suya en la lista.</p>
     <div class="pills">
       ${pills}
-      <button class="pill solo-texto ${!it.pilladorId?'on':''}" type="button" data-asig="">Sin dueño</button>
+      <button class="pill text-only ${!it.claimerId?'on':''}" type="button" data-assign-person="">Sin dueño</button>
     </div>
   `);
-  document.querySelectorAll('[data-asig]').forEach(b => b.onclick = () => {
-    const id = b.dataset.asig;
-    if(id){ it.estado='pillada'; it.pilladorId=id; toast('Se la lleva ' + persona(id).nombre); }
-    else { it.estado='pendiente'; delete it.pilladorId; toast('Suelta. A ver quién se la pide ahora.'); }
-    guardar(); cerrarSheet(); pintar();
+  document.querySelectorAll('[data-assign-person]').forEach(b => b.onclick = () => {
+    if(!requireAdmin()) return;
+    const who = personById(b.dataset.assignPerson);
+    // data-assign-person="" intentionally means "unowned". A person removed underneath
+    // must not be confused with that, because it would release the item.
+    if(b.dataset.assignPerson && !who) return abortSheet('Esa persona ya no está en la peña.');
+    let live = itemById(itemId);
+    if(!live) return abortSheet('Esa cosa ya no está en la lista.');
+    if(live.status === 'bought') return abortSheet('Esa ya está comprada: no hay nada que asignar.');
+    if(who){ live.status='claimed'; live.claimerId=who.id; toast('Se la lleva ' + who.name); }
+    else { live.status='pending'; delete live.claimerId; toast('Suelta. A ver quién se la pide ahora.'); }
+    touch(live);
+    save(); closeSheet(); render();
   });
 }
 
-/* --- ficha de persona --- */
-function sheetPersona(pid){
-  const p = persona(pid); if(!p) return;
-  const c = cuentas();
-  const asignadas = S.items.filter(i=>i.estado==='pillada' && i.pilladorId===pid);
-  const compras = S.items.filter(i=>i.estado==='comprada' && i.compradorId===pid);
-  const esYo = pid === S.yo;
-  const puedoGestionar = soyAdmin() && !esYo;
+/* --- person detail --- */
+function personSheet(pid){
+  const p = personById(pid); if(!p) return;
+  const c = accounts();
+  const assignedItems = S.items.filter(i=>i.status==='claimed' && i.claimerId===pid);
+  const purchases = S.items.filter(i=>i.status==='bought' && i.payerId===pid);
+  const isMe = pid === S.me;
+  const canManage = isAdmin() && !isMe;
 
-  const listaAsig = asignadas.length
-    ? asignadas.map(i=>`<li>${esc(i.nombre)}</li>`).join('')
+  const assignedList = assignedItems.length
+    ? assignedItems.map(i=>`<li>${escapeHtml(i.name)}</li>`).join('')
     : '<li style="color:var(--muted)">Nada pendiente</li>';
 
-  abrirSheet(`
-    <h2 class="sheet-titulo">${esc(p.nombre)}${p.admin?' '+LLAVE:''}${esYo?' <span class="chip-estado chip-sky">tú</span>':''}</h2>
-    <p class="sheet-sub">Ha pagado <strong>${eur(c.pagado[pid]||0)}</strong> en ${compras.length} compra${compras.length===1?'':'s'}.</p>
+  const s = c.balance[pid] || 0;
+  const balanceText = s === 0 ? 'está en paz' : s > 0 ? `le deben ${eur(s)}` : `debe ${eur(-s)}`;
+
+  openSheet(`
+    <h2 class="sheet-title">${escapeHtml(p.name)}${p.admin?' '+KEY_ICON:''}${isMe?' <span class="status-chip chip-primary">tú</span>':''}</h2>
+    <p class="sheet-sub">Ha pagado <strong>${eur(c.payerTotals[pid]||0)}</strong> en ${purchases.length} compra${purchases.length===1?'':'s'} ·
+      le tocaba ${eur(c.owes[pid]||0)} · ${balanceText}.</p>
     <span class="label">Le toca traer</span>
-    <ul style="margin:0 0 6px;padding-left:20px;font-size:14px;line-height:1.7">${listaAsig}</ul>
-    ${asignadas.length ? `<button class="btn btn-borde btn-mini" id="btnRecordar" type="button" style="margin-top:6px">Copiar recordatorio</button>` : ''}
-    ${puedoGestionar ? `
+    <ul style="margin:0 0 6px;padding-left:20px;font-size:14px;line-height:1.7">${assignedList}</ul>
+    ${!isMe ? `<button class="btn btn-outline btn-mini" id="remindButton" type="button" style="margin-top:6px">Mandarle un recordatorio</button>` : ''}
+    ${canManage ? `
       <span class="label">Gestión</span>
-      <button class="opcion-menu" id="btnToggleAdmin" type="button">
+      <button class="menu-option" id="toggleAdminButton" type="button">
         ${p.admin ? 'Quitarle la llave' : 'Darle la llave (admin)'}
         <small>Los de la llave asignan cosas, corrigen precios y gestionan la peña.</small>
       </button>
-      <button class="opcion-menu" id="btnEliminar" type="button">
+      <button class="menu-option" id="removePersonButton" type="button">
         Quitar de la peña
         <small>Solo si no tiene compras apuntadas.</small>
       </button>` : ''}
   `);
-  const rec = $('#btnRecordar');
-  if(rec) rec.onclick = async () => {
-    const txt = `${p.nombre}, para «${S.fiesta.nombre}» te toca traer:\n` +
-      asignadas.map(i=>'· '+i.nombre).join('\n');
-    await copiar(txt);
-    toast('Recordatorio copiado');
+  const rec = $('#remindButton');
+  if(rec) rec.onclick = () => {
+    if(!personById(pid)) return abortSheet('Esa persona ya no está en la peña.');
+    shareSheet('person', pid);
   };
-  const tog = $('#btnToggleAdmin');
+  // Handlers re-find by ID and reconfirm admin status; the party may have
+  // merged underneath while the sheet was open.
+  const tog = $('#toggleAdminButton');
   if(tog) tog.onclick = () => {
-    if(p.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
-    p.admin = !p.admin;
-    guardar(); cerrarSheet(); pintar();
-    toast(p.admin ? p.nombre + ' tiene la llave' : p.nombre + ' ya no tiene la llave');
+    if(!requireAdmin()) return;
+    const q = personById(pid);
+    if(!q) return abortSheet('Esa persona ya no está en la peña.');
+    if(q.admin && adminCount() === 1) return toast('Alguien tiene que quedarse con la llave');
+    q.admin = !q.admin;
+    touch(q);
+    save(); closeSheet(); render();
+    toast(q.admin ? q.name + ' tiene la llave' : q.name + ' ya no tiene la llave');
   };
-  const eli = $('#btnEliminar');
+  const eli = $('#removePersonButton');
   if(eli) eli.onclick = () => {
-    if(compras.length) return toast('Tiene compras apuntadas: reasígnalas antes');
-    if(p.admin && numAdmins() === 1) return toast('Alguien tiene que quedarse con la llave');
-    S.items.forEach(i => {
-      if(i.pilladorId === pid){ i.estado='pendiente'; delete i.pilladorId; }
-      if(i.consumen) i.consumen = i.consumen.filter(x=>x!==pid);
-    });
-    S.gente = S.gente.filter(x=>x.id!==pid);
-    guardar(); cerrarSheet(); pintar();
-    toast(p.nombre + ' ya no está en la peña');
+    if(!requireAdmin()) return;
+    const q = personById(pid);
+    if(!q) return abortSheet('Esa persona ya no está en la peña.');
+    if(S.items.some(i=>i.status==='bought' && i.payerId===pid))
+      return toast('Tiene compras apuntadas: reasígnalas antes');
+    // If this person is the sole explicit consumer of a purchase, removing them
+    // would leave consumers empty, which means "everyone"; the expense would
+    // silently reallocate itself.
+    if(S.items.some(i=>i.status==='bought' && i.consumers &&
+        i.consumers.length === 1 && i.consumers[0] === pid))
+      return toast('Hay compras que solo cata esa persona: corrígelas antes');
+    if(q.admin && adminCount() === 1) return toast('Alguien tiene que quedarse con la llave');
+    // Do NOT rewrite this person's items with a new stamp here. Their claims
+    // become orphaned; the UI treats them as "unowned", and splits are cleaned
+    // by the derived pass. The same pass runs during merge and only applies if
+    // the deletion truly consolidates. If the person is resurrected because they
+    // bought something this phone had not seen, their shares remain intact.
+    tombstoneEntity('people', q);
+    normalizeSplits(S.items, S.people);
+    save(); closeSheet(); render();
+    toast(q.name + ' ya no está en la peña');
   };
 }
 
-/* --- invitar por enlace --- */
-async function invitarPorEnlace(){
-  const txt = `Únete a «${S.fiesta.nombre}» en A Pachas:\n${enlaceFiesta()}`;
-  let hecho = false;
-  if(navigator.share){
-    try { await navigator.share({text: txt}); hecho = true; } catch(e){}
+/* --- share with the group: moment-specific messages --- */
+function shareMessage(shareType, pid){
+  const link = partyLink();
+  const n = S.party.name;
+  if(shareType === 'invite'){
+    return `A pachas con los gastos de «${n}».\n` +
+      `Entra, di quién eres y apunta lo que pilles:\n${link}`;
   }
-  if(!hecho){
-    hecho = await copiar(txt);
-    toast(hecho ? 'Enlace copiado. Mándalo al grupo.' : 'No se ha podido copiar');
+  if(shareType === 'list'){
+    const pendingItems = S.items.filter(isUnownedItem);
+    return `Faltan cosas pa «${n}»:\n` +
+      pendingItems.map(i=>'· ' + i.name).join('\n') +
+      `\n\nQuien pueda, que se lo pida aquí:\n${link}`;
   }
-}
-function sheetInvitar(){
-  abrirSheet(`
-    <h2 class="sheet-titulo">Invitar por enlace</h2>
-    <p class="sheet-sub">Manda el enlace al grupo. Quien lo abra verá la fiesta
-    tal y como está ahora mismo y elegirá quién es.</p>
-    <button class="btn btn-sky btn-block" id="btnCopiarInv" type="button">Copiar el enlace</button>
-    <div class="nota">Cada móvil guarda su propia copia. Para que las cuentas cuadren,
-    que las compras las apunte una misma persona (alguien con llave) y comparta el
-    enlace actualizado al final.</div>
-  `);
-  $('#btnCopiarInv').onclick = async () => { await invitarPorEnlace(); cerrarSheet(); };
+  if(shareType === 'accounts'){
+    const c = accounts();
+    const pending = pendingBizums(c);
+    const lines = [`Cuentas de «${n}» — A Pachas`,
+      `Total: ${eur(c.total)} entre ${S.people.length}`, ''];
+    if(!c.bizums.length){
+      lines.push('Cuentas en paz. Ni pa ti ni pa mí.');
+    } else {
+      c.bizums.forEach(b => lines.push(
+        (isBizumDone(b) ? '✓ ' : '· ') +
+        personById(b.de).name + ' → ' + personById(b.a).name + ': ' + eur(b.cents)));
+      lines.push('');
+      lines.push(pending.length
+        ? 'Marca el tuyo cuando lo hagas:' : 'Todo saldado. Cuentas claras y el chocolate espeso.');
+    }
+    lines.push(link);
+    return lines.join('\n');
+  }
+  if(shareType === 'person'){
+    const p = personById(pid);
+    if(!p) return link; // Removed while the sheet was open.
+    const c = accounts();
+    const assignedItems = S.items.filter(i=>i.status==='claimed' && i.claimerId===pid);
+    const lines = [`${p.name}, pa «${n}»:`];
+    if(assignedItems.length){
+      lines.push('');
+      lines.push('Te toca traer:');
+      assignedItems.forEach(i => lines.push('· ' + i.name));
+    }
+    const outgoingBizums = pendingBizums(c).filter(b => b.de === pid);
+    const isOwed = pendingBizums(c).filter(b => b.a === pid);
+    if(outgoingBizums.length || isOwed.length){
+      lines.push('');
+      lines.push('De cuentas te sale:');
+      outgoingBizums.forEach(b => lines.push(`· Bizum de ${eur(b.cents)} a ${personById(b.a).name}`));
+      isOwed.forEach(b => lines.push(`· ${personById(b.de).name} te debe ${eur(b.cents)}`));
+    }
+    if(!assignedItems.length && !outgoingBizums.length && !isOwed.length){
+      lines.push('nada pendiente. Estás al día, máquina.');
+    }
+    lines.push('');
+    lines.push('Lo tienes aquí:');
+    lines.push(link);
+    return lines.join('\n');
+  }
+  return link;
 }
 
-/* --- unirse pegando enlace --- */
-function sheetUnirse(){
-  abrirSheet(`
-    <h2 class="sheet-titulo">Tengo un enlace</h2>
+async function shareSheet(shareType, pid){
+  // The demoState is not shareable: its demoState flag would leave the receiver with a
+  // party that can never go live.
+  if(S.party.demo) return toast('La fiesta de ejemplo no se comparte: monta la tuya, que es un momento.');
+  // If there are unsent changes, make one last push before composing the
+  // message. Cap it so offline sharing does not hang for the full timeout.
+  if(S.remote && S.pendingUpload && !S.party.demo){
+    clearTimeout(sync.timer);
+    await Promise.race([upload(), new Promise(res => setTimeout(res, 1500))]);
+  }
+  const txt = shareMessage(shareType, pid);
+  const partyCanGoLive = canGoLive();
+  // If something is still unsent, tell the sharer. A live link shows server
+  // state, not this phone's unsent local state.
+  const pendingNotice = S.remote && S.pendingUpload
+    ? `<div class="note">Hay cambios tuyos aún sin subir (¿sin red?). Quien abra
+      el enlace no los verá hasta que se suban solos.</div>` : '';
+  // In local mode the link embeds the whole party. The preview abbreviates it;
+  // the copied/shared message keeps the full link.
+  const preview = txt.replace(/(#AP2:)[A-Za-z0-9_-]{24,}/g,
+    '$1… (enlace largo: lleva dentro la copia de la fiesta)');
+  openSheet(`
+    <h2 class="sheet-title">Mandar al grupo</h2>
+    <p class="sheet-sub">Así queda el mensaje:</p>
+    <div class="preview">${escapeHtml(preview)}</div>
+    ${pendingNotice}
+    ${partyCanGoLive ? `<div class="note">Esta fiesta va solo en este móvil: el enlace lleva una copia
+      congelada. Ponla en vivo y todos apuntarán en la misma.</div>
+      <button class="btn btn-soft btn-block" id="liveFromShareButton" type="button"
+        style="margin-top:10px">Ponerla en vivo primero</button>` : ''}
+    <div class="sheet-actions">
+      <button class="btn btn-outline" id="copyMessageButton" type="button">Copiar</button>
+      <button class="btn btn-green" id="whatsappMessageButton" type="button">WhatsApp</button>
+    </div>
+    ${navigator.share ? '<button class="quiet-link centered" id="alternateAppButton" type="button">Mandar con otra app</button>' : ''}
+  `);
+  $('#copyMessageButton').onclick = async () => {
+    const ok = await copyToClipboard(txt);
+    toast(ok ? 'Copiado. Pégalo en el grupo.' : 'No se ha podido copiar');
+    if(ok) closeSheet();
+  };
+  $('#whatsappMessageButton').onclick = () => {
+    window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+    closeSheet();
+  };
+  const live = $('#liveFromShareButton');
+  if(live) live.onclick = async () => {
+    live.disabled = true;
+    if(await createRemote()){ render(); shareSheet(shareType, pid); }
+    else { live.disabled = false; toast('Ahora mismo no hay manera (¿sin red?). Prueba luego.'); }
+  };
+  const alternateApp = $('#alternateAppButton');
+  if(alternateApp) alternateApp.onclick = async () => {
+    try { await navigator.share({text: txt}); closeSheet(); } catch(e){}
+  };
+}
+
+/* --- join by pasted link --- */
+function joinSheet(){
+  openSheet(`
+    <h2 class="sheet-title">Tengo un link</h2>
     <p class="sheet-sub">Pega aquí el enlace (o el mensaje entero) que te han pasado.</p>
-    <textarea id="inCodigo" placeholder="Pega el enlace del grupo"></textarea>
-    <div class="sheet-botones">
-      <button class="btn btn-borde" id="btnCancelarInv" type="button">Cancelar</button>
-      <button class="btn btn-sky" id="btnEntrarInv" type="button">Unirme</button>
+    <textarea id="codeInput" placeholder="Pega el enlace del grupo"></textarea>
+    <div class="sheet-actions">
+      <button class="btn btn-outline" id="cancelInviteButton" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="enterInviteButton" type="button">Unirme</button>
     </div>
   `);
-  $('#btnCancelarInv').onclick = cerrarSheet;
-  $('#btnEntrarInv').onclick = () => {
-    if(!importar($('#inCodigo').value)) toast('Ahí no hay ninguna fiesta que valga');
+  $('#cancelInviteButton').onclick = closeSheet;
+  $('#enterInviteButton').onclick = () => {
+    if(!importParty($('#codeInput').value)) toast('Ahí no hay ninguna fiesta que valga');
   };
 }
 
-/* --- crear fiesta --- */
-function sheetCrear(){
-  abrirSheet(`
-    <h2 class="sheet-titulo">Fiesta nueva</h2>
-    <div class="campo" style="margin-top:14px">
-      <label class="label" for="inFiestaNueva">Nombre de la fiesta</label>
-      <input type="text" id="inFiestaNueva" placeholder="Matanza en casa de Paco" maxlength="40" autocomplete="off">
+/* --- create party --- */
+function createPartySheet(){
+  openSheet(`
+    <h2 class="sheet-title">Fiesta nueva</h2>
+    <div class="field" style="margin-top:14px">
+      <label class="label" for="newPartyNameInput">Nombre de la fiesta</label>
+      <input type="text" id="newPartyNameInput" placeholder="Matanza en casa de Paco" maxlength="40" autocomplete="off">
     </div>
-    <div class="campo">
-      <label class="label" for="inTuNombre">Tu nombre (te quedas la llave)</label>
-      <input type="text" id="inTuNombre" placeholder="Paco" maxlength="20" autocomplete="off">
+    <div class="field">
+      <label class="label" for="participantNameInput">Tu nombre (te quedas la llave)</label>
+      <input type="text" id="participantNameInput" placeholder="Paco" maxlength="20" autocomplete="off">
     </div>
-    <div class="campo">
-      <label class="label" for="inFechaNueva">Fecha (opcional)</label>
-      <input type="date" id="inFechaNueva">
+    <div class="field">
+      <label class="label" for="newPartyDateInput">Fecha (opcional)</label>
+      <input type="date" id="newPartyDateInput">
     </div>
-    <button class="btn btn-sky btn-block" id="btnCrearFiesta" type="button" style="padding:14px">Crear la fiesta</button>
+    <button class="btn btn-primary btn-block" id="createPartyButton" type="button" style="padding:14px">Crear la fiesta</button>
   `);
-  $('#btnCrearFiesta').onclick = () => {
-    const nombre = $('#inFiestaNueva').value.trim();
-    const tu = $('#inTuNombre').value.trim();
-    if(!nombre) return toast('Ponle nombre a la fiesta');
-    if(!tu) return toast('Falta tu nombre');
-    const pid = nuevoId('p');
+  $('#createPartyButton').onclick = async () => {
+    const name = $('#newPartyNameInput').value.trim();
+    const participantName = $('#participantNameInput').value.trim();
+    if(!name) return toast('Ponle nombre a la fiesta');
+    if(!participantName) return toast('Falta tu nombre');
+    const newDate = $('#newPartyDateInput').value;
+    if(newDate && !DATE_RE.test(newDate))
+      return toast('Esa fecha no cuadra: ponla normal o déjala en blanco.');
+    const btn = $('#createPartyButton');
+    btn.disabled = true;
+    const pid = newId('p');
+    backupCurrentParty();
     S = {
-      v:3,
-      fiesta:{nombre, fecha: $('#inFechaNueva').value || null},
-      yo: pid, tab:'lista',
-      gente:[{id:pid, nombre:tu, admin:true}],
-      items:[], saldados:{},
+      v:5,
+      party:{name, date: newDate || null, updatedAt:now()},
+      me: pid, tab:'party', remote: null,
+      people:[{id:pid, name:participantName, admin:true, updatedAt:now()}],
+      items:[], settled:{}, tombstones:[],
     };
-    guardar(); cerrarSheet(); pintar();
-    toast('Fiesta creada. Apunta la lista e invita a la peña.');
+    // Save to the phone immediately. If the POST hangs and the user closes the
+    // app, the party still exists locally.
+    saveLocal();
+    // Go live from minute one if the network is available; otherwise stay local
+    // until the user retries.
+    const liveEnabled = await createRemote();
+    saveLocal(); closeSheet(); render();
+    if(liveEnabled) shareSheet('invite');
+    else toast('Fiesta creada en este móvil (sin red). Ponla en vivo cuando vuelva.');
   };
 }
 
-function sheetRenombrar(){
-  abrirSheet(`
-    <h2 class="sheet-titulo">Nombre y fecha</h2>
-    <div class="campo" style="margin-top:14px">
-      <label class="label" for="inNombreF">Nombre de la fiesta</label>
-      <input type="text" id="inNombreF" maxlength="40" value="${esc(S.fiesta.nombre)}">
+function renameSheet(){
+  openSheet(`
+    <h2 class="sheet-title">Nombre y fecha</h2>
+    <div class="field" style="margin-top:14px">
+      <label class="label" for="partyNameInput">Nombre de la fiesta</label>
+      <input type="text" id="partyNameInput" maxlength="40" value="${escapeHtml(S.party.name)}">
     </div>
-    <div class="campo">
-      <label class="label" for="inFechaF">Fecha (opcional)</label>
-      <input type="date" id="inFechaF" value="${S.fiesta.fecha || ''}">
+    <div class="field">
+      <label class="label" for="partyDateInput">Fecha (opcional)</label>
+      <input type="date" id="partyDateInput" value="${escapeHtml(S.party.date || '')}">
     </div>
-    <div class="sheet-botones">
-      <button class="btn btn-borde" id="btnCancelarRen" type="button">Cancelar</button>
-      <button class="btn btn-sky" id="btnGuardarRen" type="button">Guardar</button>
+    <div class="sheet-actions">
+      <button class="btn btn-outline" id="cancelRenameButton" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="saveRenameButton" type="button">Guardar</button>
     </div>
   `);
-  $('#btnCancelarRen').onclick = cerrarSheet;
-  $('#btnGuardarRen').onclick = () => {
-    const n = $('#inNombreF').value.trim();
+  $('#cancelRenameButton').onclick = closeSheet;
+  $('#saveRenameButton').onclick = () => {
+    if(!requireAdmin()) return;
+    const n = $('#partyNameInput').value.trim();
     if(!n) return toast('La fiesta necesita un nombre');
-    S.fiesta.nombre = n;
-    S.fiesta.fecha = $('#inFechaF').value || null;
-    guardar(); cerrarSheet(); pintar(); toast('Guardado');
+    const f = $('#partyDateInput').value;
+    if(f && !DATE_RE.test(f)) return toast('Esa fecha no cuadra: ponla normal o déjala en blanco.');
+    S.party.name = n;
+    S.party.date = f || null;
+    touch(S.party);
+    save(); closeSheet(); render(); toast('Guardado');
   };
 }
 
-function sheetConfirmar(titulo, aviso, accion){
-  abrirSheet(`
-    <h2 class="sheet-titulo">${esc(titulo)}</h2>
-    <p class="sheet-sub">${esc(aviso)}</p>
-    <div class="sheet-botones">
-      <button class="btn btn-borde" id="btnNo" type="button">Cancelar</button>
-      <button class="btn btn-sky" id="btnSi" type="button">Sí, adelante</button>
+function confirmSheet(title, message, action){
+  openSheet(`
+    <h2 class="sheet-title">${escapeHtml(title)}</h2>
+    <p class="sheet-sub">${escapeHtml(message)}</p>
+    <div class="sheet-actions">
+      <button class="btn btn-outline" id="confirmNoButton" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="confirmYesButton" type="button">Sí, adelante</button>
     </div>
   `);
-  $('#btnNo').onclick = cerrarSheet;
-  $('#btnSi').onclick = () => { cerrarSheet(); accion(); };
+  $('#confirmNoButton').onclick = closeSheet;
+  $('#confirmYesButton').onclick = () => { closeSheet(); action(); };
 }
 
-/* ================= vistas ================= */
+/* ================= views ================= */
 function heroHtml(){
   return `<div class="hero">
     <div class="logo" aria-hidden="true">${LOGO}</div>
     <h1>A Pachas</h1>
-    <p class="lema">Los gastos de la peña, a partes iguales.<br>Ni pa ti ni pa mí.</p>
+    <p class="tagline">Los gastos de la peña, a partes iguales.<br>Ni pa ti ni pa mí.</p>
   </div>`;
 }
 
-function vistaEntrada(){
+function entryView(){
   return `${heroHtml()}
-    <div class="fila-add">
-      <input type="text" id="inEnlace" placeholder="Pega el enlace del grupo" autocomplete="off">
-      <button class="btn btn-borde" id="btnUnirme" type="button">Unirme</button>
+    <div class="add-row">
+      <input type="text" id="linkInput" placeholder="Pega el enlace del grupo" autocomplete="off">
+      <button class="btn btn-primary" id="joinLinkButton" type="button">Unirme</button>
     </div>
-    <button class="crear-dashed" id="btnCrear" type="button">+ Crear fiesta nueva</button>
+    <button class="create-dashed" id="createButton" type="button">+ Crear fiesta nueva</button>
     <div style="text-align:center;margin-top:22px">
-      <button class="link-quieto" id="btnVerEjemplo" type="button">Ver una fiesta de ejemplo</button>
+      <button class="quiet-link" id="demoButton" type="button">Ver una fiesta de ejemplo</button>
     </div>`;
 }
 
-function vistaFiesta(){
-  const c = cuentas();
-  const yo = persona(S.yo);
-  const f = fechaBonita(S.fiesta.fecha);
-  const porResolver = S.items.filter(i=>i.estado!=='comprada').length;
-  return `${heroHtml()}
-    <div class="card fiesta-card">
+function heroMiniHtml(){
+  return `<div class="hero-mini">${LOGO}<span class="wordmark">A Pachas</span></div>`;
+}
+
+function partyView(c){
+  const me = personById(S.me);
+  const f = prettyDate(S.party.date);
+  const unownedCount = S.items.filter(isUnownedItem).length;
+  const openItems = S.items.filter(i=>i.status!=='bought').length;
+  const pendingBizumCount = pendingBizums(c).length;
+
+  // Current next step: exactly one action based on party state.
+  let action;
+  if(!S.items.length && !c.total){
+    action = {txt:'La lista está vacía. Apunta lo que hace falta pa la fiesta.',
+      btn:'Apuntar lo que falta', target:'list'};
+  } else if(unownedCount){
+    action = {txt:`Hay ${unownedCount === 1 ? 'una cosa' : unownedCount + ' cosas'} sin dueño en la lista.`,
+      btn:'Ver la lista', target:'list'};
+  } else if(openItems === 0 && pendingBizumCount){
+    action = {txt:'Todo comprado. Solo quedan los bizums pa quedar en paz.',
+      btn:'A las cuentas', target:'accounts'};
+  } else if(openItems === 0 && !pendingBizumCount && c.total){
+    action = {txt:'Todo comprado y todo saldado. Vaya máquinas.',
+      btn:'Ver las cuentas', target:'accounts'};
+  } else {
+    action = {txt:'¿Has pagado algo? Apúntalo y a otra cosa.',
+      btn:'Apuntar un gasto', target:'expense'};
+  }
+
+  // User balance, with the amount as the visual lead.
+  let myLine = '';
+  if(me && c.total){
+    const s = c.balance[S.me] || 0;
+    const txt = s === 0 ? 'En paz' : (s > 0 ? '+' : '−') + eur(Math.abs(s));
+    myLine = `<div class="card balance-card">
+      <div class="center">
+        <span class="label">Tu saldo</span>
+        <div class="amount ${balanceClass(s)}">${txt}</div>
+      </div>
+      <button class="btn btn-outline btn-mini" id="myAccountButton" type="button">Mis cuentas</button>
+    </div>`;
+  }
+
+  const isLive = isLiveSyncing();
+  return `${heroMiniHtml()}
+    <div class="card party-card">
+      <span class="brand-mark" aria-hidden="true">${LOGO}</span>
       <span class="label">Tu fiesta</span>
-      <div class="titulo">${esc(S.fiesta.nombre)}</div>
-      <div class="meta">${f ? esc(f) + ' · ' : ''}${S.gente.length} en la peña · ${S.items.length} cosa${S.items.length===1?'':'s'} en la lista · ${eur(c.total)}</div>
-      <button class="btn btn-sky btn-block" id="btnInvitar" type="button">Invitar por enlace</button>
+      <div class="title">${escapeHtml(S.party.name)}</div>
+      <div class="meta">${f ? escapeHtml(f) + ' · ' : ''}${S.people.length} en la peña · ${S.items.length} cosa${S.items.length===1?'':'s'} en la lista · ${eur(c.total)}</div>
+      <button class="btn btn-white btn-block" id="inviteButton" type="button">Mandar al grupo</button>
+      ${canGoLive() ? `
+        <button class="btn btn-live btn-block" id="enableLiveButton" type="button" style="margin-top:8px">
+          Ponerla en vivo pa que todos apunten</button>` : ''}
+      <div class="sync-status${isLive ? ' live' : ''}" id="syncStatus">${escapeHtml(syncText())}</div>
     </div>
-    <div class="card yo-fila">
-      <span class="quien">${yo ? `Eres <b>${esc(yo.nombre)}</b>` : 'Aún no has dicho quién eres'}</span>
-      <button class="btn btn-borde btn-mini" id="btnQuienSoy" type="button">${yo ? 'Cambiar' : '¿Quién eres?'}</button>
+    <div class="card">
+      <span class="label">¿Qué toca?</span>
+      <p class="next-action-text">${action.txt}</p>
+      <button class="btn ${action.target==='expense'?'btn-green':'btn-soft'} btn-block" id="actionButton"
+        data-target="${action.target}" type="button">${action.btn}</button>
     </div>
-    ${porResolver ? `<div class="card yo-fila">
-      <span class="quien">Quedan <b>${porResolver}</b> cosa${porResolver===1?'':'s'} por resolver</span>
-      <button class="btn btn-soft btn-mini" id="btnIrLista" type="button">A la lista</button>
-    </div>` : ''}
+    ${myLine}
+    <div class="card identity-row">
+      ${me ? avatarHtml(S.me) : ''}
+      <span class="who">${me ? `Eres <b>${escapeHtml(me.name)}</b>` : 'Aún no has dicho quién eres'}</span>
+      <button class="btn-text" id="whoAmIButton" type="button">${me ? 'Cambiar' : '¿Quién eres?'}</button>
+    </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:22px">
-      ${soyAdmin() ? '<button class="link-quieto" id="btnRenombrar" type="button">Cambiar nombre o fecha</button>' : ''}
-      <button class="link-quieto" id="btnNueva" type="button">Empezar otra fiesta</button>
-      <button class="link-quieto" id="btnVerEjemplo" type="button">Ver la fiesta de ejemplo</button>
+      ${isAdmin() ? '<button class="quiet-link" id="renameButton" type="button">Cambiar nombre o fecha</button>' : ''}
+      <button class="quiet-link" id="newPartyButton" type="button">Empezar otra fiesta</button>
+      <button class="quiet-link" id="demoButton" type="button">Ver la fiesta de ejemplo</button>
     </div>`;
 }
 
-function vistaLista(){
+function listView(){
   const total = S.items.length;
-  const porResolver = S.items.filter(i=>i.estado!=='comprada').length;
+  const openItems = S.items.filter(i=>i.status!=='bought').length;
   const sub = !total ? 'Apunta lo que haga falta'
-    : porResolver === 0 ? 'Todo comprado. Vaya máquinas.'
-    : porResolver === 1 ? `1 cosa por resolver de ${total}`
-    : `${porResolver} cosas por resolver de ${total}`;
-  const admin = soyAdmin();
+    : openItems === 0 ? 'Todo comprado. Vaya máquinas.'
+    : openItems === 1 ? `1 cosa por resolver de ${total}`
+    : `${openItems} cosas por resolver de ${total}`;
+  const admin = isAdmin();
 
   const cardItem = it => {
-    const comprada = it.estado === 'comprada';
-    const p = it.pilladorId ? persona(it.pilladorId) : null;
-    const esMia = it.estado==='pillada' && it.pilladorId === S.yo;
+    const isBought = it.status === 'bought';
+
+    // Bought item: green checkIcon on the left, tap to edit.
+    if(isBought){
+      const n = consumerIds(it).length;
+      return `<div class="card item-card bought-card" data-edit="${escapeHtml(it.id)}" role="button" tabindex="0"
+        aria-label="Comprada: ${escapeHtml(it.name)}, ${eur(it.priceCents||0)}. Tocar para corregirla.">
+        <div class="item-row" style="align-items:center">
+          <span class="bought-checkIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+          <div style="flex:1;min-width:0">
+            <div class="name">${escapeHtml(it.name)}</div>
+            <div class="meta" style="margin-top:1px">${eur(it.priceCents||0)} · pagó ${escapeHtml(personById(it.payerId)?.name || '—')} · entre ${n===S.people.length?'todos':n}</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    const p = it.claimerId ? personById(it.claimerId) : null;
+    const isMine = it.status==='claimed' && it.claimerId === S.me;
 
     let chip;
-    if(comprada) chip = '<span class="chip-estado chip-green">Comprada</span>';
-    else if(esMia) chip = '<span class="chip-estado chip-sky">La traes tú</span>';
-    else if(p) chip = `<span class="chip-estado chip-sky">La trae ${esc(p.nombre)}</span>`;
-    else chip = '<span class="chip-estado chip-neutro">Sin dueño</span>';
+    if(isMine) chip = '<span class="status-chip chip-primary">La traes tú</span>';
+    else if(p) chip = `<span class="status-chip chip-primary">La trae ${escapeHtml(p.name)}</span>`;
+    else chip = '<span class="status-chip chip-neutral">Sin dueño</span>';
 
-    let meta = '';
-    if(comprada){
-      const n = consumidores(it).length;
-      meta = `<div class="meta">${eur(it.precio)} · pagó ${esc(persona(it.compradorId)?.nombre || '—')} · entre ${n===S.gente.length?'todos':n}</div>`;
+    const id = escapeHtml(it.id);
+    let actions = '';
+    if(isMine){
+      actions = `<button class="btn btn-green btn-mini" data-buy="${id}" type="button">Ya está comprada</button>
+        <button class="quiet-link" data-release="${id}" type="button">soltar</button>`;
+    } else if(!p){
+      actions = `<button class="btn btn-soft btn-mini" data-pillar="${id}" type="button">Me lo pido</button>
+        <button class="quiet-link" data-buy="${id}" type="button">ya comprada</button>
+        ${admin ? `<button class="btn btn-outline btn-mini" data-assign="${id}" type="button">Asignar</button>` : ''}`;
+    } else if(admin){
+      actions = `<button class="quiet-link" data-release="${id}" type="button">soltar</button>
+        <button class="quiet-link" data-buy="${id}" type="button">apuntar precio</button>`;
     }
 
-    let acciones = '';
-    if(!comprada){
-      if(esMia){
-        acciones = `<button class="btn btn-green btn-mini" data-comprar="${it.id}" type="button">Ya está comprada</button>
-          <button class="link-quieto" data-soltar="${it.id}" type="button">soltar</button>`;
-      } else if(!p){
-        acciones = `<button class="btn btn-soft btn-mini" data-pillar="${it.id}" type="button">Me lo pido</button>
-          <button class="link-quieto" data-comprar="${it.id}" type="button">ya comprada</button>
-          ${admin ? `<button class="link-quieto" data-asignar="${it.id}" type="button">asignar</button>` : ''}`;
-      } else if(admin){
-        acciones = `<button class="link-quieto" data-soltar="${it.id}" type="button">soltar (cosas de la llave)</button>
-          <button class="link-quieto" data-comprar="${it.id}" type="button">apuntar precio</button>`;
-      }
-    }
-
-    const puedeQuitar = !comprada && (admin || !p);
-    return `<div class="card item-card ${comprada?'comprada-card':''}" ${comprada?`data-editar="${it.id}"`:''}>
-      <div class="fila">
+    const canRemove = admin || !p;
+    return `<div class="card item-card">
+      <div class="item-row">
         <div style="flex:1;min-width:0">
-          <div class="nombre">${esc(it.nombre)}</div>
-          ${meta}
-          ${acciones ? `<div class="acciones">${acciones}</div>` : ''}
+          <div class="name">${escapeHtml(it.name)}</div>
+          ${actions ? `<div class="actions">${actions}</div>` : ''}
         </div>
         <div style="display:flex;align-items:center;gap:4px">
           ${chip}
-          ${puedeQuitar ? `<button class="quitar" data-quitar="${it.id}" type="button" aria-label="Quitar ${esc(it.nombre)}">✕</button>` : ''}
+          ${canRemove ? `<button class="remove-button" data-remove-button="${id}" type="button" aria-label="Quitar ${escapeHtml(it.name)}">✕</button>` : ''}
         </div>
       </div>
     </div>`;
   };
 
-  const porComprar = S.items.filter(i=>i.estado!=='comprada');
-  const compradas = S.items.filter(i=>i.estado==='comprada');
+  const toBuy = S.items.filter(i=>i.status!=='bought');
+  const boughtItems = S.items.filter(i=>i.status==='bought');
+  const unownedCount = S.items.filter(isUnownedItem).length;
 
   return `
-    <div class="cabecera"><h1>La lista</h1><div class="sub">${sub}</div></div>
-    <form class="fila-add" id="formAddItem">
-      <input type="text" id="inItem" placeholder="¿Qué falta? (garrafón no)" maxlength="40" autocomplete="off">
-      <button class="btn btn-sky" type="submit">Apuntar</button>
+    <div class="screen-header"><h1>La lista</h1><div class="sub">${sub}</div></div>
+    <form class="add-row" id="addItemForm">
+      <input type="text" id="itemInput" placeholder="¿Qué falta? (garrafón no)" maxlength="40" autocomplete="off">
+      <button class="btn btn-primary" type="submit">Apuntar</button>
     </form>
-    ${!total ? '<div class="vacio">La lista está vacía.<br>Apunta lo primero que haga falta.</div>'
-      : porComprar.map(cardItem).join('') + compradas.map(cardItem).join('')}
+    <button class="create-dashed" id="directExpenseButton" type="button" style="margin-bottom:14px">
+      + Apuntar un gasto ya pagado</button>
+    ${!total ? '<div class="empty-state">La lista está vacía.<br>Apunta lo primero que haga falta.</div>'
+      : toBuy.map(cardItem).join('')
+        + (unownedCount ? `<div style="text-align:center;margin:2px 0 10px">
+            <button class="quiet-link" id="shareListButton" type="button">Mandar lo que falta al grupo</button>
+          </div>` : '')
+        + (boughtItems.length && toBuy.length ? '<span class="label">Ya compradas</span>' : '')
+        + boughtItems.map(cardItem).join('')}
   `;
 }
 
-function vistaPena(){
-  const c = cuentas();
-  const filas = S.gente.map(p => {
-    const asignadas = S.items.filter(i=>i.estado==='pillada' && i.pilladorId===p.id).length;
-    const s = c.saldo[p.id];
-    const cls = s>0?'saldo-verde':(s<0?'saldo-terra':'saldo-neutro');
-    const estado = s>0?'le deben':(s<0?'debe':'en paz');
+function groupView(c){
+  const rows = S.people.map(p => {
+    const assignedItems = S.items.filter(i=>i.status==='claimed' && i.claimerId===p.id).length;
+    const s = c.balance[p.id];
+    const cls = balanceClass(s);
+    const statusText = s>0?'le deben':(s<0?'debe':'en paz');
     const subs = [];
     if(p.admin) subs.push('Organiza la fiesta');
-    if(asignadas) subs.push(`trae ${asignadas} cosa${asignadas===1?'':'s'}`);
+    if(assignedItems) subs.push(`trae ${assignedItems} cosa${assignedItems===1?'':'s'}`);
     return `
-    <div class="persona-fila" data-persona="${p.id}">
+    <div class="person-row" data-person="${escapeHtml(p.id)}">
       ${avatarHtml(p.id)}
-      <div class="centro">
-        <div class="nombre">${esc(p.nombre)}${p.id===S.yo?' (tú)':''}${p.admin?LLAVE:''}</div>
-        ${subs.length?`<div class="subtexto">${esc(subs.join(' · '))}</div>`:''}
+      <div class="center">
+        <div class="name">${escapeHtml(p.name)}${p.id===S.me?' (tú)':''}${p.admin?KEY_ICON:''}</div>
+        ${subs.length?`<div class="secondary-text">${escapeHtml(subs.join(' · '))}</div>`:''}
       </div>
-      <div class="saldo ${cls}">
-        <span class="cifra">${s>0?'+':''}${eur(s)}</span>
-        <span class="estado">${estado}</span>
+      <div class="balance ${cls}">
+        <span class="amount">${s>0?'+':''}${eur(s)}</span>
+        <span class="status">${statusText}</span>
       </div>
     </div>`;
   }).join('');
   return `
-    <div class="cabecera"><h1>La peña</h1><div class="sub">${S.gente.length} en la cuadrilla</div></div>
-    <div class="card" style="padding:4px 14px">${filas}</div>
-    <button class="btn btn-sky btn-block" id="btnInvitar" type="button" style="margin-top:6px">Invitar por enlace</button>
-    <form class="fila-add" id="formAddPersona" style="margin-top:14px">
-      <input type="text" id="inPersona" placeholder="Añadir a alguien a mano" maxlength="20" autocomplete="off">
-      <button class="btn btn-borde" type="submit">Añadir</button>
+    <div class="screen-header"><h1>La peña</h1><div class="sub">${S.people.length} en la cuadrilla</div></div>
+    <div class="card" style="padding:4px 14px">${rows}</div>
+    <button class="btn btn-primary btn-block" id="inviteButton" type="button" style="margin-top:6px">Mandar al grupo</button>
+    <form class="add-row" id="addPersonForm" style="margin-top:14px">
+      <input type="text" id="personInput" placeholder="Añadir a alguien a mano" maxlength="20" autocomplete="off">
+      <button class="btn btn-outline" type="submit">Añadir</button>
     </form>
   `;
 }
 
-function vistaCuentas(){
-  const c = cuentas();
+function accountsView(c){
   if(c.total === 0){
     return `
-      <div class="cabecera"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
-      <div class="vacio">Aún no hay gastos apuntados.<br>En cuanto la peña compre cosas, aquí salen las cuentas.</div>`;
+      <div class="screen-header"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
+      <div class="empty-state">Aún no hay gastos apuntados.<br>En cuanto la peña compre cosas, aquí salen las cuentas.</div>
+      <div style="text-align:center"><button class="btn btn-green" id="directExpenseButton" type="button">Apuntar un gasto</button></div>`;
   }
-  const porCabeza = Math.round(c.total / S.gente.length);
-  const pendientes = c.bizums.filter(b => !S.saldados[b.de+'>'+b.a]);
-  const flecha = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M14 6l6 6-6 6"/></svg>';
-  const check = '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>';
+
+  const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M14 6l6 6-6 6"/></svg>';
+  const checkIcon = '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>';
+  const pending = pendingBizums(c);
+
+  // Your account comes first.
+  let myAccount;
+  if(!S.me){
+    myAccount = `<div class="card">
+      <span class="label">Tu cuenta</span>
+      <div class="my-account-action" style="border-top:none;margin-top:0;padding-top:2px">
+        <span class="text">Di quién eres y te digo cómo vas.</span>
+        <button class="btn btn-primary btn-mini" id="whoAmIButton" type="button">¿Quién eres?</button>
+      </div>
+    </div>`;
+  } else {
+    const s = c.balance[S.me] || 0;
+    const cls = balanceClass(s);
+    const title = s === 0 ? 'Estás en paz' : s > 0 ? `Te deben ${eur(s)}` : `Debes ${eur(-s)}`;
+    const myBizums = pending.filter(b => b.de === S.me || b.a === S.me);
+    const actions = myBizums.map(b => b.de === S.me
+      ? `<div class="my-account-action">
+          <span class="text">Haz bizum de <b>${eur(b.cents)}</b> a <b>${escapeHtml(personById(b.a).name)}</b></span>
+          <button class="btn btn-soft btn-mini" data-copy-bizum="${escapeHtml(b.a)}" data-cents="${b.cents}" type="button">Copiar</button>
+        </div>`
+      : `<div class="my-account-action">
+          <span class="text"><b>${escapeHtml(personById(b.de).name)}</b> te debe <b>${eur(b.cents)}</b></span>
+        </div>`).join('');
+    myAccount = `<div class="card">
+      <span class="label">Tu cuenta</span>
+      <div class="my-account-amount ${cls}">${title}</div>
+      <div class="my-account-breakdown">Pagaste ${eur(c.payerTotals[S.me]||0)} · te tocaba ${eur(c.owes[S.me]||0)}</div>
+      ${actions || (s === 0 ? '<div class="my-account-action"><span class="text">Ni pa ti ni pa mí. Así da gusto.</span></div>' : '')}
+    </div>`;
+  }
+
+  // "Per head" only when true: all purchases consumed by everyone.
+  const uniform = S.items.every(i => i.status !== 'bought' || !i.consumers || !i.consumers.length);
+  const subtotalText = uniform
+    ? `${eur(Math.round(c.total / S.people.length))} por cabeza`
+    : 'repartido según quién cata cada cosa';
 
   const bizumsHtml = c.bizums.map(b => {
-    const key = b.de+'>'+b.a, hecho = !!S.saldados[key];
-    return `<div class="card bizum-fila ${hecho?'hecho':''}">
-      <div class="quien">${esc(persona(b.de).nombre)}${flecha}${esc(persona(b.a).nombre)}</div>
-      <span class="cuanto">${eur(b.cents)}</span>
-      <button class="check ${hecho?'on':''}" data-bizum="${key}" type="button"
-        aria-label="${hecho?'Deshacer':'Marcar'} bizum de ${esc(persona(b.de).nombre)} a ${esc(persona(b.a).nombre)}">${check}</button>
+    const key = bizumKey(b), done = isBizumDone(b);
+    return `<div class="card bizum-row ${done?'done':''}">
+      <div class="who">${escapeHtml(personById(b.de).name)}${arrow}${escapeHtml(personById(b.a).name)}</div>
+      <span class="transfer-amount">${eur(b.cents)}</span>
+      <button class="checkIcon ${done?'on':''}" data-bizum="${escapeHtml(key)}" type="button"
+        aria-label="${done?'Deshacer':'Marcar'} bizum de ${escapeHtml(personById(b.de).name)} a ${escapeHtml(personById(b.a).name)}">${checkIcon}</button>
     </div>`;
   }).join('');
 
-  const todoEnPaz = c.bizums.length>0 && pendientes.length===0;
+  const allSettled = c.bizums.length>0 && pending.length===0;
 
   return `
-    <div class="cabecera"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
+    <div class="screen-header"><h1>Las cuentas</h1><div class="sub">Bizums mínimos pa quedar en paz</div></div>
+    ${myAccount}
     <div class="card total-card">
-      <div class="cifra">${eur(c.total)}</div>
-      <div class="porcabeza">${eur(porCabeza)} por cabeza</div>
+      <div class="amount">${eur(c.total)}</div>
+      <div class="per-head">${subtotalText}</div>
     </div>
+    ${c.bizums.length ? '<span class="label">Bizums de todos</span>' : ''}
     ${bizumsHtml}
-    ${todoEnPaz ? '<div class="enpaz">Cuentas claras y el chocolate espeso.</div>'
-      : '<div class="pie-nota">Marca el círculo cuando el bizum esté hecho.</div>'}
-    <button class="btn btn-borde btn-block" id="btnCompartirCuentas" type="button" style="margin-top:14px">
+    ${allSettled ? '<div class="settled-message">Cuentas claras y el chocolate espeso.</div>'
+      : c.bizums.length ? '<div class="footnote">Marca el círculo cuando el bizum esté hecho.</div>'
+      : '<div class="settled-message">Cuentas en paz. Ni pa ti ni pa mí.</div>'}
+    <button class="btn btn-primary btn-block" id="shareAccountsButton" type="button" style="margin-top:14px;padding:14px">
       Mandar las cuentas al grupo</button>
   `;
 }
 
-/* ================= pintar ================= */
-function pintar(){
-  document.body.classList.toggle('sin-fiesta', !S);
-  const v = $('#vista');
+/* ================= render ================= */
+function render(){
+  sync.renderLater = false; // Any render path clears the deferred-render debt.
+  document.body.classList.toggle('no-party', !S);
+  const v = $('#preview');
   if(!S){
-    v.innerHTML = vistaEntrada();
-    conectarEntrada(v);
+    v.innerHTML = entryView();
+    bindEntry(v);
     return;
   }
   document.querySelectorAll('.tab').forEach(t =>
-    t.classList.toggle('activa', t.dataset.tab === S.tab));
-  const c = cuentas();
-  const pend = c.bizums.filter(b=>!S.saldados[b.de+'>'+b.a]).length;
-  const badge = $('#badgeCuentas');
-  badge.hidden = pend===0;
-  badge.textContent = pend;
+    t.classList.toggle('active', t.dataset.tab === S.tab));
+  const c = accounts();
+  const pendingItems = pendingBizums(c).length;
+  const badge = $('#accountsBadge');
+  badge.hidden = pendingItems===0;
+  badge.textContent = pendingItems;
 
-  v.innerHTML = S.tab==='fiesta' ? vistaFiesta()
-    : S.tab==='lista' ? vistaLista()
-    : S.tab==='pena' ? vistaPena()
-    : vistaCuentas();
-  conectar(v);
+  v.innerHTML = S.tab==='party' ? partyView(c)
+    : S.tab==='list' ? listView()
+    : S.tab==='group' ? groupView(c)
+    : accountsView(c);
+  bindView(v);
 }
 
-function conectarEntrada(v){
-  v.querySelector('#btnUnirme').onclick = () => {
-    const txt = v.querySelector('#inEnlace').value.trim();
-    if(!txt) return sheetUnirse();
-    if(!importar(txt)) toast('Ahí no hay ninguna fiesta que valga');
+function bindEntry(v){
+  v.querySelector('#joinLinkButton').onclick = () => {
+    const txt = v.querySelector('#linkInput').value.trim();
+    if(!txt) return joinSheet();
+    if(!importParty(txt)) toast('Ahí no hay ninguna fiesta que valga');
   };
-  v.querySelector('#btnCrear').onclick = sheetCrear;
-  v.querySelector('#btnVerEjemplo').onclick = () => {
-    S = demo(); guardar(); pintar(); sheetIdentidad(true);
+  v.querySelector('#createButton').onclick = createPartySheet;
+  v.querySelector('#demoButton').onclick = () => {
+    resetSync();
+    S = demoState(); saveLocal(); render(); identitySheet(true);
   };
 }
 
-function conectar(v){
+function bindView(v){
   const on = (sel, fn) => { const el = v.querySelector(sel); if(el) el.onclick = fn; };
 
-  /* fiesta */
-  on('#btnInvitar', sheetInvitar);
-  on('#btnQuienSoy', () => sheetIdentidad(false));
-  on('#btnIrLista', () => { S.tab='lista'; guardar(); pintar(); });
-  on('#btnRenombrar', sheetRenombrar);
-  on('#btnNueva', () => sheetConfirmar('¿Empezar otra fiesta?',
-    'Esta se borra de tu móvil. Si quieres conservarla, copia antes el enlace de invitación: sirve de copia de seguridad.', () => {
-      S = null; localStorage.removeItem(CLAVE); pintar();
+  /* party / home */
+  on('#inviteButton', () => shareSheet('invite'));
+  on('#enableLiveButton', enableLive);
+  on('#whoAmIButton', () => identitySheet(false));
+  on('#myAccountButton', () => { S.tab='accounts'; save(); render(); });
+  on('#actionButton', e => {
+    const target = v.querySelector('#actionButton').dataset.target;
+    if(target === 'expense'){
+      if(!S.me) return identitySheet(true);
+      expenseSheet(null);
+    } else { S.tab = target; save(); render(); }
+  });
+  on('#renameButton', renameSheet);
+  on('#newPartyButton', () => confirmSheet('¿Empezar otra fiesta?',
+    S.remote
+      ? 'Se quita de tu móvil, pero sigue en vivo pa la peña: con el enlace del grupo vuelves cuando quieras.'
+      : 'Esta se borra de tu móvil. Si quieres conservarla, copia antes el enlace de invitación: sirve de copia de seguridad.', () => {
+      resetSync();
+      S = null; localStorage.removeItem(STORAGE_KEY); render();
     }));
-  on('#btnVerEjemplo', () => sheetConfirmar('¿Cargar la fiesta de ejemplo?',
-    'Se borrará la actual de este móvil (la de tus colegas no se toca).', () => {
-      S = demo(); guardar(); pintar(); sheetIdentidad(true);
+  on('#demoButton', () => confirmSheet('¿Cargar la fiesta de ejemplo?',
+    S.remote
+      ? 'La tuya sigue en vivo pa la peña; el ejemplo va solo en este móvil.'
+      : 'Se borrará la actual de este móvil (la de tus colegas no se toca).', () => {
+      backupCurrentParty();
+      resetSync();
+      S = demoState(); saveLocal(); render(); identitySheet(true);
     }));
 
-  /* lista */
-  const form = v.querySelector('#formAddItem');
+  /* list */
+  const form = v.querySelector('#addItemForm');
   if(form) form.onsubmit = e => {
     e.preventDefault();
-    const n = v.querySelector('#inItem').value.trim();
+    const n = v.querySelector('#itemInput').value.trim();
     if(!n) return toast('Escribe algo, que la lista no adivina.');
-    S.items.unshift({id:nuevoId('i'), nombre:n, estado:'pendiente'});
-    guardar(); pintar(); toast('«' + n + '» apuntado');
+    if(S.items.length >= 500) return toast('La lista no da pa más (500 cosas). Quita algo primero.');
+    S.items.unshift(touch({id:newId('i'), name:n, status:'pending',
+      createdAt:now(), createdBy:S.me || null}));
+    save(); render(); toast('«' + n + '» apuntado');
   };
+  on('#directExpenseButton', () => {
+    if(!S.me) return identitySheet(true);
+    expenseSheet(null);
+  });
+  on('#shareListButton', () => shareSheet('list'));
+  // The party may have changed underneath while rendering was deferred because
+  // an input had half-written text. Every action revalidates item state so it
+  // does not overwrite a purchase another phone just resolved.
   v.querySelectorAll('[data-pillar]').forEach(b => b.onclick = () => {
-    if(!S.yo) return sheetIdentidad(true);
-    const it = S.items.find(x=>x.id===b.dataset.pillar);
-    it.estado='pillada'; it.pilladorId=S.yo;
-    guardar(); pintar(); toast('Apuntado: ' + it.nombre + ' corre de tu cuenta.');
-  });
-  v.querySelectorAll('[data-soltar]').forEach(b => b.onclick = () => {
-    const it = S.items.find(x=>x.id===b.dataset.soltar);
-    if(it.pilladorId !== S.yo && !soyAdmin()) return;
-    it.estado='pendiente'; delete it.pilladorId;
-    guardar(); pintar(); toast('Suelta. A ver quién se la pide ahora.');
-  });
-  v.querySelectorAll('[data-asignar]').forEach(b => b.onclick = () => {
-    if(!soyAdmin()) return toast('Eso es cosa de la llave');
-    sheetAsignar(b.dataset.asignar);
-  });
-  v.querySelectorAll('[data-comprar]').forEach(b => b.onclick = () => {
-    if(!S.yo) return sheetIdentidad(true);
-    sheetCompra(b.dataset.comprar);
-  });
-  v.querySelectorAll('[data-editar]').forEach(card => card.onclick = e => {
-    if(e.target.closest('button')) return;
-    const it = S.items.find(x=>x.id===card.dataset.editar);
-    if(!it) return;
-    if(!soyAdmin() && it.compradorId !== S.yo){
-      const quien = persona(it.compradorId);
-      return toast('Solo ' + (quien?quien.nombre:'quien la pagó') + ' o la llave pueden tocarla');
+    if(!S.me) return identitySheet(true);
+    const it = itemById(b.dataset.pillar);
+    if(!isUnownedItem(it)){
+      render(); return toast('Alguien se ha adelantado: esa ya está resuelta.');
     }
-    sheetCompra(card.dataset.editar);
+    it.status='claimed'; it.claimerId=S.me;
+    touch(it);
+    save(); render(); toast('Apuntado: ' + it.name + ' corre de tu cuenta.');
   });
-  v.querySelectorAll('[data-quitar]').forEach(b => b.onclick = e => {
+  v.querySelectorAll('[data-release]').forEach(b => b.onclick = () => {
+    const it = itemById(b.dataset.release);
+    if(!it || it.status !== 'claimed'){
+      render(); return toast('Esa ya ha cambiado de manos.');
+    }
+    if(it.claimerId !== S.me && !isAdmin()){
+      render(); return toast('Esa la trae ' + (personById(it.claimerId)?.name || 'otro') + ': soltarla es cosa suya o de la llave.');
+    }
+    it.status='pending'; delete it.claimerId;
+    touch(it);
+    save(); render(); toast('Suelta. A ver quién se la pide ahora.');
+  });
+  v.querySelectorAll('[data-assign]').forEach(b => b.onclick = () => {
+    if(!isAdmin()) return toast('Eso es cosa de la llave');
+    assignSheet(b.dataset.assign);
+  });
+  v.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    if(!S.me) return identitySheet(true);
+    expenseSheet(b.dataset.buy);
+  });
+  v.querySelectorAll('[data-edit]').forEach(card => card.onclick = e => {
+    if(e.target.closest('button')) return;
+    const it = S.items.find(x=>x.id===card.dataset.edit);
+    if(!it) return;
+    if(!isAdmin() && it.payerId !== S.me){
+      const who = personById(it.payerId);
+      return toast('Solo ' + (who?who.name:'quien la pagó') + ' o la llave pueden tocarla');
+    }
+    expenseSheet(card.dataset.edit);
+  });
+  v.querySelectorAll('[data-remove-button]').forEach(b => b.onclick = e => {
     e.stopPropagation();
-    S.items = S.items.filter(x=>x.id!==b.dataset.quitar);
-    guardar(); pintar();
+    const it = itemById(b.dataset.removeButton);
+    if(!it) return render();
+    if(it.status === 'bought'){
+      // Another phone just bought it; deleting money requires confirmation.
+      render(); return toast('Esa ya está comprada: tócala si quieres corregirla.');
+    }
+    // Render-time permission (admin or unowned) is revalidated on tap. With
+    // deferred rendering, the x button may predate someone claiming the item.
+    if(!isAdmin() && it.claimerId){
+      render(); return toast('Esa ya la trae ' + (personById(it.claimerId)?.name || 'alguien') + ': no se quita así como así.');
+    }
+    tombstoneEntity('items', it);
+    save(); render();
   });
 
-  /* peña */
-  const formP = v.querySelector('#formAddPersona');
+  /* group */
+  const formP = v.querySelector('#addPersonForm');
   if(formP) formP.onsubmit = e => {
     e.preventDefault();
-    const n = v.querySelector('#inPersona').value.trim();
+    const n = v.querySelector('#personInput').value.trim();
     if(!n) return;
-    S.gente.push({id:nuevoId('p'), nombre:n, admin:false});
-    guardar(); pintar(); toast(n + ' se une a la peña');
+    if(S.people.length >= 100) return toast('La peña no da pa más (100). Menuda fiesta.');
+    S.people.push(touch({id:newId('p'), name:n, admin:false}));
+    save(); render(); toast(n + ' se une a la peña');
   };
-  v.querySelectorAll('[data-persona]').forEach(f => f.onclick = () => sheetPersona(f.dataset.persona));
+  v.querySelectorAll('[data-person]').forEach(f => f.onclick = () => personSheet(f.dataset.person));
 
-  /* cuentas */
+  /* accounts */
   v.querySelectorAll('[data-bizum]').forEach(b => b.onclick = () => {
     const key = b.dataset.bizum;
-    if(S.saldados[key]) delete S.saldados[key];
-    else {
-      S.saldados[key] = true;
-      const c = cuentas();
-      if(c.bizums.every(x=>S.saldados[x.de+'>'+x.a])) toast('Cuentas claras y el chocolate espeso.');
+    const c = accounts();
+    const bz = c.bizums.find(x => bizumKey(x) === key);
+    if(!bz) return render(); // Accounts changed underneath.
+    const done = !isBizumDone(bz);
+    // Store the paid amount with the mark. If the Bizum amount later changes,
+    // the new amount becomes pending again.
+    S.settled[key] = {done, at:now(), by:S.me || null, cents: bz.cents};
+    pruneSettled(S.settled, S.people); // Keep this path bounded too.
+    if(done){
+      if(c.bizums.every(x => bizumKey(x) === key || isBizumDone(x))) toast('Cuentas claras y el chocolate espeso.');
       else toast('Bizum apuntado');
     }
-    guardar(); pintar();
+    save(); render();
   });
-  on('#btnCompartirCuentas', async () => {
-    const c = cuentas();
-    const lineas = ['Cuentas de «' + S.fiesta.nombre + '» — A Pachas',
-      'Total: ' + eur(c.total) + ' entre ' + S.gente.length, ''];
-    c.bizums.forEach(b => lineas.push(
-      (S.saldados[b.de+'>'+b.a]?'✓ ':'· ') +
-      persona(b.de).nombre + ' → ' + persona(b.a).nombre + ': ' + eur(b.cents)));
-    if(!c.bizums.length) lineas.push('Cuentas en paz.');
-    const txt = lineas.join('\n');
-    let compartido = false;
-    if(navigator.share){
-      try { await navigator.share({text: txt}); compartido = true; } catch(e){}
-    }
-    if(!compartido){
-      const ok = await copiar(txt);
-      toast(ok ? 'Cuentas copiadas' : 'No se ha podido copiar');
-    }
+  v.querySelectorAll('[data-copy-bizum]').forEach(b => b.onclick = async () => {
+    const who = personById(b.dataset.copyBizum);
+    const txt = `Bizum de ${eur(Number(b.dataset.cents))} a ${who ? who.name : '—'} — «${S.party.name}»`;
+    const ok = await copyToClipboard(txt);
+    toast(ok ? 'Copiado. Al Bizum y arreando.' : 'No se ha podido copiar');
   });
+  on('#shareAccountsButton', () => shareSheet('accounts'));
 }
 
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
   if(!S) return;
-  S.tab = t.dataset.tab; guardar(); pintar();
+  S.tab = t.dataset.tab; save(); render();
 }));
 
-/* invitación por enlace (#AP1:… o el antiguo #EB1:…) */
+/* startup: live link (#F:id:key), snapshot (#AP2:), or saved state */
 (function(){
-  if(location.hash && location.hash.length > 4){
-    const obj = decodificar(decodeURIComponent(location.hash.slice(1)));
+  // Shared-state baseline as loaded. Without this, the first local-only save
+  // (switching tabs) would count as a party change.
+  if(S && S.remote) sync.actualSharedJson = stateJson();
+  let hash = location.hash || '';
+  try { hash = decodeURIComponent(hash); } catch(e){ /* A stray % must not crash the app. */ }
+  const clearHash = () => {
+    try { history.replaceState(null,'',location.pathname + location.search); } catch(e){}
+  };
+
+  const live = hash.match(LIVE_LINK_RE);
+  if(live){
+    render();
+    if(!S) toast('Abriendo la fiesta del grupo…');
+    // Clear the hash only if the party opens. Without network, reload retries.
+    openLiveLink(live[1].toLowerCase(), live[2].toLowerCase())
+      .then(ok => { if(ok) clearHash(); });
+    return;
+  }
+
+  if(hash.length > 4){
+    const obj = decodeSnapshot(hash);
     if(obj){
-      S = obj; guardar();
-      try { history.replaceState(null,'',location.pathname + location.search); } catch(e){}
+      clearHash();
+      // An old snapshot link must not silently disconnect a live party.
+      if(isRemoteParty()){
+        render();
+        confirmSheet('¿Abrir la fiesta del enlace?',
+          'Ese enlace lleva una copia congelada. Tu fiesta en vivo se queda a salvo: vuelves a ella con el enlace del grupo.',
+          () => applyImported(obj));
+        download();
+        return;
+      }
+      applyImported(obj);
+      return;
     }
   }
+  render();
+  if(S && !S.me) identitySheet(true);
+  if(S && S.remote) download();
 })();
 
-pintar();
-if(S && !S.yo) sheetIdentidad(true);
+/* live parties keep themselves up to date */
+setInterval(() => {
+  if(document.visibilityState !== 'visible' || !S || !S.remote) return;
+  refreshSync();
+  if(sync.renderLater) renderNowOrLater();
+  // Download first, upload after, in order. Processing a stale GET after a PUT
+  // would create revision bounce.
+  download().then(() => {
+    if(S && S.remote && (sync.markOffline || S.pendingUpload)) upload();
+  });
+}, 12000);
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible') download();
+});
+// When connectivity returns, poll first to seed the baseline, then upload.
+window.addEventListener('online', async () => { await download(); upload(); });
 </script>
 </body>
 </html>

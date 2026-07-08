@@ -857,7 +857,7 @@ function syncText(){
   return 'En vivo con la peña · al día ' + timeAgo(sync.lastSeenAt);
 }
 function refreshSync(){
-  const el = $('#syncEstado');
+  const el = $('#syncStatus');
   if(!el) return;
   el.textContent = syncText();
   el.classList.toggle('live', isLiveSyncing());
@@ -1028,7 +1028,9 @@ async function enableLive(){
 }
 
 async function openLiveLink(id, key){
+  const openParty = S; // If S changes during the GET, the response is stale.
   const r = await apiRequest('GET', '/parties/' + id).catch(() => ({status: 0}));
+  if(S !== openParty) return false;
   if(r.status !== 200 || !r.body || !r.body.state){
     toast(r.status === 404
       ? 'Ese enlace ya no lleva a ninguna fiesta.'
@@ -1701,7 +1703,7 @@ function partyView(c){
       ${canGoLive() ? `
         <button class="btn btn-live btn-block" id="enableLiveButton" type="button" style="margin-top:8px">
           Ponerla en vivo pa que todos apunten</button>` : ''}
-      <div class="sync-status${isLive ? ' live' : ''}" id="syncEstado">${escapeHtml(syncText())}</div>
+      <div class="sync-status${isLive ? ' live' : ''}" id="syncStatus">${escapeHtml(syncText())}</div>
     </div>
     <div class="card">
       <span class="label">¿Qué toca?</span>

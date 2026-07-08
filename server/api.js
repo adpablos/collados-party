@@ -368,13 +368,22 @@ setInterval(purgeExpiredParties, 12 * 3600 * 1000).unref();
 /* ---------- API ---------- */
 
 async function parseJsonBody(req, res) {
+  let value;
   try {
-    return JSON.parse(await readBody(req));
+    value = JSON.parse(await readBody(req));
   } catch (e) {
     if (e.message === 'too_large') throw e; // Outer catch returns 413.
     json(res, 400, { error: 'Cuerpo inválido' });
     return null;
   }
+  // Syntactically valid but falsey JSON (null, false, 0, "") parses without
+  // throwing; callers treat a falsey return as "already responded", so this
+  // must send the 400 itself instead of letting the request hang unanswered.
+  if (!value) {
+    json(res, 400, { error: 'Cuerpo inválido' });
+    return null;
+  }
+  return value;
 }
 
 async function api(req, res, url) {

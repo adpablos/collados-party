@@ -141,8 +141,7 @@ function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-function legacyTransferId(key, value) {
-  const text = `${key}|${value.cents || 0}|${value.at || 0}`;
+function stableEntityId(prefix, text) {
   let first = 2166136261;
   let second = 3335557771;
   for (let i = 0; i < text.length; i++) {
@@ -150,7 +149,11 @@ function legacyTransferId(key, value) {
     first = Math.imul(first ^ code, 16777619);
     second = Math.imul(second ^ code, 2246822519);
   }
-  return `tl${(first >>> 0).toString(36)}${(second >>> 0).toString(36)}`;
+  return `${prefix}${(first >>> 0).toString(36)}${(second >>> 0).toString(36)}`;
+}
+
+function legacyTransferId(key, value) {
+  return stableEntityId('tl', `${key}|${value.cents || 0}|${value.at || 0}`);
 }
 
 function migrateLegacyTransfers(input, people) {

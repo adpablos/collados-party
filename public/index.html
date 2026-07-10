@@ -373,15 +373,17 @@ const now = () => Date.now();
 // a poisoned state cannot smuggle a weird ID into HTML.
 const ID_RE = /^[A-Za-z0-9_-]{1,40}$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-function legacyTransferId(key, value){
-  const text = `${key}|${value.cents || 0}|${value.at || 0}`;
+function stableEntityId(prefix, text){
   let first = 2166136261, second = 3335557771;
   for(let i=0; i<text.length; i++){
     const code = text.charCodeAt(i);
     first = Math.imul(first ^ code, 16777619);
     second = Math.imul(second ^ code, 2246822519);
   }
-  return `tl${(first >>> 0).toString(36)}${(second >>> 0).toString(36)}`;
+  return `${prefix}${(first >>> 0).toString(36)}${(second >>> 0).toString(36)}`;
+}
+function legacyTransferId(key, value){
+  return stableEntityId('tl', `${key}|${value.cents || 0}|${value.at || 0}`);
 }
 function migrateLegacyTransfers(settled, people){
   if(!settled || typeof settled !== 'object' || Array.isArray(settled)) return [];
@@ -617,6 +619,16 @@ function tombstoneEntity(collection, entity){
 }
 
 const itemById = id => S && S.items.find(x => x.id === id);
+
+// Two phones may confirm the same recommendation from the same server revision.
+// Give that payment the same ID on both phones so the entity merge keeps one.
+// Later expenses or payments change the basis, allowing a genuinely new Bizum
+// with the same people and amount to remain a separate transfer.
+function transferCompletionId(fromId, toId, cents){
+  const itemBasis = S.items.map(item=>`${item.id}:${item.updatedAt || 0}`).sort().join(',');
+  const transferBasis = S.transfers.map(transfer=>transfer.id).sort().join(',');
+  return stableEntityId('t', `${fromId}>${toId}|${cents}|${itemBasis}|${transferBasis}`);
+}
 
 // Abort a sheet action whose premise is no longer true because the party changed
 // underneath it: close, repaint the truth, and notify consistently.
@@ -2695,7 +2707,7 @@ function bindView(v){
         item.fromId===fromId && item.toId===toId && item.cents===cents);
       if(!liveBizum) throw new Error('changed_bizum');
       const at = now();
-      S.transfers.push({id:newId('t'), fromId, toId, cents,
+      S.transfers.push({id:transferCompletionId(fromId,toId,cents), fromId, toId, cents,
         createdAt:at, createdBy:S.me || null, updatedAt:at, updatedBy:S.me || null});
     }, {toast:accounts().bizums.length === 1
       ? 'Cuentas claras y el chocolate espeso.' : 'Bizum apuntado'})).catch(e => {

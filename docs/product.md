@@ -161,7 +161,9 @@ confirmation. No activity feed in P0.
 Marking a suggested Bizum creates a transfer entity that changes both people's
 balances. Later expenses are calculated on top of those real money movements,
 so nobody is asked to pay the same debt twice. Completed transfers remain
-visible and can be undone with confirmation when marked by mistake.
+visible and can be undone with confirmation when marked by mistake. If two
+phones confirm the same recommendation from the same accounting state, both
+derive the same transfer ID so concurrent merging retains one payment.
 
 ### D9. Membership Changes Never Rewrite History
 

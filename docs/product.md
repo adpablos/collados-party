@@ -393,6 +393,9 @@ and write capabilities stored on that phone.
   actor remains a declared identity, not authenticated identity; the UI states
   that boundary explicitly. Events are capped at 200 and 256 KB, and expire or
   delete with the party.
+- Device references stored in audit events are scoped to that party, preventing
+  readers with links to different parties from correlating the same phone.
+  Global device references exist only in server-side operations data.
 
 ## Appendix: Corrections to the Original Analysis
 

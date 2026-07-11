@@ -142,6 +142,13 @@ test('party lifecycle enforces write and owner credentials', async () => {
   const updatedState = partyState('Fiesta de pruebas actualizada');
   updatedState.party.updatedAt = 2;
 
+  const invalidWrite = await request('PUT', `/api/parties/${id}`, {
+    key,
+    rev: 1,
+    state: { ...updatedState, v: 5 },
+  });
+  assert.equal(invalidWrite.status, 400);
+
   const forbiddenWrite = await request('PUT', `/api/parties/${id}`, {
     key: 'aaaaaaaaaaaaaa',
     rev: 1,
@@ -166,6 +173,31 @@ test('party lifecycle enforces write and owner credentials', async () => {
   });
   assert.equal(written.status, 200);
   assert.equal(written.body.rev, 2);
+  const createdEvent = created.body.audit.find((event) => event.action === 'party.created');
+  const updatedEvent = written.body.audit.find((event) => event.action === 'party.updated');
+  assert.ok(createdEvent);
+  assert.ok(updatedEvent);
+  assert.match(createdEvent.deviceRef, /^[a-f0-9]{16}$/);
+  assert.equal(updatedEvent.rev, 2);
+  assert.equal(updatedEvent.actorId, 'p1');
+  assert.equal(updatedEvent.label, updatedState.party.name);
+  assert.match(updatedEvent.requestId, /^[A-Za-z0-9._-]{8,80}$/);
+  assert.equal(updatedEvent.deviceRef, createdEvent.deviceRef);
+  assert.deepEqual(updatedEvent.changes, [{
+    field: 'name',
+    before: initialState.party.name,
+    after: updatedState.party.name,
+  }]);
+
+  const secondParty = await request('POST', '/api/parties', {
+    state: partyState('Otra fiesta'),
+    actorId: 'p1',
+    deviceId: 'device-api-test-0001',
+  }, '198.51.100.11');
+  assert.equal(secondParty.status, 201);
+  const secondCreatedEvent = secondParty.body.audit.find((event) => event.action === 'party.created');
+  assert.ok(secondCreatedEvent);
+  assert.notEqual(secondCreatedEvent.deviceRef, createdEvent.deviceRef);
 
   const forbiddenDelete = await request('DELETE', `/api/parties/${id}`, {
     ownerKey: 'aaaaaaaaaaaaaaaaaaaaaaaa',
@@ -221,6 +253,54 @@ test('party lifecycle enforces write and owner credentials', async () => {
   assert.equal(finalRead.status, 200);
   assert.equal(finalRead.body.rev, 2);
   assert.deepEqual(finalRead.body.state, updatedState);
+
+  const livePath = path.join(dataDir, `${id}.json`);
+  const conflictTrashPath = path.join(dataDir, '.trash', `${id}.${Date.now()}.json`);
+  fs.copyFileSync(livePath, conflictTrashPath);
+  const restoreConflict = await request('POST', `/api/parties/${id}/restore`, { ownerKey });
+  assert.equal(restoreConflict.status, 409);
+  assert.equal(fs.existsSync(livePath), true);
+  assert.equal(fs.existsSync(conflictTrashPath), true);
+  fs.unlinkSync(conflictTrashPath);
+});
+
+test('trash lookup skips corrupt entries and authenticates before purging', async () => {
+  const created = await request('POST', '/api/parties', {
+    state: partyState('Fiesta borrada'),
+  }, '198.51.100.12');
+  assert.equal(created.status, 201);
+
+  const { id, ownerKey } = created.body;
+  const deleted = await request('DELETE', `/api/parties/${id}`, {
+    ownerKey,
+    rev: 1,
+    confirmName: 'Fiesta borrada',
+  });
+  assert.equal(deleted.status, 202);
+
+  const trashDir = path.join(dataDir, '.trash');
+  const validName = fs.readdirSync(trashDir).find((name) => name.startsWith(`${id}.`));
+  assert.ok(validName);
+  const validPath = path.join(trashDir, validName);
+  const corruptPath = path.join(trashDir, `${id}.${Date.now() + 1000}.json`);
+  fs.writeFileSync(corruptPath, '{"truncated"');
+
+  const deletedRead = await request('GET', `/api/parties/${id}`);
+  assert.equal(deletedRead.status, 410);
+  fs.unlinkSync(corruptPath);
+
+  const expiredPath = path.join(trashDir, `${id}.${Date.now() - 61000}.json`);
+  fs.renameSync(validPath, expiredPath);
+  const forbiddenRestore = await request('POST', `/api/parties/${id}/restore`, {
+    ownerKey: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+  });
+  assert.equal(forbiddenRestore.status, 403);
+  assert.equal(fs.existsSync(expiredPath), true);
+
+  const expiredRestore = await request('POST', `/api/parties/${id}/restore`, { ownerKey });
+  assert.equal(expiredRestore.status, 410);
+  assert.equal(fs.existsSync(expiredPath), false);
+  assert.equal((await request('GET', `/api/parties/${id}`)).status, 404);
 });
 
 test('create and client-event endpoints return retry guidance at their limits', async () => {

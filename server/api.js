@@ -194,8 +194,19 @@ function findTrashedParty(id) {
       const deletedAt = Number(name.slice(prefix.length, -5));
       if (!Number.isFinite(deletedAt)) continue;
       const file = path.join(TRASH_DIR, name);
-      const doc = normalizeDocument(JSON.parse(fs.readFileSync(file, 'utf8')));
-      if (doc) return { file, doc, purgeAt: deletedAt + DELETION_RETENTION_MS };
+      try {
+        const doc = normalizeDocument(JSON.parse(fs.readFileSync(file, 'utf8')));
+        if (doc) return { file, doc, purgeAt: deletedAt + DELETION_RETENTION_MS };
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          logEvent('error', 'trash_read_failed', {
+            partyRef: privateRef('party', id),
+            errorName: sanitizeDiagnostic(error.name),
+          });
+          continue;
+        }
+        if (error.code !== 'ENOENT') throw error;
+      }
     }
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
@@ -381,16 +392,17 @@ function auditChanges(type, before, after) {
   });
 }
 
-function auditMeta(body, oldState, newState, context) {
+function auditMeta(body, oldState, newState, partyId, context) {
   const peopleIds = new Set([
     ...((oldState && oldState.people) || []).map((person) => person.id),
     ...((newState && newState.people) || []).map((person) => person.id),
   ]);
   const actorId = body && validId(body.actorId) && peopleIds.has(body.actorId)
     ? body.actorId : null;
-  const deviceRef = body && DEVICE_ID_RE.test(body.deviceId || '')
-    ? privateRef('device', body.deviceId) : undefined;
-  context.deviceRef = deviceRef;
+  const deviceId = body && DEVICE_ID_RE.test(body.deviceId || '') ? body.deviceId : null;
+  const deviceRef = deviceId
+    ? privateRef('party-device', `${partyId}:${deviceId}`) : undefined;
+  context.deviceRef = deviceId ? privateRef('device', deviceId) : undefined;
   return { actorId, deviceRef, requestId: context.requestId };
 }
 
@@ -920,7 +932,7 @@ async function api(req, res, url, context) {
     const ownerKey = randomToken(24);
     context.partyRef = privateRef('party', id);
     const updatedAt = new Date().toISOString();
-    const meta = auditMeta(body, null, state, context);
+    const meta = auditMeta(body, null, state, id, context);
     const audit = [makeAuditEvent('party.created', null, state.party.name,
       auditChanges('party', null, state.party), meta, 1, updatedAt)];
     const doc = { key, ownerKey, rev: 1, updatedAt, state, audit };
@@ -942,12 +954,12 @@ async function api(req, res, url, context) {
       if (!body) return;
       const deleted = findTrashedParty(id);
       if (!deleted) return json(res, 404, { error: 'No hay tal fiesta' });
+      if (!deleted.doc.ownerKey || body.ownerKey !== deleted.doc.ownerKey) {
+        return json(res, 403, { error: 'Este móvil no puede recuperar esa fiesta' });
+      }
       if (Date.now() >= deleted.purgeAt) {
         fs.unlinkSync(deleted.file);
         return json(res, 410, { error: 'Ya no se puede recuperar esa fiesta' });
-      }
-      if (!deleted.doc.ownerKey || body.ownerKey !== deleted.doc.ownerKey) {
-        return json(res, 403, { error: 'Este móvil no puede recuperar esa fiesta' });
       }
       if (fs.existsSync(partyFile(id))) {
         return json(res, 409, { error: 'Esa fiesta ya está en vivo' });
@@ -1007,7 +1019,7 @@ async function api(req, res, url, context) {
       const nextRev = doc.rev + 1;
       const updatedAt = new Date().toISOString();
       const events = auditEventsForChange(doc.state, state,
-        auditMeta(body, doc.state, state, context), nextRev, updatedAt);
+        auditMeta(body, doc.state, state, id, context), nextRev, updatedAt);
       doc.rev = nextRev;
       doc.updatedAt = updatedAt;
       doc.state = state;

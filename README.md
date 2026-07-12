@@ -44,9 +44,9 @@ live in [docs/product.md](docs/product.md).
 
 ## Releases
 
-The family-and-friends beta starts at `v0.1.0-beta.1`. Annotated Git tags are
-the human product version, while `APP_RELEASE` remains the exact deployed Git
-SHA and `STATE_VERSION` remains only the persisted-data contract version.
+The family-and-friends beta starts at `v0.1.0-beta.1`. Git tags are the human
+product version, while `APP_RELEASE` remains the exact deployed Git SHA and
+`STATE_VERSION` remains only the persisted-data contract version.
 
 Every product, data, security, privacy, deployment, or recovery change is added
 under `Unreleased` in [CHANGELOG.md](CHANGELOG.md). The short release procedure

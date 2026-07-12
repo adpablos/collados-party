@@ -29,6 +29,8 @@ First family-and-friends beta.
   rate limits, strict Content Security Policy checks, and production uptime CI.
 - Encrypted age backups, retention, hardened daily scheduling, and a
   non-destructive restore validator.
+- Semantic Versioning tags, this canonical changelog, and a guarded release
+  procedure tied to the SHA confirmed by production.
 
 ### Changed
 

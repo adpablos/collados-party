@@ -357,8 +357,9 @@ amounts, or party links.
 
 The content-free `usage.feedback_opened` code is sent separately to A Pachas' own
 `POST /api/events` endpoint. Changing providers requires updating only
-`FEEDBACK_URL`, the visible provider name and this runbook, then refreshing the
-CSP hash and running `scripts/check.sh`.
+`FEEDBACK_URL`, the visible provider name, and every provider reference in
+`docs/product.md`, `docs/design.md`, and this runbook; then refresh the CSP hash
+and run `scripts/check.sh`.
 
 The Featurebase workspace is provisioned separately from deployment. Before
 enabling the CTA for a release, verify that `FEEDBACK_URL` resolves and configure

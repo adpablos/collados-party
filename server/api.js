@@ -37,6 +37,9 @@ const TRASH_DIR = path.join(DATA_DIR, '.trash');
 const STATIC_DIR = process.env.STATIC_DIR || path.join(__dirname, '..', 'public');
 const APP_RELEASE = /^[A-Za-z0-9._-]{1,64}$/.test(process.env.APP_RELEASE || '')
   ? process.env.APP_RELEASE : 'dev';
+const REMOTE_QUEUE_MAX = integerEnv('REMOTE_QUEUE_MAX', 100);
+const REMOTE_TIMEOUT_MS = integerEnv('REMOTE_TIMEOUT_MS', 2000);
+const REMOTE_WARNING_INTERVAL_MS = integerEnv('REMOTE_WARNING_INTERVAL_MS', 60 * 1000);
 
 const MAX_BODY = 256 * 1024;          // A large party is ~30 KB; this is plenty.
 const EXPIRY_MS = 240 * 24 * 3600 * 1000; // Untouched parties expire after 8 months.
@@ -108,9 +111,147 @@ function sanitizeDiagnostic(value) {
   return String(value || '').replace(SENSITIVE_TOKEN_RE, '***').slice(0, 4000);
 }
 
+function configuredUrl(value, defaultPath = '') {
+  if (!value) return null;
+  try {
+    const url = new URL(defaultPath, value);
+    const testLoopback = process.env.ALLOW_INSECURE_OBSERVABILITY_FOR_TESTS === '1' &&
+      url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
+    return url.protocol === 'https:' || testLoopback ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+const BETTER_STACK_TOKEN = /^[A-Za-z0-9._-]{8,300}$/.test(process.env.BETTER_STACK_SOURCE_TOKEN || '')
+  ? process.env.BETTER_STACK_SOURCE_TOKEN : '';
+const BETTER_STACK_URL = BETTER_STACK_TOKEN
+  ? configuredUrl(process.env.BETTER_STACK_INGESTING_URL || 'https://in.logs.betterstack.com/') : null;
+const POSTHOG_API_KEY = /^[A-Za-z0-9._-]{8,300}$/.test(process.env.POSTHOG_API_KEY || '')
+  ? process.env.POSTHOG_API_KEY : '';
+const POSTHOG_URL = POSTHOG_API_KEY
+  ? configuredUrl(process.env.POSTHOG_HOST || 'https://eu.i.posthog.com', '/capture/') : null;
+
+function remoteQueue(name, url, headers, maxAttempts = 1) {
+  const queue = [];
+  let sending = false;
+  let deliveryDrops = 0;
+  let overflowDrops = 0;
+  let deliveryDegraded = false;
+  let lastDeliveryWarningAt = 0;
+  let lastOverflowWarningAt = 0;
+
+  function diagnostic(level, event, fields) {
+    console.error(JSON.stringify({
+      timestamp: new Date().toISOString(), level,
+      event, release: APP_RELEASE, sink: name, ...fields,
+    }));
+  }
+
+  function noteDeliveryDrop(error) {
+    deliveryDrops++;
+    deliveryDegraded = true;
+    const now = Date.now();
+    if (now - lastDeliveryWarningAt >= REMOTE_WARNING_INTERVAL_MS) {
+      diagnostic('warn', 'remote_observability_degraded', {
+        reason: 'delivery_failed', dropped: deliveryDrops,
+        ...(error ? { errorName: error.name || 'Error' } : {}),
+      });
+      lastDeliveryWarningAt = now;
+    }
+  }
+
+  function noteOverflow() {
+    overflowDrops++;
+    const now = Date.now();
+    if (now - lastOverflowWarningAt >= REMOTE_WARNING_INTERVAL_MS) {
+      diagnostic('warn', 'remote_observability_degraded', {
+        reason: 'queue_overflow', dropped: overflowDrops,
+      });
+      lastOverflowWarningAt = now;
+    }
+  }
+
+  async function deliverWithRetry(payload) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REMOTE_TIMEOUT_MS);
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+        await response.arrayBuffer();
+        if (!response.ok) throw new Error(`status_${response.status}`);
+        return true;
+      } catch (error) {
+        if (attempt === maxAttempts) {
+          noteDeliveryDrop(error);
+          return false;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 200 * 2 ** (attempt - 1)));
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+    return false;
+  }
+
+  async function flush() {
+    if (sending || !queue.length) return;
+    sending = true;
+    const payload = queue.shift();
+    try {
+      if (await deliverWithRetry(payload) && deliveryDegraded) {
+        diagnostic('info', 'remote_observability_recovered', { dropped: deliveryDrops });
+        deliveryDrops = 0;
+        deliveryDegraded = false;
+        lastDeliveryWarningAt = 0;
+      }
+    } finally {
+      sending = false;
+      if (overflowDrops && queue.length < Math.ceil(REMOTE_QUEUE_MAX / 2)) {
+        diagnostic('info', 'remote_observability_queue_recovered', { dropped: overflowDrops });
+        overflowDrops = 0;
+        lastOverflowWarningAt = 0;
+      }
+      if (queue.length) setImmediate(flush);
+    }
+  }
+  return (payload) => {
+    if (!url) return;
+    if (queue.length >= REMOTE_QUEUE_MAX) {
+      queue.shift();
+      noteOverflow();
+    }
+    queue.push(payload);
+    setImmediate(flush);
+  };
+}
+
+const forwardRemoteLog = remoteQueue('better_stack', BETTER_STACK_URL,
+  BETTER_STACK_TOKEN ? { Authorization: `Bearer ${BETTER_STACK_TOKEN}` } : {});
+const forwardServerProductEvent = remoteQueue('posthog_server', POSTHOG_URL, {}, 3);
+const forwardClientProductEvent = remoteQueue('posthog_client', POSTHOG_URL, {}, 2);
+const REMOTE_LOG_FIELDS = new Set([
+  'timestamp', 'level', 'event', 'release', 'requestId', 'method', 'route', 'status',
+  'durationMs', 'partyRef', 'deviceRef', 'auditEvents', 'errorName', 'errorCode',
+  'stackRef', 'windowMs', 'requests', 'routes', 'statuses', 'errors', 'auditActions',
+  'clientEvents', 'activeParties', 'activeDevices', 'averageDurationMs', 'maxDurationMs',
+  'parties', 'deletedParties', 'storageReady', 'storageFreeBytes', 'deleted', 'purgeAt',
+  'port', 'node', 'staticServing', 'code', 'source',
+]);
+
+function remoteLogPayload(entry) {
+  return Object.fromEntries(Object.entries(entry).filter(([key]) => REMOTE_LOG_FIELDS.has(key)));
+}
+
 function logEvent(level, event, fields = {}) {
   const entry = { timestamp: new Date().toISOString(), level, event, release: APP_RELEASE, ...fields };
   console.log(JSON.stringify(entry));
+  forwardRemoteLog(remoteLogPayload(entry));
 }
 
 function safeError(error) {
@@ -118,7 +259,33 @@ function safeError(error) {
     errorName: error && error.name ? sanitizeDiagnostic(error.name) : 'Error',
     errorCode: error && error.code ? sanitizeDiagnostic(error.code) : undefined,
     stack: error && error.stack ? sanitizeDiagnostic(error.stack) : undefined,
+    stackRef: error && error.stack ? privateRef('stack', error.stack) : undefined,
   };
+}
+
+const PRODUCT_EVENTS = new Set([
+  'party_created', 'collaboration_started', 'first_expense_recorded',
+  'first_transfer_completed', 'party_opened_write', 'party_opened_read',
+  'invite_share_intent', 'accounts_share_intent', 'support_opened', 'accounts_viewed',
+]);
+
+function captureProductEvent(event, partyRef, source) {
+  if (!PRODUCT_EVENTS.has(event) || !partyRef || !['server', 'client'].includes(source)) return;
+  logEvent('info', 'product_event', { code: event, partyRef, source });
+  if (!POSTHOG_URL) return;
+  const forward = source === 'server' ? forwardServerProductEvent : forwardClientProductEvent;
+  forward({
+    api_key: POSTHOG_API_KEY,
+    event,
+    properties: {
+      distinct_id: partyRef,
+      $insert_id: source === 'server'
+        ? privateRef('product-event', `${partyRef}:${event}`) : crypto.randomUUID(),
+      $process_person_profile: false,
+      release: APP_RELEASE,
+      source,
+    },
+  });
 }
 
 const REQUEST_ID_RE = /^[A-Za-z0-9._-]{8,80}$/;
@@ -228,13 +395,26 @@ function normalizeDocument(doc) {
   // consumer lists introduced in v6.
   const state = validState(doc.state, { allowLegacy: true });
   if (!WRITE_KEY_RE.test(key || '') || !state || !Number.isInteger(doc.rev)) return null;
+  const audit = normalizeAudit(doc.audit);
+  const auditDevices = new Set(audit.map((event) => event.deviceRef).filter(Boolean));
+  const milestones = {
+    collaborationStarted: doc.milestones && doc.milestones.collaborationStarted === true ||
+      auditDevices.size >= 2,
+    firstExpenseRecorded: doc.milestones && doc.milestones.firstExpenseRecorded === true ||
+      state.items.some((item) => item.status === 'bought') || audit.some((event) =>
+        event.action.startsWith('item.') && event.changes.some((change) =>
+          change.field === 'status' && change.after === 'bought')),
+    firstTransferCompleted: doc.milestones && doc.milestones.firstTransferCompleted === true ||
+      state.transfers.length > 0 || audit.some((event) => event.action === 'transfer.created'),
+  };
   return {
     key,
     ownerKey,
     rev: doc.rev,
     updatedAt: doc.updatedAt || new Date().toISOString(),
     state,
-    audit: normalizeAudit(doc.audit),
+    audit,
+    milestones,
   };
 }
 
@@ -263,6 +443,11 @@ function writeParty(id, doc) {
     updatedAt: doc.updatedAt,
     state: doc.state,
     audit: normalizeAudit(doc.audit),
+    milestones: {
+      collaborationStarted: doc.milestones && doc.milestones.collaborationStarted === true,
+      firstExpenseRecorded: doc.milestones && doc.milestones.firstExpenseRecorded === true,
+      firstTransferCompleted: doc.milestones && doc.milestones.firstTransferCompleted === true,
+    },
   };
   const tmp = partyFile(id) + '.tmp-' + randomToken(6);
   fs.writeFileSync(tmp, JSON.stringify(stored), { mode: 0o600 });
@@ -852,9 +1037,17 @@ const CLIENT_ERROR_CODES = new Set([
 const USAGE_EVENT_CODES = new Set([
   'usage.party_opened_write', 'usage.party_opened_read',
   'usage.invite_share_intent', 'usage.accounts_share_intent',
-  'usage.support_opened',
+  'usage.support_opened', 'usage.accounts_viewed',
 ]);
+const USAGE_PRODUCT_EVENTS = new Map([...USAGE_EVENT_CODES]
+  .map((code) => [code, code.slice('usage.'.length)]));
 const CLIENT_EVENT_CODES = new Set([...CLIENT_ERROR_CODES, ...USAGE_EVENT_CODES]);
+const CLIENT_ERROR_TYPES = new Set([
+  'Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'URIError',
+  'EvalError', 'AggregateError', 'DOMException', 'AbortError', 'NetworkError',
+  'TimeoutError', 'NotAllowedError', 'SecurityError', 'QuotaExceededError',
+]);
+const RELATED_REQUEST_ID_RE = /^(?:[a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12})$/i;
 const CLIENT_ROUTES = new Set([
   'parties.create', 'parties.read', 'parties.update', 'parties.delete', 'parties.restore', 'client',
 ]);
@@ -876,11 +1069,11 @@ function recordClientEvents(body, context) {
       route: item.route,
       status: Number.isInteger(item.status) && item.status >= 0 && item.status <= 599
         ? item.status : undefined,
-      relatedRequestId: typeof item.requestId === 'string' && REQUEST_ID_RE.test(item.requestId)
+      relatedRequestId: typeof item.requestId === 'string' && RELATED_REQUEST_ID_RE.test(item.requestId)
         ? item.requestId : undefined,
       partyRef: privateRef('party', partyId),
       deviceRef,
-      errorType: typeof item.errorType === 'string' && /^[A-Za-z]{1,40}$/.test(item.errorType)
+      errorType: typeof item.errorType === 'string' && CLIENT_ERROR_TYPES.has(item.errorType)
         ? item.errorType : undefined,
     });
   }
@@ -890,8 +1083,30 @@ function recordClientEvents(body, context) {
     if (event.deviceRef) metrics.activeDeviceRefs.add(event.deviceRef);
     logEvent(USAGE_EVENT_CODES.has(event.code) ? 'info' : 'warn',
       USAGE_EVENT_CODES.has(event.code) ? 'usage_event' : 'client_event', event);
+    const productEvent = USAGE_PRODUCT_EVENTS.get(event.code);
+    if (productEvent) captureProductEvent(productEvent, event.partyRef, 'client');
   }
   return true;
+}
+
+function advanceMilestones(doc, after, deviceRef) {
+  const events = [];
+  const previousDevices = new Set((doc.audit || []).map((event) => event.deviceRef).filter(Boolean));
+  if (!doc.milestones.collaborationStarted && deviceRef && previousDevices.size >= 1 &&
+      !previousDevices.has(deviceRef)) {
+    doc.milestones.collaborationStarted = true;
+    events.push('collaboration_started');
+  }
+  if (!doc.milestones.firstExpenseRecorded &&
+      after.items.some((item) => item.status === 'bought')) {
+    doc.milestones.firstExpenseRecorded = true;
+    events.push('first_expense_recorded');
+  }
+  if (!doc.milestones.firstTransferCompleted && after.transfers.length) {
+    doc.milestones.firstTransferCompleted = true;
+    events.push('first_transfer_completed');
+  }
+  return events;
 }
 
 async function api(req, res, url, context) {
@@ -935,10 +1150,20 @@ async function api(req, res, url, context) {
     const meta = auditMeta(body, null, state, id, context);
     const audit = [makeAuditEvent('party.created', null, state.party.name,
       auditChanges('party', null, state.party), meta, 1, updatedAt)];
-    const doc = { key, ownerKey, rev: 1, updatedAt, state, audit };
+    const doc = {
+      key, ownerKey, rev: 1, updatedAt, state, audit,
+      milestones: {
+        collaborationStarted: false,
+        firstExpenseRecorded: false,
+        firstTransferCompleted: false,
+      },
+    };
+    const productEvents = advanceMilestones(doc, state, meta.deviceRef);
     writeParty(id, doc);
     context.auditEvents = audit.length;
     recordAuditActions(audit);
+    captureProductEvent('party_created', context.partyRef, 'server');
+    for (const event of productEvents) captureProductEvent(event, context.partyRef, 'server');
     return json(res, 201, { id, key, ownerKey, rev: 1, updatedAt, audit });
   }
 
@@ -1018,8 +1243,9 @@ async function api(req, res, url, context) {
       }
       const nextRev = doc.rev + 1;
       const updatedAt = new Date().toISOString();
-      const events = auditEventsForChange(doc.state, state,
-        auditMeta(body, doc.state, state, id, context), nextRev, updatedAt);
+      const meta = auditMeta(body, doc.state, state, id, context);
+      const productEvents = advanceMilestones(doc, state, meta.deviceRef);
+      const events = auditEventsForChange(doc.state, state, meta, nextRev, updatedAt);
       doc.rev = nextRev;
       doc.updatedAt = updatedAt;
       doc.state = state;
@@ -1027,6 +1253,7 @@ async function api(req, res, url, context) {
       writeParty(id, doc);
       context.auditEvents = events.length;
       recordAuditActions(events);
+      for (const event of productEvents) captureProductEvent(event, context.partyRef, 'server');
       return json(res, 200, { rev: doc.rev, updatedAt: doc.updatedAt, audit: doc.audit });
     }
 

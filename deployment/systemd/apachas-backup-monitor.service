@@ -1,0 +1,36 @@
+[Unit]
+Description=Check A Pachas encrypted backup freshness
+Documentation=https://github.com/adpablos/apachas/blob/main/docs/deployment.md
+After=network-online.target apachas-backup.service
+Wants=network-online.target
+RequiresMountsFor=/var/backups/apachas
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+EnvironmentFile=-/etc/apachas/backup-monitor.env
+ExecStart=/usr/local/libexec/apachas-check-backup-freshness
+UMask=0077
+
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+ProtectSystem=strict
+ReadOnlyPaths=/var/backups/apachas
+InaccessiblePaths=/etc/apachas /opt/apachas /var/lib/docker
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+LockPersonality=true
+MemoryDenyWriteExecute=true

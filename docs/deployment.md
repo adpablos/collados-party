@@ -52,6 +52,8 @@ These are the canonical deployment paths for A Pachas. Changing them is a server
 | Tunnel config/credentials  | `/etc/apachas/cloudflared/`        |
 | Backup public recipients   | `/etc/apachas/backup-recipients.txt` |
 | Encrypted backup artifacts | `/var/backups/apachas/`            |
+| Optional observability credentials | `/etc/apachas/observability.env` |
+| Optional backup heartbeat | `/etc/apachas/backup-monitor.env` |
 | Local smoke port           | `127.0.0.1:3200`                   |
 | Compose project            | `apachas`                          |
 
@@ -244,6 +246,85 @@ fixed codes, safe route labels, status/request IDs, and one-way party/device
 references. It never includes names, amounts, concepts, state, bodies, full URLs,
 IP addresses, or URL fragments.
 
+### Optional remote observability
+
+Remote observability is disabled unless credentials are provisioned. Local JSON
+logs, health endpoints, metrics snapshots, and backups remain the source of
+truth and continue working when either provider is unavailable.
+
+The API supports two independent server-side projections:
+
+- **Better Stack EU** receives an explicit allowlist of already-sanitized JSON
+  fields. Every log is written locally first. Delivery uses a bounded queue and
+  a two-second timeout, without delaying an application request. Raw stacks stay
+  local; the remote copy receives only a one-way stack reference for grouping.
+- **PostHog EU** receives only the product events listed below. The API uses the
+  HMAC party reference as `distinct_id` and always sends
+  `$process_person_profile: false`. Bounded retries reuse a content-free
+  `$insert_id` so a delayed response cannot double-count an event. There is no
+  browser SDK, autocapture, cookie, session replay, URL capture, or person profile.
+
+| Product event | Source | Meaning |
+| --- | --- | --- |
+| `party_created` | Server | A valid party document was created. |
+| `collaboration_started` | Server | An accepted write arrived from the first second party-scoped device. |
+| `first_expense_recorded` | Server | The party accepted its first bought item. |
+| `first_transfer_completed` | Server | The party accepted its first completed transfer. |
+| `party_opened_write`, `party_opened_read` | Client allowlist | A live party opened in the corresponding capability mode. |
+| `invite_share_intent`, `accounts_share_intent` | Client allowlist | The native share/copy flow was opened. |
+| `support_opened`, `accounts_viewed` | Client allowlist | Support or the accounts screen was opened. |
+
+Every event is also recorded in local structured logs as `product_event` before
+remote delivery, so a provider gap can be audited or backfilled.
+Client-originated events are directional product signals, not
+billing or business truth: a caller can submit an allowlisted event without an
+account. Server lifecycle events are derived only after an accepted write.
+
+Provision one root-readable environment file on the server:
+
+```bash
+sudo install -o root -g root -m 0600 /dev/null /etc/apachas/observability.env
+sudoedit /etc/apachas/observability.env
+```
+
+```dotenv
+BETTER_STACK_SOURCE_TOKEN=<logs-source-token>
+BETTER_STACK_INGESTING_URL=https://in.logs.betterstack.com/
+POSTHOG_API_KEY=<project-api-key>
+POSTHOG_HOST=https://eu.i.posthog.com
+```
+
+Use a Better Stack logs source in the EU region and a PostHog EU project. These
+are ingestion credentials, not personal or management API tokens. Store their
+canonical recovery copy in 1Password vault `Private`, Secure Note
+`A Pachas observability providers`. **Predeployment provisioning marker:** add
+the stable 1Password item ID here before merging the provider-enabled deployment;
+no item or credentials existed when this optional code path was implemented.
+Never put tokens in GitHub, Compose, shell history, or this repository.
+
+Set provider retention to no more than 30 days for operational logs and 12
+months for content-free product events; a plan may retain them for less time.
+The same limits apply to dashboards and exports. Do not enable recordings,
+autocapture, surveys, feature flags, or person profiles in PostHog for this app.
+
+Recommended provider configuration:
+
+1. Monitor `/` and `/api/health` externally; alert after two consecutive
+   failures.
+2. Alert on any `request` with `status >= 500`, any `request_exception`, and a
+   sustained increase in `client_event` or sync failures.
+3. Dashboard the five-minute `metrics_snapshot` fields for status, latency,
+   active pseudonymous parties/devices, storage readiness, and free bytes.
+4. Build activation (`party_created` → `collaboration_started` →
+   `first_expense_recorded`) and settlement (`first_expense_recorded` →
+   `first_transfer_completed`) funnels in PostHog. Treat small beta counts as
+   directional.
+
+After saving the environment file, redeploy the API and verify that one
+`api_started` log and a deliberately created test party reach the EU projects.
+Inspect the provider payloads to confirm that no party ID, device ID, name,
+amount, URL, IP address, or state appears.
+
 General traffic, party creation, and client events have separate configurable
 rate buckets. A rejected request returns `429` plus `Retry-After`. Defaults are
 defined in `server/api.js`; overrides use `RATE_MAX`, `RATE_WINDOW_MS`,
@@ -324,6 +405,56 @@ the backup directory and cannot access the network. The hardened unit requires
 output at `/var/backups/apachas`; `/etc/apachas/backup.env` may adjust retention.
 Any path override supported by the standalone script also requires a matching
 systemd `ReadOnlyPaths` or `ReadWritePaths` drop-in.
+
+### Backup freshness heartbeat
+
+The optional freshness monitor is deliberately separate from backup creation.
+The backup unit keeps `RestrictAddressFamilies=AF_UNIX` and therefore no network
+access. The monitor executes a root-owned installed copy rather than the deploy
+checkout. Its namespace hides `/etc/apachas`, `/opt/apachas`, and Docker data;
+it can read the encrypted backup directory but cannot read the application data
+volume or any decryption key.
+
+Create a heartbeat monitor in Better Stack with a 36-hour expected interval and
+copy its HTTPS ping URL to a root-only environment file:
+
+```bash
+sudo install -o root -g root -m 0600 /dev/null /etc/apachas/backup-monitor.env
+sudoedit /etc/apachas/backup-monitor.env
+```
+
+```dotenv
+APACHAS_BACKUP_MAX_AGE_HOURS=36
+APACHAS_BACKUP_HEARTBEAT_URL=<https-heartbeat-url>
+```
+
+Install a root-owned copy of the checker outside the deploy checkout, then
+install and test the independent monitor:
+
+```bash
+sudo install -d -o root -g root -m 0755 /usr/local/libexec
+sudo install -o root -g root -m 0755 \
+  /opt/apachas/scripts/check_backup_freshness.sh \
+  /usr/local/libexec/apachas-check-backup-freshness
+sudo install -o root -g root -m 0644 \
+  /opt/apachas/deployment/systemd/apachas-backup-monitor.service \
+  /opt/apachas/deployment/systemd/apachas-backup-monitor.timer \
+  /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now apachas-backup-monitor.timer
+sudo systemctl start apachas-backup-monitor.service
+sudo systemctl status apachas-backup-monitor.service --no-pager
+systemctl list-timers apachas-backup-monitor.timer
+```
+
+After this first-time unit installation, `scripts/deploy.sh` refreshes the
+root-owned checker on every normal deployment before restarting the app stack.
+
+The hourly check pings only when the newest manifest is recent and its named
+encrypted artifact matches the recorded size and SHA-256. A missing, corrupt,
+or stale backup exits non-zero and withholds the heartbeat. Configure Better Stack to
+alert by email immediately after the 36-hour grace period. Store the heartbeat
+URL in the same 1Password observability item as the provider ingestion keys.
 
 Backups on the same host protect against application mistakes, not host or disk
 loss. A beta-readiness gate is to copy the encrypted `.age` file and companion

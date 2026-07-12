@@ -2638,9 +2638,9 @@ function privacySheet(){
     <p class="sheet-sub">A Pachas es una beta privada de Alejandro de Pablos para cuadrar gastos de grupos conocidos.</p>
     <div class="note"><strong>Qué se guarda.</strong><br>Nombres elegidos, fiesta, lista, gastos, repartos, Bizums y actividad necesaria para que todos vean las mismas cuentas.</div>
     <div class="note"><strong>Cómo funciona el acceso.</strong><br>El enlace de edición permite ver y cambiar la fiesta, incluso eligiendo el nombre de otra persona. El enlace de cuentas es solo para mirar. No hay identidad verificada.</div>
-    <div class="note"><strong>Privacidad por defecto.</strong><br>No hay publicidad ni analítica de terceros. Los avisos técnicos y métricas de uso son códigos cerrados sin nombres, importes, contenido, direcciones IP ni enlaces completos.</div>
-    <div class="note"><strong>Cuánto dura.</strong><br>Las fiestas sin uso caducan a los 8 meses. Los datos de este móvil, a los 90 días; las copias de recuperación y los borrados reversibles, a los 7. Las copias operativas, cuando están activadas, van cifradas y caducan a los 30 días.</div>
-    <div class="note"><strong>Infraestructura.</strong><br>La app usa Hetzner para alojarse, Cloudflare para la conexión y Google Fonts para la tipografía.</div>
+    <div class="note"><strong>Privacidad por defecto.</strong><br>No hay publicidad, cookies de analítica, grabaciones de pantalla ni perfiles personales. Los avisos técnicos y métricas de uso se envían desde el servidor con códigos cerrados y referencias seudónimas, nunca con nombres, importes, contenido, direcciones IP ni enlaces.</div>
+    <div class="note"><strong>Cuánto dura.</strong><br>Las fiestas sin uso caducan a los 8 meses. Los datos de este móvil, a los 90 días; las copias de recuperación y los borrados reversibles, a los 7. Las copias operativas cifradas y los registros remotos, como máximo 30 días; las métricas de recorridos sin contenido, como máximo 12 meses.</div>
+    <div class="note"><strong>Infraestructura.</strong><br>La app usa Hetzner para alojarse, Cloudflare para la conexión, Google Fonts para la tipografía y, cuando están activados, Better Stack y PostHog EU para detectar fallos y entender recorridos generales.</div>
     <p class="footnote">Para ayuda, borrado o cualquier cuestión sobre tus datos: <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.</p>
     <button class="btn btn-primary btn-block" id="privacySupportButton" type="button">Escribir a Alex</button>
   `);
@@ -3065,6 +3065,7 @@ function render(){
     else t.removeAttribute('aria-current');
   });
   const c = accounts();
+  if(S.tab === 'accounts' && S.remote) reportUsageEvent('usage.accounts_viewed');
   const pendingItems = c.bizums.length;
   const badge = $('#accountsBadge');
   badge.hidden = pendingItems===0;

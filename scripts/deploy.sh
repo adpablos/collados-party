@@ -12,7 +12,11 @@ PUBLIC_URL="https://apachas.alexdepablos.es"
 
 echo "→ Deploying to ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}"
 ssh -i "${DEPLOY_SSH_KEY}" -o IdentitiesOnly=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
-  "cd '${APP_DIR}' && git pull --ff-only && release=\$(git rev-parse HEAD) && sudo APP_RELEASE=\"\$release\" docker compose up -d --wait"
+  "cd '${APP_DIR}' && git pull --ff-only && release=\$(git rev-parse HEAD) && \
+   sudo install -d -o root -g root -m 0755 /usr/local/libexec && \
+   sudo install -o root -g root -m 0755 scripts/check_backup_freshness.sh \
+     /usr/local/libexec/apachas-check-backup-freshness && \
+   sudo APP_RELEASE=\"\$release\" docker compose up -d --wait"
 
 DEPLOYED_SHA="$(ssh -i "${DEPLOY_SSH_KEY}" -o IdentitiesOnly=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
   "cd '${APP_DIR}' && git rev-parse HEAD")"

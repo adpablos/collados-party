@@ -72,7 +72,7 @@ A Pachas keeps three deliberately separate identifiers:
 
 | Identifier | Source | Changes when |
 | --- | --- | --- |
-| Product version | Annotated Git tag such as `v0.1.0-beta.1` | A release is recorded |
+| Product version | Git tag such as `v0.1.0-beta.1` | A release is recorded |
 | Deployed release | `APP_RELEASE`, always the full Git SHA | Production is deployed |
 | Data contract | `STATE_VERSION` in frontend and API | Persisted state changes |
 
@@ -95,8 +95,8 @@ To record a release:
 2. Merge only after review and CI are green, then deploy with `scripts/deploy.sh`.
 3. Read the exact deployed SHA from `/api/health` and tag that commit, never an
    unverified local commit.
-4. Push the annotated tag and create a GitHub Release marked as a prerelease,
-   using the matching changelog section as its notes.
+4. Push the tag and create a GitHub Release marked as a prerelease, using the
+   matching changelog section as its notes.
 
 ```bash
 set -euo pipefail
@@ -119,7 +119,7 @@ awk -v heading="## [${version#v}]" '
 ' CHANGELOG.md > "$notes"
 test -s "$notes"
 
-git tag -a "$version" "$deployed_sha" -m "A Pachas $version"
+git tag "$version" "$deployed_sha"
 git push origin "$version"
 gh release create "$version" --verify-tag --prerelease \
   --title "A Pachas $version" --notes-file "$notes"

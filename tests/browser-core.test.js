@@ -125,6 +125,8 @@ test('feedback leaves through a context-free external link without embedded thir
   assert.match(html, /const FEEDBACK_URL = 'https:\/\/apachas\.featurebase\.app';/);
   assert.match(html, /href="\$\{FEEDBACK_URL\}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"/);
   assert.match(html, /reportUsageEvent\('usage\.feedback_opened'\)/);
+  assert.doesNotMatch(html,
+    /reportUsageEvent\('usage\.feedback_opened'\);\s*closeSheet\(\)/);
   assert.match(html, /El tablón lo gestiona Featurebase/);
   assert.match(html, /No incluyas nombres, importes ni enlaces de la fiesta/);
   assert.doesNotMatch(html, /<script[^>]+src=["'][^"']*featurebase/i);

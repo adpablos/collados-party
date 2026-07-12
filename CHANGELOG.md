@@ -20,6 +20,7 @@ or recovery changes. Pure refactors and test-only changes need no entry. -->
   plus independent encrypted-backup freshness heartbeats.
 - Added a privacy-gated external feedback board for ideas, comments, and votes,
   without embedded third-party code or party context.
+
 ### Security
 
 - Documented the stable 1Password locator and recovery procedure for the

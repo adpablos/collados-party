@@ -101,10 +101,11 @@ bit of humor, but not overdone.
    live-status line with green dot; "¿QUÉ TOCA?" card with Bricolage 18px
    statement and exactly one personalized action (own assigned item first,
    missing group items second, own Bizum third); "TU SALDO" card with large colored number
-   and "Mis cuentas"; identity row with avatar and violet "Cambiar"; access
-   links for recent activity, rename/date when key holder, start another party,
-   forget this phone's copy, server deletion on the creator phone, and demo. Without
-   a party: private-beta badge, large centered hero with the concrete
+   and "Mis cuentas"; identity row with avatar and violet "Cambiar"; one
+   full-width "Opciones de esta fiesta" control that opens a grouped sheet for
+   recent activity, rename/date when key holder, repeating pending items, starting
+   another party, forgetting this phone's copy, and server deletion on the creator
+   phone. Without a party: private-beta badge, large centered hero with the concrete
    create/share/settle promise, three compact steps, join/create/demo, deleted
    party recovery, and up to five recent live parties stored on that phone,
    plus a phone-data clearing action when local party data or capabilities
@@ -155,11 +156,12 @@ bit of humor, but not overdone.
    add/edit/delete/assign/complete/undo controls. Identity selection may remain
    local so "Tu cuenta" works. Accounts and reminders may be shared only with a
    `#R:` link; a disconnected saved copy cannot be reshared as live state.
-10. **Privacy and help**: every rendered screen ends with small Privacy and Help
-    links. The privacy sheet explains data, access model, telemetry, retention,
-    infrastructure, and support in plain Spanish. It is also directly reachable
-    at `#privacidad`. It offers "Comentarios e ideas" alongside support. Settled
-    accounts repeat the same quiet CTA without an automatic prompt. Both open a
+10. **Feedback, privacy, and help**: the entry screen and every party tab end with
+    one full-width "Comentarios e ideas" control above small Help and Privacy links.
+    Its supporting copy says "Cuéntanos qué falla o qué mejorarías"; there are no
+    duplicate or automatic feedback prompts. The privacy sheet explains data,
+    access model, telemetry, retention, infrastructure, and support in plain
+    Spanish, and remains directly reachable at `#privacidad`. Feedback opens a
     warning sheet before the external Featurebase board; the warning names the
     provider and tells people never to include names, amounts, or party links.
 11. **Global deletion**: only show it when this phone has the creator recovery

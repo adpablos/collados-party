@@ -135,11 +135,82 @@ test('feedback leaves through a context-free external link without embedded thir
   assert.doesNotMatch(html, /featurebase\.app\/[^'"\s<]/i);
 });
 
-test('feedback controls are keyboard and touch accessible', () => {
+test('feedback has one clear global entry with keyboard and touch access', () => {
+  const footerSource = extractFunction(scripts[0], 'footerHtml');
+  const bindFooterSource = extractFunction(scripts[0], 'bindFooter');
   assert.match(html, /querySelectorAll\('a\[href\],button:not\(\[disabled\]\)/);
-  assert.match(html, /\.feedback-cta\{min-height:44px/);
-  assert.match(html, /class="quiet-link feedback-cta" id="accountsFeedbackButton"/);
+  assert.match(html, /\.utility-entry\{[\s\S]*?min-height:56px/);
+  assert.equal([...footerSource.matchAll(/id="feedbackButton"/g)].length, 1);
+  assert.match(footerSource, /Comentarios e ideas/);
+  assert.match(footerSource, /Cuéntanos qué falla o qué mejorarías/);
+  assert.match(bindFooterSource, /feedback\.onclick = feedbackSheet/);
+  assert.doesNotMatch(html, /accountsFeedbackButton|privacyFeedbackButton|feedback-cta/);
 });
+
+test('party management is grouped without changing role or owner capabilities', () => {
+  const context = vm.createContext({});
+  vm.runInContext(`
+    const OWNER_KEY_RE = /^[abcdefghjkmnpqrstuvwxyz23456789]{24}$/i;
+    var S;
+    var readOnly;
+    var admin;
+    function isReadOnlyParty() { return readOnly; }
+    function isAdmin() { return admin; }
+    ${extractFunction(scripts[0], 'partyOptionsHtml')}
+    this.renderOptions = (state, isReadOnly, isCurrentAdmin) => {
+      S = state;
+      readOnly = isReadOnly;
+      admin = isCurrentAdmin;
+      return partyOptionsHtml();
+    };
+  `, context, { filename: 'public/index.html#party-options' });
+
+  const editableAdminOwnerOptions = context.renderOptions({
+    remote: { ownerKey: 'abcdefghjkmnpqrstuvwxy23' },
+    items: [{ status: 'pending' }],
+  }, false, true);
+  for(const id of ['activityButton', 'renameButton', 'repeatPartyButton',
+    'newPartyButton', 'forgetPartyButton', 'deletePartyButton']) {
+    assert.match(editableAdminOwnerOptions, new RegExp(`id="${id}"`));
+  }
+
+  const readOnlyOptions = context.renderOptions({
+    remote: { ownerKey: 'abcdefghjkmnpqrstuvwxy23' },
+    items: [{ status: 'pending' }],
+  }, true, true);
+  assert.match(readOnlyOptions, /id="activityButton"/);
+  assert.match(readOnlyOptions, /id="newPartyButton"/);
+  assert.match(readOnlyOptions, /id="forgetPartyButton"/);
+  assert.doesNotMatch(readOnlyOptions, /id="(?:rename|repeatParty|deleteParty)Button"/);
+
+  const nonAdminOwnerOptions = context.renderOptions({
+    remote: { ownerKey: 'abcdefghjkmnpqrstuvwxy23' },
+    items: [{ status: 'pending' }],
+  }, false, false);
+  assert.match(nonAdminOwnerOptions, /id="deletePartyButton"/,
+    'The creator-phone capability must stay independent of the admin role');
+  assert.doesNotMatch(nonAdminOwnerOptions, /id="(?:rename|repeatParty)Button"/);
+
+  const localNonAdminOptions = context.renderOptions({ remote: null, items: [] }, false, false);
+  assert.doesNotMatch(localNonAdminOptions, /Actividad y organización/,
+    'Empty option groups should not render');
+});
+
+test('the active party exposes one options trigger and keeps the demo at entry only', () => {
+  const partySource = extractFunction(scripts[0], 'partyView');
+  const entrySource = extractFunction(scripts[0], 'entryView');
+  const bindEntrySource = extractFunction(scripts[0], 'bindEntry');
+  const bindViewSource = extractFunction(scripts[0], 'bindView');
+
+  assert.match(partySource, /id="partyOptionsButton"/);
+  assert.match(partySource, /aria-haspopup="dialog"/);
+  assert.doesNotMatch(partySource,
+    /id="(?:activity|rename|repeatParty|newParty|forgetParty|deleteParty|demo)Button"/);
+  assert.match(entrySource, /id="demoButton"/);
+  assert.match(bindEntrySource, /querySelector\('#demoButton'\)/);
+  assert.doesNotMatch(bindViewSource, /#demoButton/);
+});
+
 test('v5 migration freezes consumers and turns completed settlements into transfers', () => {
   const { functions } = coreContext('', ['migrateState']);
   const migrated = functions.migrateState({

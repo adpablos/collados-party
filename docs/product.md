@@ -202,9 +202,10 @@ assignments, transfers, and balances never carry over.
 
 - The entry screen states the private-beta status, the product promise, and the
   three-step create/share/settle flow before asking for anything.
-- Every screen links to concise privacy and help copy with a direct support
-  address. It explains stored data, link capabilities, unverified identity,
-  retention, infrastructure, and privacy-minimized operational signals.
+- The entry screen and every party tab expose one clear feedback entry plus
+  concise privacy and help copy with a direct support address. Privacy explains
+  stored data, link capabilities, unverified identity, retention, infrastructure,
+  and privacy-minimized operational signals.
 - Global deletion belongs only to the creator-phone capability, not to a
   self-declared admin. It is a seven-day soft delete; only that phone can
   restore it. Legacy parties without an owner capability remain usable but
@@ -329,11 +330,11 @@ and write capabilities stored on that phone.
 15. **Operational readiness**: CI covers API and core browser behavior; CSP is
     generated from the actual inline blocks; uptime checks web, CSP, liveness,
     and readiness; encrypted backups pass a non-destructive restore check.
-16. **Feedback boundary**: privacy/help and settled accounts link to an external
-    Featurebase board only after a plain-language warning. The link opens in a
-    new tab without referrer data, query parameters, URL fragments, party data,
-    embedded scripts, widgets, or cookies in A Pachas. The browser reports only
-    the allowlisted first-party `usage.feedback_opened` event.
+16. **Feedback boundary**: one global "Comentarios e ideas" entry links to an
+    external Featurebase board only after a plain-language warning. The link
+    opens in a new tab without referrer data, query parameters, URL fragments,
+    party data, embedded scripts, widgets, or cookies in A Pachas. The browser
+    reports only the allowlisted first-party `usage.feedback_opened` event.
 
 The single public Featurebase board (`Ideas y problemas`), guest posting and
 upvoting, automatic spam protection, and seed posts are provider-side

@@ -21,6 +21,11 @@ or recovery changes. Pure refactors and test-only changes need no entry. -->
 - Added a privacy-gated external feedback board for ideas, comments, and votes,
   without embedded third-party code or party context.
 
+### Changed
+
+- Grouped occasional party actions behind one options sheet and made feedback
+  directly available from every stable screen.
+
 ### Security
 
 - Documented the stable 1Password locator and recovery procedure for the

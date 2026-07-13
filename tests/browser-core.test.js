@@ -170,18 +170,19 @@ test('party management is grouped without changing role or owner capabilities', 
     items: [{ status: 'pending' }],
   }, false, true);
   for(const id of ['activityButton', 'renameButton', 'repeatPartyButton',
-    'switchPartyButton', 'forgetPartyButton', 'deletePartyButton']) {
+    'forgetPartyButton', 'deletePartyButton']) {
     assert.match(editableAdminOwnerOptions, new RegExp(`id="${id}"`));
   }
+  assert.match(editableAdminOwnerOptions, /Gestionar esta fiesta/);
+  assert.doesNotMatch(editableAdminOwnerOptions, /switchPartyButton|Ver tus fiestas/);
 
   const readOnlyOptions = context.renderOptions({
     remote: { ownerKey: 'abcdefghjkmnpqrstuvwxy23' },
     items: [{ status: 'pending' }],
   }, true, true);
   assert.match(readOnlyOptions, /id="activityButton"/);
-  assert.match(readOnlyOptions, /id="switchPartyButton"/);
   assert.match(readOnlyOptions, /id="forgetPartyButton"/);
-  assert.doesNotMatch(readOnlyOptions, /id="(?:rename|repeatParty|deleteParty)Button"/);
+  assert.doesNotMatch(readOnlyOptions, /id="(?:rename|repeatParty|switchParty|deleteParty)Button"/);
 
   const nonAdminOwnerOptions = context.renderOptions({
     remote: { ownerKey: 'abcdefghjkmnpqrstuvwxy23' },
@@ -192,7 +193,7 @@ test('party management is grouped without changing role or owner capabilities', 
   assert.doesNotMatch(nonAdminOwnerOptions, /id="(?:rename|repeatParty)Button"/);
 
   const localNonAdminOptions = context.renderOptions({ remote: null, items: [] }, false, false);
-  assert.doesNotMatch(localNonAdminOptions, /Actividad y organización/,
+  assert.doesNotMatch(localNonAdminOptions, /Actividad y datos/,
     'Empty option groups should not render');
 });
 
@@ -245,13 +246,17 @@ test('recent live parties keep access and per-party context until explicitly for
 });
 
 test('core copy and controls state money actions literally and expose accessible names', () => {
-  assert.doesNotMatch(html, /catar|catan|Sí, adelante|Solo quiero mirar/);
+  const partySource = extractFunction(scripts[0], 'partyView');
+  assert.doesNotMatch(html,
+    /catar|catan|Sí, adelante|Solo quiero mirar|\bpa\b|garrafón no|Haz bizum/i);
   assert.match(html, /¿Entre quiénes se reparte\?/);
   assert.match(html, /Quién paga a quién para quedar en paz/);
+  assert.match(partySource, /Te queda un Bizum para quedar en paz/);
+  assert.match(partySource, /Te quedan \$\{myOutgoingBizums\.length\} Bizums para quedar en paz/);
+  assert.match(partySource, /Solo quedan los Bizums pendientes/);
   assert.match(html, /id="offlineBanner" role="status"/);
   assert.match(extractFunction(scripts[0], 'refreshSync'), /banner\.textContent !== message/);
-  assert.match(extractFunction(scripts[0], 'partyView'),
-    /<h1 class="title">\$\{escapeHtml\(S\.party\.name\)\}<\/h1>/);
+  assert.match(partySource, /<h1 class="title">\$\{escapeHtml\(S\.party\.name\)\}<\/h1>/);
   assert.match(html, /aria-label="Cambiar quién pagó"/);
   assert.match(html, /aria-label="Cambiar el reparto"/);
   assert.match(html, /aria-pressed="\$\{classes\.split/);
@@ -260,19 +265,92 @@ test('core copy and controls state money actions literally and expose accessible
   }
 });
 
-test('the active party exposes one options trigger and keeps the demo at entry only', () => {
+test('global party switching stays separate from active-party management', () => {
   const partySource = extractFunction(scripts[0], 'partyView');
+  const partyOptionsSource = extractFunction(scripts[0], 'partyOptionsHtml');
+  const partySwitcherSource = extractFunction(scripts[0], 'partySwitcherSheet');
+  const renderSource = extractFunction(scripts[0], 'render');
   const entrySource = extractFunction(scripts[0], 'entryView');
   const bindEntrySource = extractFunction(scripts[0], 'bindEntry');
   const bindViewSource = extractFunction(scripts[0], 'bindView');
 
+  assert.match(html, /<body class="no-party">/);
+  assert.match(html,
+    /<header class="app-header" id="appHeader">[\s\S]*id="partySwitcherButton"[\s\S]*id="themeButton"[\s\S]*<\/header>/);
+  assert.match(html, /id="partySwitcherButton" type="button" aria-haspopup="dialog"/);
+  assert.match(html, /#themeButton\{\s*flex:none;/);
+  assert.doesNotMatch(html, /#themeButton\{[^}]*position:absolute/);
+  assert.match(renderSource, /classList\.toggle\('no-party', !S\)/);
+  assert.doesNotMatch(renderSource, /appHeader\.hidden/);
+  assert.match(renderSource, /partySwitcherName.*S\.party\.name/);
+  assert.match(html, /getElementById\('partySwitcherButton'\).*partySwitcherSheet/s);
+  assert.match(partySwitcherSource, /Esta fiesta solo está en este móvil/);
+  assert.match(html, /\.recent-list\{display:grid;grid-template-columns:minmax\(0,1fr\)/);
+  assert.match(html, /\.recent-party-row\{[^}]*min-width:0;width:100%/);
   assert.match(partySource, /id="partyOptionsButton"/);
+  assert.match(partySource, /Gestionar esta fiesta/);
   assert.match(partySource, /aria-haspopup="dialog"/);
+  assert.match(partyOptionsSource, /Gestionar esta fiesta/);
+  assert.doesNotMatch(partyOptionsSource, /switchPartyButton|Ver tus fiestas|Cambiar de fiesta/);
   assert.doesNotMatch(partySource,
     /id="(?:activity|rename|repeatParty|newParty|forgetParty|deleteParty|demo)Button"/);
   assert.match(entrySource, /id="demoButton"/);
   assert.match(bindEntrySource, /querySelector\('#demoButton'\)/);
   assert.doesNotMatch(bindViewSource, /#demoButton/);
+});
+
+test('recent-party switching keeps its sheet busy until the target has opened', async () => {
+  const context = vm.createContext({});
+  vm.runInContext(`
+    var S = { me: 'p1' };
+    var openResult = false;
+    var closeCount = 0;
+    var buttonFocusCount = 0;
+    function render() {}
+    function closeSheet() { closeCount += 1; }
+    function openLiveLink() { return Promise.resolve(openResult); }
+    async function withBusyButton(button, pendingText, task) { return task(); }
+    function isSheetOpen() { return true; }
+    function $(selector) { return sheet; }
+    ${extractFunction(scripts[0], 'bindRecentPartyControls')}
+    const button = {
+      dataset: { recentIndex: '0' },
+      isConnected: true,
+      focus() { buttonFocusCount += 1; },
+    };
+    const sheet = {
+      contains(element) { return element === button; },
+      focus() {},
+      hasAttribute() { return false; },
+      setAttribute() {},
+      removeAttribute() {},
+    };
+    const container = {
+      querySelectorAll(selector) {
+        return selector === '[data-recent-index]' ? [button] : [];
+      },
+    };
+    bindRecentPartyControls(container, [{ id: 'abcdefghj2', key: 'abcdefghjkmnpq' }]);
+    this.testExports = {
+      button,
+      setOpenResult(value) { openResult = value; },
+      setIdentity(value) { S = { me: value }; },
+      closeCount() { return closeCount; },
+      buttonFocusCount() { return buttonFocusCount; },
+    };
+  `, context, { filename: 'public/index.html#recent-party-controls' });
+
+  await context.testExports.button.onclick();
+  assert.equal(context.testExports.closeCount(), 0, 'A failed open must leave the sheet available');
+  assert.equal(context.testExports.buttonFocusCount(), 1, 'A failed open must restore focus to its button');
+
+  context.testExports.setOpenResult(true);
+  await context.testExports.button.onclick();
+  assert.equal(context.testExports.closeCount(), 1, 'A successful open with identity closes the switcher');
+
+  context.testExports.setIdentity(null);
+  await context.testExports.button.onclick();
+  assert.equal(context.testExports.closeCount(), 1, 'The identity sheet must remain open for a new party');
 });
 
 test('v5 migration freezes consumers and turns completed settlements into transfers', () => {

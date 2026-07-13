@@ -76,12 +76,13 @@ background and `--bg` as text. Card radius is 16px. Dark mode is automatic via
 Visible product copy stays in Spanish from Spain. Tone: village Spanish with a
 bit of humor, but not overdone. Money, access, permissions, and destructive
 actions are always literal; village humor belongs in successes and celebratory
-empty states.
+empty states. Use "para", never the contraction "pa". Labels, placeholders,
+instructions, and validation must favor immediate understanding over jokes.
 
-- "Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí."
-- "¿Qué falta? (garrafón no)" · "Me encargo" · "Apuntar compra"
+- "Los gastos de la peña, a partes iguales. Ni para ti ni para mí."
+- "Hielo, pan, vasos…" · "Me encargo" · "Apuntar compra"
 - "¿Entre quiénes se reparte?" · "Sin responsable" · "Se encarga Marta"
-- "Ponle precio, que gratis no fue." · "El gasto tiene que repartirse entre al menos una persona."
+- "Pon un precio mayor que cero." · "El gasto tiene que repartirse entre al menos una persona."
 - "Pon qué fue." · "Apuntado. Las cuentas ya lo saben."
 - "Todo comprado. Vaya máquinas." · "Cuentas claras y el chocolate espeso."
 - Sync copy must avoid technical language: "En vivo con la peña · al día hace
@@ -98,17 +99,22 @@ empty states.
 
 ## Screens
 
-1. **Fiesta, actionable home**: header with oculus + wordmark left and moon
-   right; violet party card with oculus watermark, translucent white label/meta,
+1. **Fiesta, actionable home**: every party tab has the same in-party header
+   with oculus + wordmark left, a 44px active-party selector, and theme control
+   right. The selector truncates long names and opens the global "Tus fiestas"
+   sheet; it is never nested inside controls for the active party. The header
+   scrolls with the content instead of competing with the offline banner and
+   fixed bottom navigation. The home has
+   a violet party card with oculus watermark, translucent white label/meta,
    white "Mandar al grupo" button, translucent "Ponerla en vivo" when local, and
    live-status line with green dot; "¿QUÉ TOCA?" card with Bricolage 18px
    statement and exactly one personalized action (own assigned item first,
    missing group items second, own Bizum third); "TU SALDO" card with large colored number
    and "Mis cuentas"; identity row with avatar and violet "Cambiar"; one
-   full-width "Opciones de esta fiesta" control that opens a grouped sheet for
-   recent activity, rename/date when key holder, repeating pending items, a party
-   switcher, forgetting this phone's copy, and server deletion on the creator
-   phone. The switcher keeps one active party and any number of remembered live
+   full-width "Gestionar esta fiesta" control that opens a grouped sheet for
+   recent activity, rename/date when key holder, repeating pending items,
+   forgetting this phone's copy, and server deletion on the creator phone.
+   The global switcher keeps one active party and any number of remembered live
    party access pointers; it never clears the current party before the target has
    opened successfully. A returning entry screen puts "Tus fiestas" first and
    keeps create/open-link actions below. A first-time entry keeps the private-beta

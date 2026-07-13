@@ -2849,20 +2849,20 @@ function partySwitcherSheet(){
       <span class="recent-meta">Activa ahora · ${S.party.demo ? 'Fiesta de ejemplo' : 'Solo en este móvil'}</span>
     </span></div>
   </div></div>` : '';
-  const switcherSub = !S
-    ? 'Elige una fiesta guardada o añade otra.'
-    : S.party.demo
-      ? 'Esta fiesta es solo una prueba. Al cambiar, no se conservará.'
-      : S.remote
-        ? 'Solo una está activa. Cambiar no borra ninguna.'
-        : 'Esta fiesta solo está en este móvil. Ponla en vivo antes de cambiar si quieres conservarla.';
-  const createNote = !S
-    ? 'Empieza una fiesta desde cero.'
-    : S.party.demo
-      ? 'Empieza desde cero.'
-      : S.remote
-        ? 'La fiesta actual seguirá guardada aquí.'
-        : 'Empezarás una fiesta nueva.';
+  let switcherSub = 'Elige una fiesta guardada o añade otra.';
+  let createNote = 'Empieza una fiesta desde cero.';
+  if(S){
+    if(S.party.demo){
+      switcherSub = 'Esta fiesta es solo una prueba. Al cambiar, no se conservará.';
+      createNote = 'Empieza desde cero.';
+    } else if(S.remote){
+      switcherSub = 'Solo una está activa. Cambiar no borra ninguna.';
+      createNote = 'La fiesta actual seguirá guardada aquí.';
+    } else {
+      switcherSub = 'Esta fiesta solo está en este móvil. Ponla en vivo antes de cambiar si quieres conservarla.';
+      createNote = 'Empezarás una fiesta nueva.';
+    }
+  }
   openSheet(`
     <h2 class="sheet-title">Tus fiestas</h2>
     <p class="sheet-sub">${switcherSub}</p>
@@ -2910,14 +2910,15 @@ function partyOptionsHtml(){
 }
 
 function forgetCurrentPartySheet(){
-  confirmSheet('¿Olvidar esta fiesta en este móvil?',
-    S.party.demo
-      ? 'Se borrarán los cambios hechos en esta fiesta de ejemplo.'
-      : S.remote
-        ? 'Se borrarán de este móvil la copia y el acceso guardado. La fiesta seguirá existiendo para la peña.'
-        : 'Se borrará la única copia de esta fiesta. No podrás recuperarla.', () => {
-      clearCurrentPartyFromPhone(); render(); toast('Fiesta olvidada en este móvil.');
-    }, {confirmLabel:'Olvidar en este móvil', danger:true});
+  let message = 'Se borrará la única copia de esta fiesta. No podrás recuperarla.';
+  if(S.party.demo){
+    message = 'Se borrarán los cambios hechos en esta fiesta de ejemplo.';
+  } else if(S.remote){
+    message = 'Se borrarán de este móvil la copia y el acceso guardado. La fiesta seguirá existiendo para la peña.';
+  }
+  confirmSheet('¿Olvidar esta fiesta en este móvil?', message, () => {
+    clearCurrentPartyFromPhone(); render(); toast('Fiesta olvidada en este móvil.');
+  }, {confirmLabel:'Olvidar en este móvil', danger:true});
 }
 
 function partyOptionsSheet(){

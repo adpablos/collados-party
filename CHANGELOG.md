@@ -14,6 +14,11 @@ stable, publicly supported product contract.
 <!-- Add concise bullets here for product, data, security, privacy, deployment,
 or recovery changes. Pure refactors and test-only changes need no entry. -->
 
+### Added
+
+- Added optional privacy-safe remote logs and server-side product analytics,
+  plus independent encrypted-backup freshness heartbeats.
+
 ### Security
 
 - Documented the stable 1Password locator and recovery procedure for the

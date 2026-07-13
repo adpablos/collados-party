@@ -6,5 +6,5 @@ cd "$ROOT"
 
 node --check server/api.js
 node scripts/update_csp.js --check
-bash -n scripts/backup_data.sh scripts/restore_check.sh
+bash -n scripts/backup_data.sh scripts/check_backup_freshness.sh scripts/deploy.sh scripts/restore_check.sh
 node --test tests/*.test.js

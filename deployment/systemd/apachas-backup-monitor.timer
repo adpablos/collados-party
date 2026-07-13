@@ -1,0 +1,12 @@
+[Unit]
+Description=Check A Pachas encrypted backup freshness hourly
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=10m
+AccuracySec=5m
+Persistent=true
+Unit=apachas-backup-monitor.service
+
+[Install]
+WantedBy=timers.target

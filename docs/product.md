@@ -209,10 +209,12 @@ assignments, transfers, and balances never carry over.
   self-declared admin. It is a seven-day soft delete; only that phone can
   restore it. Legacy parties without an owner capability remain usable but
   cannot be globally deleted through the app.
-- The beta collects only allowlisted technical errors and five coarse product
-  signals: write/read opens, edit/read share intent, and support intent. There
-  are no third-party analytics, advertising identifiers, names, amounts,
-  concepts, request bodies, or full URLs in telemetry.
+- The beta collects only allowlisted technical errors, six coarse client
+  signals (write/read opens, edit/read share intent, accounts viewed, and
+  support intent), and four server-derived lifecycle events. Optional remote
+  processing uses Better Stack EU and PostHog EU from the server only. There are
+  no browser analytics, advertising identifiers, profiles, cookies, names,
+  amounts, concepts, request bodies, or URLs in telemetry.
 - Availability is covered by external uptime checks, structured privacy-safe
   logs, bounded rate limits, encrypted daily backups, a tested restore checker,
   CSP generation, and dependency-free CI.
@@ -380,6 +382,9 @@ and write capabilities stored on that phone.
   sanitized exceptions, cleanup, startup, client errors, and five-minute metric
   snapshots are recorded. Successful polls and healthchecks are aggregated
   rather than written as one log line each.
+- Remote logs are optional projections through a bounded, non-blocking Better
+  Stack queue. An explicit field allowlist prevents future log additions from
+  being exported automatically; raw stack traces remain local.
 - Logs contain route templates, status, latency, release, request IDs, and
   HMAC-based party/device references. They never contain party IDs, write keys,
   names, item content, amounts, IPs, user agents, request bodies, full URLs, or
@@ -389,6 +394,16 @@ and write capabilities stored on that phone.
 - The browser reports only fixed error/usage codes, safe route names, status
   codes, request IDs, and pseudonymous party/device references. It never sends
   DOM, localStorage, URLs, state, names, concepts, amounts, or HTTP bodies.
+- The server records and may project to PostHog EU four accepted-write lifecycle
+  events (`party_created`, `collaboration_started`, `first_expense_recorded`,
+  and `first_transfer_completed`) plus the fixed client usage codes. PostHog
+  receives the HMAC party reference as `distinct_id`, no person profile, and
+  only `release`, `source`, and a content-free deduplication ID as properties.
+  Each product event remains in local logs even when remote analytics is
+  disabled or unavailable. Server-owned
+  boolean milestones in each party document prevent first-use lifecycle events
+  from being emitted again after later corrections or process restarts; they do
+  not enter shared state or API responses.
 - The server derives audit events from the accepted before/after states. The
   actor remains a declared identity, not authenticated identity; the UI states
   that boundary explicitly. Events are capped at 200 and 256 KB, and expire or
@@ -396,6 +411,10 @@ and write capabilities stored on that phone.
 - Device references stored in audit events are scoped to that party, preventing
   readers with links to different parties from correlating the same phone.
   Global device references exist only in server-side operations data.
+- Remote operational logs are retained for at most 30 days and content-free
+  product events for at most 12 months. Provider dashboards, exports, session
+  replay, autocapture, surveys, and person profiles must not expand that
+  contract.
 
 ## Appendix: Corrections to the Original Analysis
 

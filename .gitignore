@@ -1,2 +1,7 @@
 # Parties saved by server/api.js in local development
 server/data/
+
+# Local provider credentials never belong in the repository.
+.env
+.env.*
+!.env.example

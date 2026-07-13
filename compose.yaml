@@ -39,6 +39,9 @@ services:
     image: node:22-alpine
     restart: unless-stopped
     command: ["node", "/srv/api.js"]
+    env_file:
+      - path: ${APACHAS_OBSERVABILITY_ENV_FILE:-/etc/apachas/observability.env}
+        required: false
     environment:
       DATA_DIR: /data
       APP_RELEASE: ${APP_RELEASE:-dev}

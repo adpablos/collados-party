@@ -155,7 +155,10 @@ send, WhatsApp button, native share, and copy:
 Inside a party, the large hero is redundant. The screen becomes: party card with
 sync status and "Mandar al grupo"; "¿Qué toca?" card with exactly one action
 based on state; the current user's balance; identity; and existing links. The
-full hero remains only for the entry state without a party.
+full hero remains only for the entry state without a party. A shared header
+on all four party tabs shows the active party and opens the global party
+switcher. "Gestionar esta fiesta" contains only actions whose target or source
+is the active party.
 
 ### D7. Minimal Server-Derived History, Not Accounting
 
@@ -194,13 +197,14 @@ historical fact to balance future accounts.
 
 Each phone remembers every live party link the user has opened until that access
 is explicitly forgotten, the party no longer exists, or all local A Pachas data
-is cleared. One party is active at a time, but the entry screen and party
-switcher expose the remembered set directly. A switch fetches the target before
-replacing the current party, so failure or lack of connectivity leaves the
-current party intact. Each pointer remembers the locally chosen person and last
-tab without weakening a write capability already stored on that phone. Opening
-an explicit `#R:` link remains read-only for that session. Key holders can start
-a new party from the current pending list; prices, assignments, transfers, and
+is cleared. One party is active at a time, but the entry screen and global
+active-party selector expose the remembered set directly. A switch fetches the
+target before replacing the current party, so failure or lack of connectivity
+leaves the current party intact. Each pointer remembers the locally chosen
+person and last tab without weakening a write capability already stored on that
+phone. Opening an explicit `#R:` link remains read-only for that session. Key
+holders can start a new party from the current pending list; prices, assignments,
+transfers, and
 balances never carry over.
 
 ### D12. Family-and-Friends Beta Boundaries
@@ -299,8 +303,8 @@ and write capabilities stored on that phone.
    people edit the same party from different phones without overwriting each
    other.
 2. **Quick expense**: with identity selected, recording a shared expense takes
-   four actions. Errors use product voice: "Pon qué fue", "Ponle precio, que
-   gratis no fue".
+   four actions. Errors are direct: "Pon qué fue" and "Pon un precio mayor que
+   cero".
 3. **List**: stays simple: add, claim, assign with key, mark bought. Pending and
    bought items are visually separated.
 4. **Accounts**: first thing visible is the user's own status and action. "Per
@@ -324,10 +328,10 @@ and write capabilities stored on that phone.
 10. **Safe interaction**: money and membership writes disable their initiating
     control while saving; destructive actions confirm; sheets support close,
     Escape, focus trapping, focus return, and hidden closed state.
-11. **Continuity**: the entry screen and in-party switcher can reopen all recent
-    live parties, retain local identity/tab context per party, and keep the active
-    party when another cannot be opened. Repeating a pending list creates a clean
-    party with no old money state.
+11. **Continuity**: the entry screen and global in-party selector can reopen
+    all recent live parties, retain local identity/tab context per party, and
+    keep the active party when another cannot be opened. Repeating a pending list
+    creates a clean party with no old money state.
 12. **Capabilities**: `#F:` can edit; `#R:` adopts server truth and exposes no
     shared mutation controls. Accounts sharing always uses `#R:`. Explicitly
     opening `#R:` never silently upgrades the current session to edit access.

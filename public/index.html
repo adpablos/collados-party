@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Pachas — los gastos de la peña</title>
-<meta name="description" content="Los gastos de la peña, a partes iguales. Ni pa ti ni pa mí.">
+<meta name="description" content="Los gastos de la peña, a partes iguales. Ni para ti ni para mí.">
 <meta name="theme-color" content="#F5F6FA">
 <meta name="apple-mobile-web-app-title" content="A Pachas">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -65,18 +65,43 @@
     font-size:15px; line-height:1.45;
     min-height:100dvh;
   }
-  #app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+  #app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;position:relative}
   main{flex:1;padding:14px 20px 104px;overflow-x:hidden}
   body.no-party #tabbar{display:none}
   body.no-party main{padding-bottom:30px}
   button{font-family:inherit;color:inherit}
   :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 
+  /* ---------- shared in-party header ---------- */
+  .app-header{
+    display:flex;align-items:center;gap:10px;min-height:64px;
+    padding:14px 14px 0 22px;
+  }
+  body.no-party .app-header{
+    position:absolute;top:0;left:0;right:0;z-index:50;justify-content:flex-end;
+    pointer-events:none;
+  }
+  body.no-party .app-brand,body.no-party .app-party-switcher{display:none}
+  body.no-party #themeButton{pointer-events:auto}
+  .app-brand{display:flex;align-items:center;gap:8px;min-width:0;flex:none}
+  .app-brand svg{width:24px;height:24px;color:var(--primary)}
+  .app-brand .wordmark{font-family:var(--display);font-weight:800;font-size:20px;
+    letter-spacing:-.3px;color:var(--ink);white-space:nowrap}
+  .app-party-switcher{
+    min-width:0;max-width:170px;min-height:44px;margin-left:auto;padding:0 10px 0 12px;
+    display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;cursor:pointer;font-size:13px;font-weight:700;
+  }
+  .app-party-switcher .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .app-party-switcher .chevron{color:var(--muted);font-size:15px;line-height:1;flex:none}
+  @media (max-width:360px){
+    .app-brand .wordmark{position:absolute;width:1px;height:1px;overflow:hidden;
+      clip-path:inset(50%);white-space:nowrap}
+  }
+
   /* ---------- theme button ---------- */
   #themeButton{
-    /* absolute instead of fixed: it scrolls with the page instead of floating
-       over cards. */
-    position:absolute;top:14px;right:14px;z-index:50;
+    flex:none;
     width:44px;height:44px;border-radius:999px;border:1px solid var(--line);
     background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;
     color:var(--muted);
@@ -270,8 +295,8 @@
   .selection-options{border-top:1px solid var(--line);padding-top:10px;margin-bottom:8px}
   .selection-options[hidden]{display:none}
   .quick-picks{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-  .recent-list{display:grid;gap:8px;margin-top:8px}
-  .recent-party-row{display:flex;align-items:stretch;gap:6px}
+  .recent-list{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:8px;min-width:0}
+  .recent-party-row{display:flex;align-items:stretch;gap:6px;min-width:0;width:100%}
   .recent-party{display:flex;flex:1;min-width:0;align-items:center;gap:10px;text-align:left;background:var(--card);
     border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);cursor:pointer}
   .recent-party[aria-current="true"]{border-color:var(--primary);background:var(--primarysoft);cursor:default}
@@ -382,14 +407,22 @@
   }
 </style>
 </head>
-<body>
-
-<button id="themeButton" type="button" aria-label="Usar modo oscuro">
-  <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
-</button>
-
+<body class="no-party">
 <div id="app">
   <div id="offlineBanner" role="status" hidden></div>
+  <header class="app-header" id="appHeader">
+    <div class="app-brand">
+      <svg aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4.5"><circle cx="24" cy="24" r="19"/><g stroke-linecap="round"><line x1="24" y1="24" x2="24" y2="5"/><line x1="24" y1="24" x2="42.1" y2="18.1"/><line x1="24" y1="24" x2="35.2" y2="39.4"/><line x1="24" y1="24" x2="12.8" y2="39.4"/><line x1="24" y1="24" x2="5.9" y2="18.1"/></g></svg>
+      <span class="wordmark">A Pachas</span>
+    </div>
+    <button class="app-party-switcher" id="partySwitcherButton" type="button" aria-haspopup="dialog">
+      <span class="name" id="partySwitcherName"></span>
+      <span class="chevron" aria-hidden="true">⌄</span>
+    </button>
+    <button id="themeButton" type="button" aria-label="Usar modo oscuro">
+      <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+    </button>
+  </header>
   <main id="preview"></main>
   <nav id="tabbar">
     <div class="tabbar-in">
@@ -554,7 +587,7 @@ function demoState(){
       {id:'i4', name:'Cordero',                status:'claimed',  claimerId:'p1'},
       {id:'i5', name:'Vasos y servilletas',    status:'claimed',  claimerId:'p2'},
       {id:'i6', name:'Pan (mucho pan)',        status:'pending'},
-      {id:'i7', name:'Café y orujo pa después',status:'pending'},
+      {id:'i7', name:'Café y orujo para después',status:'pending'},
     ],
     transfers: [],
   });
@@ -1739,10 +1772,10 @@ function identitySheet(forced, suggestedName){
   const joinButton = $('#joinButton');
   if(joinButton) joinButton.onclick = async () => {
     const n = $('#newNameInput').value.trim();
-    if(!n) return toast('Escribe tu nombre, que la lista no adivina.');
+    if(!n) return toast('Escribe tu nombre.');
     const existing = personByName(n);
     if(existing) return duplicateIdentitySheet(existing,n);
-    if(S.people.length >= 100) return toast('La peña no da pa más (100). Menuda fiesta.');
+    if(S.people.length >= 100) return toast('La fiesta admite hasta 100 personas.');
     await withBusyButton(joinButton,'Entrando…',() => commitSharedChange(() => {
       if(personByName(n)) throw new Error('duplicate_name');
       const p = touch({id:newId('p'), name:n, admin:false, active:true});
@@ -1885,8 +1918,8 @@ function expenseSheet(itemId){
     const name = $('#expenseNameInput').value.trim();
     if(!name) return toast('Pon qué fue.');
     const priceCents = parsePriceCents($('#priceInput').value);
-    if(isNaN(priceCents) || priceCents<=0) return toast('Ponle precio, que gratis no fue.');
-    if(priceCents > 100000000) return toast('¿' + eur(priceCents) + '? Repasa ese precio, anda.');
+    if(isNaN(priceCents) || priceCents<=0) return toast('Pon un precio mayor que cero.');
+    if(priceCents > 100000000) return toast('El precio parece demasiado alto. Revísalo.');
     if(!personById(selectedPayerId)) return toast('¿Quién lo pagó?');
     const consumers = [...selectedIds].filter(id => personById(id));
     if(!consumers.length){
@@ -1942,8 +1975,8 @@ function expenseSheet(itemId){
         }
       }
     }, {close:true, toast:() => successMessage})).catch(e => {
-      if(e.message === 'too_many_items') toast('La lista no da pa más (500 cosas). Quita algo primero.');
-      else if(e.message === 'payer_changed') abortSheet('Esa compra acaba de cambiar de manos: solo quien la pagó o la llave pueden tocarla.');
+      if(e.message === 'too_many_items') toast('La lista admite hasta 500 cosas. Quita una antes de añadir otra.');
+      else if(e.message === 'payer_changed') abortSheet('Ha cambiado quién pagó esta compra. Solo quien pagó o quien tenga la llave puede corregirla.');
       else if(e.message === 'already_bought') abortSheet('Alguien la ha apuntado ya como comprada: revísala antes de corregirla.');
       else if(e.message === 'group_changed') abortSheet('La peña ha cambiado: revisa quién pagó y entre quiénes se reparte.');
       else throw e;
@@ -1957,7 +1990,7 @@ function expenseSheet(itemId){
         const live = itemById(itemId);
         if(!live){ render(); return toast('Ya no está: alguien la ha quitado antes.'); }
         if(!isAdmin() && live.payerId !== S.me){
-          render(); return toast('Esa compra ha cambiado de manos: solo quien la pagó o la llave pueden borrarla.');
+          render(); return toast('Ha cambiado quién pagó esta compra. Solo quien pagó o quien tenga la llave puede borrarla.');
         }
         await commitSharedChange(() => {
           const latest = itemById(itemId);
@@ -2034,9 +2067,9 @@ function renamePersonSheet(pid){
     if(!q) return abortSheet('Esa persona ya no está en la peña.');
     if(pid !== S.me && !requireAdmin()) return;
     const n = $('#personNameEditInput').value.trim();
-    if(!n) return toast('Ponle nombre, que alguien será.');
+    if(!n) return toast('Escribe un nombre.');
     const duplicate = personByName(n);
-    if(duplicate && duplicate.id !== pid) return toast('Ya hay alguien con ese nombre. Ponle un mote distinto.');
+    if(duplicate && duplicate.id !== pid) return toast('Ya hay alguien con ese nombre. Usa otro.');
     const button = $('#savePersonRenameButton');
     await withBusyButton(button,'Guardando…',() => commitSharedChange(() => {
       const live = personById(pid);
@@ -2049,7 +2082,7 @@ function renamePersonSheet(pid){
     }, {close:true, toast:'Nombre cambiado'})).catch(e => {
       if(e.message === 'missing_person') abortSheet('Esa persona ya no está en la peña.');
       else if(e.message === 'not_admin') abortSheet('Necesitas tener la llave para hacer eso.');
-      else if(e.message === 'duplicate_name') toast('Ya hay alguien con ese nombre. Ponle un mote distinto.');
+      else if(e.message === 'duplicate_name') toast('Ya hay alguien con ese nombre. Usa otro.');
       else throw e;
     });
   };
@@ -2089,7 +2122,7 @@ function personSheet(pid){
       <span class="label">Nombre</span>
       <button class="menu-option" id="renamePersonButton" type="button">
         Cambiar nombre
-        <small>Pa corregir un mote torcido antes de que se quede pa siempre.</small>
+        <small>Corrige el nombre que verá la peña.</small>
       </button>` : ''}
     ${canManage ? `
       <span class="label">Gestión</span>
@@ -2209,12 +2242,12 @@ function shareMessage(shareType, pid){
   const n = S.party.name;
   if(shareType === 'invite'){
     return `A pachas con los gastos de «${n}».\n` +
-      `Entra, di quién eres y apunta lo que pilles:\n${link}\n\n` +
+      `Entra, di quién eres y apunta lo que compres:\n${link}\n\n` +
       'Quien tenga este enlace puede ver y cambiar la fiesta. Mándalo solo a la peña.';
   }
   if(shareType === 'list'){
     const pendingItems = S.items.filter(isUnownedItem);
-    return `Faltan cosas pa «${n}»:\n` +
+    return `Faltan cosas para «${n}»:\n` +
       pendingItems.map(i=>'· ' + i.name).join('\n') +
       `\n\nQuien pueda, que se encargue aquí:\n${link}`;
   }
@@ -2229,7 +2262,7 @@ function shareMessage(shareType, pid){
       lines.push('');
     }
     if(!c.bizums.length){
-      lines.push('Cuentas en paz. Ni pa ti ni pa mí.');
+      lines.push('Cuentas en paz. Ni para ti ni para mí.');
     } else {
       lines.push('Bizums pendientes:');
       c.bizums.forEach(b => lines.push(
@@ -2245,7 +2278,7 @@ function shareMessage(shareType, pid){
     if(!p) return link; // Removed while the sheet was open.
     const c = accounts();
     const assignedItems = S.items.filter(i=>i.status==='claimed' && i.claimerId===pid);
-    const lines = [`${p.name}, pa «${n}»:`];
+    const lines = [`Resumen de ${p.name} en «${n}»:`];
     if(assignedItems.length){
       lines.push('');
       lines.push('Te toca traer:');
@@ -2280,7 +2313,7 @@ async function shareSheet(shareType, pid){
     ? 'usage.accounts_share_intent' : 'usage.invite_share_intent');
   // The demoState is not shareable: its demoState flag would leave the receiver with a
   // party that can never go live.
-  if(S.party.demo) return toast('La fiesta de ejemplo no se comparte: monta la tuya, que es un momento.');
+  if(S.party.demo) return toast('La fiesta de ejemplo no se puede compartir. Crea una fiesta para enviarla al grupo.');
   if(canGoLive()){
     openSheet(`
       <h2 class="sheet-title">Poniendo la fiesta en vivo</h2>
@@ -2294,7 +2327,7 @@ async function shareSheet(shareType, pid){
     openSheet(`
       <h2 class="sheet-title">Ahora mismo no hay manera</h2>
       <p class="sheet-sub">Necesitas internet para poner la fiesta en vivo y mandarla al grupo.</p>
-      <div class="note">Así evitamos el lío de tener una fiesta distinta en cada teléfono. Con red, lo intentamos otra vez y arreando.</div>
+      <div class="note">Así evitamos tener una fiesta distinta en cada teléfono. Cuando vuelva la conexión, inténtalo de nuevo.</div>
       <div class="sheet-actions">
         <button class="btn btn-outline" id="closeShareBlockButton" type="button">Seguir aquí</button>
         <button class="btn btn-primary" id="retryLiveShareButton" type="button">Reintentar</button>
@@ -2412,11 +2445,11 @@ function createPartySheet(templateItems){
   $('#createPartyButton').onclick = async () => {
     const name = $('#newPartyNameInput').value.trim();
     const participantName = $('#participantNameInput').value.trim();
-    if(!name) return toast('Ponle nombre a la fiesta');
-    if(!participantName) return toast('Falta tu nombre');
+    if(!name) return toast('Escribe un nombre para la fiesta.');
+    if(!participantName) return toast('Escribe tu nombre.');
     const newDate = $('#newPartyDateInput').value;
     if(newDate && !DATE_RE.test(newDate))
-      return toast('Esa fecha no cuadra: ponla normal o déjala en blanco.');
+      return toast('Escribe una fecha válida o déjala en blanco.');
     const btn = $('#createPartyButton');
     btn.disabled = true;
     const pid = newId('p');
@@ -2470,9 +2503,9 @@ function renameSheet(){
   $('#saveRenameButton').onclick = async () => {
     if(!requireAdmin()) return;
     const n = $('#partyNameInput').value.trim();
-    if(!n) return toast('La fiesta necesita un nombre');
+    if(!n) return toast('Escribe un nombre para la fiesta.');
     const f = $('#partyDateInput').value;
-    if(f && !DATE_RE.test(f)) return toast('Esa fecha no cuadra: ponla normal o déjala en blanco.');
+    if(f && !DATE_RE.test(f)) return toast('Escribe una fecha válida o déjala en blanco.');
     const button = $('#saveRenameButton');
     await withBusyButton(button,'Guardando…',() => commitSharedChange(() => {
       if(!isAdmin()) throw new Error('not_admin');
@@ -2676,7 +2709,7 @@ async function restoreDeletedParty(entry, button){
       S.pendingUpload = false;
       forgetDeletedParty(entry.id);
       saveLocal(); markOnline(); render(); identitySheet(true);
-      return toast('Fiesta recuperada. Aquí no ha pasado nada.');
+      return toast('Fiesta recuperada.');
     }
     if(response.status === 404 || response.status === 410){
       forgetDeletedParty(entry.id); render();
@@ -2712,7 +2745,7 @@ function helpSheet(){
   openSheet(`
     <h2 class="sheet-title">Ayuda</h2>
     <p class="sheet-sub">Lo esencial para no perderse.</p>
-    <div class="note"><strong>¿Cómo vuelvo a una fiesta?</strong><br>En «Opciones de esta fiesta» abre «Tus fiestas». Las que hayas usado en este móvil se quedan ahí hasta que las olvides.</div>
+    <div class="note"><strong>¿Cómo vuelvo a una fiesta?</strong><br>Pulsa el nombre de la fiesta en la parte superior. Las que hayas usado en este móvil se quedan en «Tus fiestas» hasta que las olvides.</div>
     <div class="note"><strong>¿Por qué no puedo guardar?</strong><br>Las fiestas compartidas necesitan conexión. Sin ella puedes consultar la última copia, pero no hacer cambios.</div>
     <div class="note"><strong>¿Qué enlace mando?</strong><br>«Mandar al grupo» permite editar. Desde «Las cuentas» se comparte un enlace solo para mirar.</div>
     <div class="sheet-actions">
@@ -2744,10 +2777,10 @@ function feedbackSheet(){
 }
 
 function recentPartyMeta(party, active){
-  if(active) return 'Activa ahora';
+  if(active) return `Activa ahora · ${isReadOnlyParty() ? 'Solo para mirar' : 'Puedes editar'}`;
   const parts = [party.readOnly ? 'Solo para mirar' : 'Puedes editar'];
   if(party.date) parts.push(prettyDate(party.date) || party.date);
-  parts.push('usada ' + timeAgo(party.lastOpenedAt));
+  parts.push('abierta ' + timeAgo(party.lastOpenedAt));
   return parts.join(' · ');
 }
 
@@ -2785,8 +2818,21 @@ function bindRecentPartyControls(container, recent){
   container.querySelectorAll('[data-recent-index]').forEach(button => button.onclick = async () => {
     const party = recent[Number(button.dataset.recentIndex)];
     if(!party) return render();
-    if(S) closeSheet();
-    await withBusyButton(button,'Abriendo…',() => openLiveLink(party.id,party.key));
+    const sheet = $('#sheet');
+    const waitingInSheet = isSheetOpen() && sheet.contains(button);
+    const sheetHadTabIndex = sheet.hasAttribute('tabindex');
+    if(waitingInSheet){
+      sheet.setAttribute('aria-busy','true');
+      if(!sheetHadTabIndex) sheet.setAttribute('tabindex','-1');
+      sheet.focus();
+    }
+    const opened = await withBusyButton(button,'Abriendo…',() => openLiveLink(party.id,party.key));
+    if(waitingInSheet){
+      sheet.removeAttribute('aria-busy');
+      if(!sheetHadTabIndex) sheet.removeAttribute('tabindex');
+      if(!opened && button.isConnected) button.focus();
+    }
+    if(opened && S && S.me) closeSheet();
   });
   container.querySelectorAll('[data-forget-recent-index]').forEach(button => button.onclick = event => {
     event.stopPropagation();
@@ -2797,18 +2843,36 @@ function bindRecentPartyControls(container, recent){
 function partySwitcherSheet(){
   const recent = loadRecentParties();
   const activeId = S && S.remote && S.remote.id;
-  const createNote = S && S.remote
-    ? 'La fiesta actual seguirá guardada aquí.'
-    : 'La fiesta actual solo está en este móvil; ponla en vivo antes si quieres conservarla.';
+  const localActiveHtml = S && !S.remote ? `<div class="recent-list"><div class="recent-party-row">
+    <div class="recent-party" aria-current="true"><span class="recent-copy">
+      <span class="recent-name">${escapeHtml(S.party.name)}</span>
+      <span class="recent-meta">Activa ahora · ${S.party.demo ? 'Fiesta de ejemplo' : 'Solo en este móvil'}</span>
+    </span></div>
+  </div></div>` : '';
+  const switcherSub = !S
+    ? 'Elige una fiesta guardada o añade otra.'
+    : S.party.demo
+      ? 'Esta fiesta es solo una prueba. Al cambiar, no se conservará.'
+      : S.remote
+        ? 'Solo una está activa. Cambiar no borra ninguna.'
+        : 'Esta fiesta solo está en este móvil. Ponla en vivo antes de cambiar si quieres conservarla.';
+  const createNote = !S
+    ? 'Empieza una fiesta desde cero.'
+    : S.party.demo
+      ? 'Empieza desde cero.'
+      : S.remote
+        ? 'La fiesta actual seguirá guardada aquí.'
+        : 'Empezarás una fiesta nueva.';
   openSheet(`
     <h2 class="sheet-title">Tus fiestas</h2>
-    <p class="sheet-sub">Puedes guardar varias en este móvil. Solo una está activa cada vez.</p>
-    ${recent.length ? recentPartiesHtml(recent,activeId) : '<div class="empty-state" style="padding:20px 10px">Todavía no hay otras fiestas guardadas.</div>'}
-    <span class="label">Abrir otra</span>
+    <p class="sheet-sub">${switcherSub}</p>
+    ${localActiveHtml}
+    ${recent.length ? recentPartiesHtml(recent,activeId) : (localActiveHtml ? '' : '<div class="empty-state" style="padding:20px 10px">Todavía no hay fiestas guardadas.</div>')}
+    <span class="label">Añadir una fiesta</span>
+    <button class="menu-option" id="createAnotherPartyButton" type="button">
+      Crear una fiesta<small>${createNote}</small></button>
     <button class="menu-option" id="openAnotherLinkButton" type="button">
       Abrir con un enlace<small>Pega el enlace o el mensaje que te mandaron.</small></button>
-    <button class="menu-option" id="createAnotherPartyButton" type="button">
-      Crear una fiesta nueva<small>${createNote}</small></button>
   `);
   bindRecentPartyControls($('#sheet'),recent);
   $('#openAnotherLinkButton').onclick = joinSheet;
@@ -2819,23 +2883,23 @@ function partyOptionsHtml(){
   const readOnly = isReadOnlyParty();
   const canManage = !readOnly && isAdmin();
   const hasPendingItems = S.items.some(item=>item.status!=='bought');
-  const organizationOptionsHtml = [
+  const partyDataOptionsHtml = [
     S.remote ? `<button class="menu-option" id="activityButton" type="button">
       Ver actividad reciente<small>Mira los últimos cambios guardados.</small></button>` : '',
     canManage ? `<button class="menu-option" id="renameButton" type="button">
       Cambiar nombre o fecha<small>Edita lo que ve toda la peña.</small></button>` : '',
-    canManage && hasPendingItems ? `<button class="menu-option" id="repeatPartyButton" type="button">
-      Repetir la lista en otra fiesta<small>Crea otra con las cosas que siguen pendientes.</small></button>` : '',
   ].filter(Boolean).join('');
+  const repeatPartyOptionHtml = canManage && hasPendingItems ? `
+    <h3 class="label">Para otra fiesta</h3>
+    <button class="menu-option" id="repeatPartyButton" type="button">
+      Repetir la lista<small>Crea otra fiesta con las cosas que siguen pendientes.</small></button>` : '';
   const canDeleteForEveryone = !readOnly && S.remote && OWNER_KEY_RE.test(S.remote.ownerKey || '');
 
   return `
-    <h2 class="sheet-title">Opciones de esta fiesta</h2>
-    <p class="sheet-sub">Actividad, datos y cambios que no hacen falta todos los días.</p>
-    ${organizationOptionsHtml ? `<h3 class="label">Actividad y organización</h3>${organizationOptionsHtml}` : ''}
-    <h3 class="label">Cambiar de fiesta</h3>
-    <button class="menu-option" id="switchPartyButton" type="button">
-      Ver tus fiestas<small>Cambia a otra guardada, abre un enlace o crea una nueva.</small></button>
+    <h2 class="sheet-title">Gestionar esta fiesta</h2>
+    <p class="sheet-sub">Actividad, datos y acciones sobre la fiesta actual.</p>
+    ${partyDataOptionsHtml ? `<h3 class="label">Actividad y datos</h3>${partyDataOptionsHtml}` : ''}
+    ${repeatPartyOptionHtml}
     <h3 class="label">En este móvil</h3>
     <button class="menu-option" id="forgetPartyButton" type="button">
       Olvidar esta fiesta<small>Quita de este móvil la copia y su acceso guardado.</small></button>
@@ -2847,9 +2911,11 @@ function partyOptionsHtml(){
 
 function forgetCurrentPartySheet(){
   confirmSheet('¿Olvidar esta fiesta en este móvil?',
-    S.remote
-      ? 'Se borran de este móvil la copia y la clave. La fiesta sigue en vivo para la peña.'
-      : 'Se borra la copia de este móvil. Esta acción no se puede deshacer.', () => {
+    S.party.demo
+      ? 'Se borrarán los cambios hechos en esta fiesta de ejemplo.'
+      : S.remote
+        ? 'Se borrarán de este móvil la copia y el acceso guardado. La fiesta seguirá existiendo para la peña.'
+        : 'Se borrará la única copia de esta fiesta. No podrás recuperarla.', () => {
       clearCurrentPartyFromPhone(); render(); toast('Fiesta olvidada en este móvil.');
     }, {confirmLabel:'Olvidar en este móvil', danger:true});
 }
@@ -2868,7 +2934,6 @@ function partyOptionsSheet(){
     if(!pendingItems.length) return abortSheet('Ya no quedan cosas pendientes que repetir.');
     createPartySheet(pendingItems);
   });
-  bindOption('#switchPartyButton', partySwitcherSheet);
   bindOption('#forgetPartyButton', forgetCurrentPartySheet);
   bindOption('#deletePartyButton', deletePartySheet);
 }
@@ -2987,7 +3052,7 @@ function partyView(c){
   } else if(!me.active){
     action = {txt:'Ya no sales en gastos nuevos, pero tus cuentas siguen aquí.',btn:'Ver mi cuenta',target:'accounts'};
   } else if(!S.items.length && !c.total){
-    action = {txt:'La lista está vacía. Apunta lo que hace falta pa la fiesta.',
+    action = {txt:'La lista está vacía. Apunta lo que hace falta para la fiesta.',
       btn:'Apuntar lo que falta', target:'list'};
   } else if(myClaimedItems.length === 1){
     action = {txt:`Te toca traer ${escapeHtml(myClaimedItems[0].name)}.`,
@@ -2998,10 +3063,12 @@ function partyView(c){
     action = {txt:`Hay ${unownedCount === 1 ? 'una cosa' : unownedCount + ' cosas'} sin responsable en la lista.`,
       btn:'Ver la lista', target:'list'};
   } else if(myOutgoingBizums.length){
-    action = {txt:`Te queda ${myOutgoingBizums.length===1?'un Bizum':myOutgoingBizums.length+' Bizums'} pa quedar en paz.`,
+    action = {txt:myOutgoingBizums.length === 1
+      ? 'Te queda un Bizum para quedar en paz.'
+      : `Te quedan ${myOutgoingBizums.length} Bizums para quedar en paz.`,
       btn:'Ver mi cuenta',target:'accounts'};
   } else if(openItems === 0 && pendingBizumCount){
-    action = {txt:'Todo comprado. Solo quedan los bizums pa quedar en paz.',
+    action = {txt:'Todo comprado. Solo quedan los Bizums pendientes.',
       btn:'A las cuentas', target:'accounts'};
   } else if(openItems === 0 && !pendingBizumCount && c.total){
     action = {txt:'Todo comprado y todo saldado. Vaya máquinas.',
@@ -3026,8 +3093,7 @@ function partyView(c){
   }
 
   const isLive = isLiveSyncing();
-  return `${heroMiniHtml()}
-    <div class="card party-card">
+  return `<div class="card party-card">
       <span class="brand-mark" aria-hidden="true">${LOGO}</span>
       <span class="label">Tu fiesta</span>
       <h1 class="title">${escapeHtml(S.party.name)}</h1>
@@ -3036,7 +3102,7 @@ function partyView(c){
       ${S.localReadOnly ? '<div class="access-note"><strong>Copia guardada.</strong><br>Ya no está conectada a una fiesta que se pueda compartir.</div>' : `<button class="btn btn-white btn-block" id="inviteButton" type="button">${readOnly ? 'Mandar las cuentas' : 'Mandar al grupo'}</button>`}
       ${canGoLive() ? `
         <button class="btn btn-live btn-block" id="enableLiveButton" type="button" style="margin-top:8px">
-          Ponerla en vivo pa que todos apunten</button>` : ''}
+          Ponerla en vivo para que todos apunten</button>` : ''}
       <div class="sync-status${isLive ? ' live' : ''}" id="syncStatus">${escapeHtml(syncText())}</div>
     </div>
     <div class="card">
@@ -3053,8 +3119,8 @@ function partyView(c){
     </div>
     <button class="utility-entry party-options-entry" id="partyOptionsButton" type="button" aria-haspopup="dialog">
       <span class="utility-copy">
-        <span class="utility-title">Opciones de esta fiesta</span>
-        <span class="utility-sub">Actividad, datos y cambios de fiesta</span>
+        <span class="utility-title">Gestionar esta fiesta</span>
+        <span class="utility-sub">Actividad y acciones sobre la fiesta actual</span>
       </span>
       <span class="utility-arrow" aria-hidden="true">›</span>
     </button>`;
@@ -3219,7 +3285,7 @@ function listView(){
     <div class="screen-header"><h1>La lista</h1><div class="sub">${sub}</div></div>
     ${readOnly ? '<div class="access-note"><strong>Solo lectura.</strong><br>Puedes ver la lista, pero este enlace no guarda cambios.</div>' : `<form class="add-row" id="addItemForm">
       <label class="visually-hidden" for="itemInput">Qué hace falta</label>
-      <input type="text" id="itemInput" placeholder="¿Qué falta? (garrafón no)" maxlength="40" autocomplete="off">
+      <input type="text" id="itemInput" placeholder="Hielo, pan, vasos…" maxlength="40" autocomplete="off">
       <button class="btn btn-primary" type="submit">Apuntar</button>
     </form>
     <button class="create-dashed" id="directExpenseButton" type="button" style="margin-bottom:14px">
@@ -3304,7 +3370,7 @@ function accountsView(c){
     const myBizums = c.bizums.filter(b => b.fromId === S.me || b.toId === S.me);
     const actions = myBizums.map(b => b.fromId === S.me
       ? `<div class="my-account-action">
-          <span class="text">Haz bizum de <b>${eur(b.cents)}</b> a <b>${escapeHtml(personById(b.toId).name)}</b></span>
+          <span class="text">Haz un Bizum de <b>${eur(b.cents)}</b> a <b>${escapeHtml(personById(b.toId).name)}</b></span>
           <button class="btn btn-soft btn-mini" data-copy-bizum="${escapeHtml(b.toId)}" data-cents="${b.cents}" type="button">Copiar</button>
         </div>`
       : `<div class="my-account-action">
@@ -3318,7 +3384,7 @@ function accountsView(c){
       <span class="label">Tu cuenta</span>
       <div class="my-account-amount ${cls}">${title}</div>
       <div class="my-account-breakdown">Pagaste ${eur(c.payerTotals[S.me]||0)} · te tocaba ${eur(c.owes[S.me]||0)}${transferBreakdown}</div>
-      ${actions || (s === 0 ? '<div class="my-account-action"><span class="text">Ni pa ti ni pa mí. Así da gusto.</span></div>' : '')}
+      ${actions || (s === 0 ? '<div class="my-account-action"><span class="text">Ni para ti ni para mí. Así da gusto.</span></div>' : '')}
     </div>`;
   }
 
@@ -3357,7 +3423,7 @@ function accountsView(c){
     ${c.bizums.length ? '<span class="label">Bizums pendientes</span>' : ''}
     ${bizumsHtml}
     ${c.bizums.length ? `<div class="footnote">${readOnly ? 'Este enlace no puede marcar Bizums como hechos.' : 'Marca el círculo cuando el Bizum esté hecho.'}</div>`
-      : '<div class="settled-message">Cuentas en paz. Ni pa ti ni pa mí.</div>'}
+      : '<div class="settled-message">Cuentas en paz. Ni para ti ni para mí.</div>'}
     ${S.transfers.length ? '<span class="label">Bizums hechos</span>' : ''}
     ${transfersHtml}
     ${S.transfers.length && !readOnly ? '<div class="footnote">¿Marcaste uno por error? Toca su círculo verde para deshacerlo.</div>' : ''}
@@ -3385,6 +3451,11 @@ function activateTab(tabName){
 function render(){
   sync.renderLater = false; // Any render path clears the deferred-render debt.
   document.body.classList.toggle('no-party', !S);
+  const partySwitcher = $('#partySwitcherButton');
+  if(S){
+    $('#partySwitcherName').textContent = S.party.name;
+    partySwitcher.setAttribute('aria-label', `Abrir tus fiestas. Activa: ${S.party.name}`);
+  }
   const v = $('#preview');
   if(!S){
     v.innerHTML = entryView();
@@ -3472,8 +3543,8 @@ function bindView(v){
     e.preventDefault();
     if(!requireActivePerson()) return;
     const n = v.querySelector('#itemInput').value.trim();
-    if(!n) return toast('Escribe algo, que la lista no adivina.');
-    if(S.items.length >= 500) return toast('La lista no da pa más (500 cosas). Quita algo primero.');
+    if(!n) return toast('Escribe qué hace falta.');
+    if(S.items.length >= 500) return toast('La lista admite hasta 500 cosas. Quita una antes de añadir otra.');
     const button = form.querySelector('button[type="submit"]');
     await withBusyButton(button,'Guardando…',() => commitSharedChange(() => {
       if(!personById(S.me)?.active) throw new Error('inactive_person');
@@ -3525,8 +3596,8 @@ function bindView(v){
     if(!requireActivePerson()) return;
     const n = v.querySelector('#personInput').value.trim();
     if(!n) return;
-    if(personByName(n)) return toast('Ya hay alguien con ese nombre. Ponle un mote distinto.');
-    if(S.people.length >= 100) return toast('La peña no da pa más (100). Menuda fiesta.');
+    if(personByName(n)) return toast('Ya hay alguien con ese nombre. Usa otro.');
+    if(S.people.length >= 100) return toast('La fiesta admite hasta 100 personas.');
     const button = formP.querySelector('button[type="submit"]');
     await withBusyButton(button,'Guardando…',() => commitSharedChange(() => {
       if(!personById(S.me)?.active) throw new Error('inactive_person');
@@ -3534,7 +3605,7 @@ function bindView(v){
       S.people.push(touch({id:newId('p'), name:n, admin:false, active:true}));
     }, {toast:n + ' se une a la peña'})).catch(err => {
       if(err.message === 'inactive_person') toast('Ya no sales en gastos nuevos. La llave puede volverte a meter.');
-      else if(err.message === 'duplicate_name') toast('Ya hay alguien con ese nombre. Ponle un mote distinto.');
+      else if(err.message === 'duplicate_name') toast('Ya hay alguien con ese nombre. Usa otro.');
       else throw err;
     });
   };
@@ -3592,6 +3663,9 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
   if(!S) return;
   activateTab(t.dataset.tab);
 }));
+document.getElementById('partySwitcherButton').addEventListener('click', () => {
+  if(S) partySwitcherSheet();
+});
 
 /* startup: edit link (#F:id:key), read link (#R:id), snapshot (#AP2:), or saved state */
 (function(){

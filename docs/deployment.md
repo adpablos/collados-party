@@ -273,7 +273,7 @@ The API supports two independent server-side projections:
 | `first_transfer_completed` | Server | The party accepted its first completed transfer. |
 | `party_opened_write`, `party_opened_read` | Client allowlist | A live party opened in the corresponding capability mode. |
 | `invite_share_intent`, `accounts_share_intent` | Client allowlist | The native share/copy flow was opened. |
-| `support_opened`, `accounts_viewed` | Client allowlist | Support or the accounts screen was opened. |
+| `support_opened`, `accounts_viewed`, `feedback_opened` | Client allowlist | Support, accounts, or feedback was opened. |
 
 Every event is also recorded in local structured logs as `product_event` before
 remote delivery, so a provider gap can be audited or backfilled.
@@ -343,6 +343,33 @@ scripts/check.sh
 CI fails when the generated header is stale. `security-headers.conf` permits
 only the app origin plus Google Fonts, blocks framing and plugins, and keeps
 inline JavaScript restricted to the generated SHA-256 hash.
+
+## External Feedback Board
+
+`FEEDBACK_URL` in `public/index.html` is the single integration point for the
+target Featurebase board. A Pachas uses a normal external link only: there is no
+Featurebase SDK, widget, iframe, runtime credential, or cookie in the app. The
+link has no query string or fragment, sends no referrer, and receives no party
+or identity context from A Pachas. Featurebase still receives the ordinary
+network, browser, cookie, or account metadata of that separate visit. Before
+opening it, the UI names Featurebase and tells people not to enter names,
+amounts, or party links.
+
+The content-free `usage.feedback_opened` code is sent separately to A Pachas' own
+`POST /api/events` endpoint. Changing providers requires updating `FEEDBACK_URL`,
+the visible provider name, every provider reference in `docs/product.md`,
+`docs/design.md`, and this runbook, plus the provider-specific assertions in
+`tests/browser-core.test.js`; then refresh the CSP hash and run
+`scripts/check.sh`.
+
+The Featurebase workspace is provisioned separately from deployment. Before
+enabling the CTA for a release, verify that `FEEDBACK_URL` resolves and configure
+the single public `Ideas y problemas` board, guest posting and upvoting, a
+Spanish board title and seed-post copy, and automatic spam protection. Separate
+boards and full post/comment moderation require Growth and are intentionally not
+enabled for the Free beta. Votes inform product prioritization; they do not
+automatically reorder work or override security, correctness, or data-loss
+issues.
 
 ## Encrypted Backups
 

@@ -10,9 +10,20 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'u
 
 test('Claude imports the canonical agent instructions without duplicating them', () => {
   const claude = read('CLAUDE.md');
+  const agents = read('AGENTS.md');
+  const normalizedAgents = agents.replace(/\s+/g, ' ');
   assert.match(claude, /^@AGENTS\.md$/m);
   assert.doesNotMatch(claude, /^## (Repository Map|Language Policy|Rules|Testing)$/m);
-  assert.match(read('AGENTS.md'), /Read `REVIEW\.md` before reviewing a pull request/);
+  assert.match(agents, /Read `REVIEW\.md` before reviewing a pull request/);
+
+  for (const invariant of [
+    'write keys stay in the hash so they do not reach logs',
+    'Do not mention sync, revisions, or conflicts in user-facing copy',
+    'Shared-party data lives in the `api-data` volume and must not be logged',
+    'demo data and must never upload it to the server',
+  ]) {
+    assert.ok(normalizedAgents.includes(invariant), `AGENTS.md is missing ${invariant}`);
+  }
 });
 
 test('the review contract and pull request template preserve the guardrail ratchet', () => {

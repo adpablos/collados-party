@@ -15,6 +15,8 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
   acceptance criteria, and backlog.
 - `docs/design.md` — identity and UI rules: logo, exact tokens, typography,
   user-facing voice, and screen structure.
+- `REVIEW.md` — the pull-request review contract and required evidence.
+- `.claude/skills/` — reusable review, mobile-smoke, and release workflows.
 - `compose.yaml` — server stack: nginx, API, and cloudflared.
 - `deployment/nginx/default.conf` — nginx static serving plus `/api/` proxy.
 - `deployment/nginx/security-headers.conf` — generated CSP plus shared headers.
@@ -79,6 +81,15 @@ the whole frontend lives in `public/index.html` and the whole backend lives in
    share messages. After deployment, confirm `https://apachas.alexdepablos.es`
    responds; `scripts/deploy.sh <version>` already checks the product version,
    release SHA, web, and API health.
+9. Read `REVIEW.md` before reviewing a pull request. Review the changed behavior,
+   not only the diff shape, and return either actionable findings with file and
+   line references or the exact verdict `ready to merge`. A review does not
+   authorize merging or deploying.
+10. When a review, incident, or repeated correction reveals reusable knowledge,
+    encode it at the narrowest enforceable layer: test or CI for invariants,
+    script for deterministic work, this file for always-on facts, or a project
+    skill for a conditional workflow. Do not add a guardrail for a one-off issue
+    without a plausible recurrence.
 
 ## Testing
 
@@ -102,4 +113,5 @@ python3 -m http.server -d public
 
 Test on a mobile viewport around 390px wide. Automated checks cover the API and
 core state behavior; the complete interaction and responsive flow remain
-browser-based.
+browser-based. Agents that support project skills should use
+`verify-apachas-mobile` and report the evidence it requires.
